@@ -7,7 +7,6 @@ import { getCameras } from '../../store/camera-slice/selectors';
 
 function CatalogScreen(): JSX.Element {
   const cameras = useAppSelector(getCameras);
-  {console.log(cameras)}
 
   return(
     <div className="wrapper">

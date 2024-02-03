@@ -3,6 +3,7 @@ import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 
 function ProductScreen(): JSX.Element {
+  //const {id} = useParams();
   return(
     <div className="wrapper">
       <Helmet>:Item_name:</Helmet>
