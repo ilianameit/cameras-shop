@@ -2,8 +2,13 @@ import { Helmet } from 'react-helmet-async';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
 import CardsList from '../../components/cards-list/cards-list';
+import { useAppSelector } from '../../hooks';
+import { getCameras } from '../../store/camera-slice/selectors';
 
 function CatalogScreen(): JSX.Element {
+  const cameras = useAppSelector(getCameras);
+  {console.log(cameras)}
+
   return(
     <div className="wrapper">
       <Helmet>
@@ -151,7 +156,7 @@ function CatalogScreen(): JSX.Element {
                       </div>
                     </form>
                   </div>
-                  <CardsList />
+                  <CardsList cameras={cameras}/>
                   <div className="pagination">
                     <ul className="pagination__list">
                       <li className="pagination__item"><a className="pagination__link pagination__link--active" href="1">1</a>

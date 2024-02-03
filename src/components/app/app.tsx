@@ -15,7 +15,7 @@ function App(): JSX.Element {
         <Routes>
           <Route path={AppRoutes.Root} element={<CatalogScreen />}/>
           <Route path={AppRoutes.Basket} element={<BasketScreen />} />
-          <Route path={AppRoutes.Product} element={<ProductScreen />} />
+          <Route path={`${AppRoutes.Product}:id`} element={<ProductScreen />} />
           <Route path='*' element={<NotFoundScreen />} />
 
         </Routes>
