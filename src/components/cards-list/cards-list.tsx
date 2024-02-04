@@ -10,7 +10,7 @@ function CardsList({cameras}: CardListProps): JSX.Element {
     <div className="cards catalog__cards">
       {
         cameras.map((camera) => (
-          <CardItem key={camera.id} camera={camera}/>
+          <CardItem key={`${camera.id}-camera`} camera={camera}/>
         ))
       }
     </div>

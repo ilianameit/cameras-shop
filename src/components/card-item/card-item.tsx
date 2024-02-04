@@ -19,7 +19,7 @@ function CardItem({camera}: CardItemProps): JSX.Element{
         <div className="rate product-card__rate">
           {
             Array.from({length: RATING_STAR}, (_, index) => index).map((value) => (
-              <svg key={rating} width="17" height="16" aria-hidden="true">
+              <svg key={`${id}-rating-${value}`} width="17" height="16" aria-hidden="true">
                 <use xlinkHref={value < rating ? '#icon-full-star' : '#icon-star'}></use>
               </svg>
             ))
