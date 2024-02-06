@@ -23,3 +23,4 @@ export enum APIRoute {
 }
 
 export const RATING_STAR = 5;
+

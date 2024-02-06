@@ -5,9 +5,23 @@ import CardsList from '../../components/cards-list/cards-list';
 import { useAppSelector } from '../../hooks';
 import { getCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
+import Pagination from '../../components/pagination/pagination';
+import { useSearchParams } from 'react-router-dom';
+
+const MAX_COUNT_ITEM_PAGE = 9;
 
 function CatalogScreen(): JSX.Element {
   const cameras = useAppSelector(getCameras);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Number(searchParams.get('page') || 1);
+  const beginItem = (currentPage - 1) * MAX_COUNT_ITEM_PAGE;
+  const endItem = currentPage * MAX_COUNT_ITEM_PAGE;
+
+  const currentCameras = cameras.slice(beginItem, endItem);
+
+  function handlePaginateClick(pageNumber: number) {
+    setSearchParams({page: String(pageNumber)});
+  }
 
   return(
     <div className="wrapper">
@@ -151,19 +165,11 @@ function CatalogScreen(): JSX.Element {
                       </div>
                     </form>
                   </div>
-                  <CardsList cameras={cameras}/>
-                  <div className="pagination">
-                    <ul className="pagination__list">
-                      <li className="pagination__item"><a className="pagination__link pagination__link--active" href="1">1</a>
-                      </li>
-                      <li className="pagination__item"><a className="pagination__link" href="2">2</a>
-                      </li>
-                      <li className="pagination__item"><a className="pagination__link" href="3">3</a>
-                      </li>
-                      <li className="pagination__item"><a className="pagination__link pagination__link--text" href="2">Далее</a>
-                      </li>
-                    </ul>
-                  </div>
+                  <CardsList cameras={currentCameras}/>
+                  {
+                    cameras.length > MAX_COUNT_ITEM_PAGE &&
+                    <Pagination currentPage={currentPage} totalItems={cameras.length} itemsPerPage={MAX_COUNT_ITEM_PAGE} onPageClick={handlePaginateClick}/>
+                  }
                 </div>
               </div>
             </div>
