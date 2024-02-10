@@ -1,12 +1,20 @@
 import { Camera } from '../../types/types';
 import { AppRoutes, RATING_STAR } from '../../const/const';
 import { Link } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks';
+import { setActiveModal } from '../../store/app-slice/app-slice';
 type CardItemProps = {
   camera: Camera;
 }
 
 function CardItem({camera}: CardItemProps): JSX.Element{
   const {id, previewImgWebp, previewImgWebp2x, previewImg, previewImg2x, name, rating, reviewCount, price} = camera;
+  const dispath = useAppDispatch();
+
+  function handleOpenModalClick() {
+    dispath(setActiveModal());
+  }
+
   return(
     <div className="product-card">
       <div className="product-card__img">
@@ -32,7 +40,12 @@ function CardItem({camera}: CardItemProps): JSX.Element{
         </p>
       </div>
       <div className="product-card__buttons">
-        <button className="btn btn--purple product-card__btn" type="button">Купить
+        <button
+          className="btn btn--purple product-card__btn"
+          type="button"
+          onClick={handleOpenModalClick}
+        >
+          Купить
         </button>
         {
           // <a className="btn btn--purple-border product-card__btn product-card__btn--in-cart" href="#">

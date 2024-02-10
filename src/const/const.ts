@@ -10,7 +10,8 @@ export enum NameSpace {
   Similar = 'SIMILAR',
   Review = 'REVIEW',
   Coupon = 'COUPON',
-  ORDER = 'ORDER',
+  Order = 'ORDER',
+  App = 'APP',
 }
 
 export enum APIRoute {

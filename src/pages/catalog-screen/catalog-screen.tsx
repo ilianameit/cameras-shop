@@ -7,6 +7,8 @@ import { getCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
+import ModalWindow from '../../components/modal-window/modal-window';
+import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -177,6 +179,9 @@ function CatalogScreen(): JSX.Element {
         </div>
       </main>
       <Footer />
+      <ModalWindow>
+        <AddItemPopup />
+      </ModalWindow>
     </div>
   );
 }
