@@ -6,11 +6,13 @@ import { fetchCamerasAction, fetchPromoAction } from '../api-actions';
 type CamerasStateType = {
   cameras: Camera[];
   promo: Item[];
+  loadingCameras: boolean;
 }
 
 const initialState: CamerasStateType = {
   cameras: [],
   promo: [],
+  loadingCameras: false,
 };
 
 export const camerasSlice = createSlice({
@@ -22,6 +24,10 @@ export const camerasSlice = createSlice({
     builder
       .addCase(fetchCamerasAction.fulfilled, (state, action) => {
         state.cameras = action.payload;
+        state.loadingCameras = false;
+      })
+      .addCase(fetchCamerasAction.pending, (state) => {
+        state.loadingCameras = true;
       })
       .addCase(fetchPromoAction.fulfilled, (state, action) => {
         state.promo = action.payload;
