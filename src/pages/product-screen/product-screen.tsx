@@ -1,12 +1,55 @@
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
+import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getOneCamera, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
+import { useEffect, useState } from 'react';
+import { fetchOneCameraAction } from '../../store/api-actions';
+import { dropCamera } from '../../store/camera-slice/camera-slice';
+import LoadingScreen from '../loading-screen/loading-screen';
+import NotFoundScreen from '../not-found-screen/not-found-screen';
+import RatingStarsList from '../../components/rating-stars-list/rating-stars-list';
+import { returnFormatedPrice } from '../../utils/common';
+import { createPortal } from 'react-dom';
+import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 
 function ProductScreen(): JSX.Element {
-  //const {id} = useParams();
+
+  const dispatch = useAppDispatch();
+  const {id} = useParams();
+
+  const camera = useAppSelector(getOneCamera);
+  const isLoading = useAppSelector(getStatusLoadingOneCamera);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if(!id) {
+      return;
+    }
+
+    dispatch(fetchOneCameraAction(id));
+
+    return () => {
+      dispatch(dropCamera());
+    };
+  }, [dispatch, id]);
+
+  if(!camera && isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if(!camera || !id) {
+    return <NotFoundScreen />;
+  }
+
+  const {id: idCamera, name, reviewCount, rating, price, description, vendorCode, category, type, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x} = camera;
+  const splitedDescription = description.split('. ');
   return(
     <div className="wrapper">
-      <Helmet>:Item_name:</Helmet>
+      <Helmet>
+        <title>Продукт - {name}</title>
+      </Helmet>
       <Header />
       <main>
         <div className="page-content">
@@ -27,7 +70,10 @@ function ProductScreen(): JSX.Element {
                     </svg>
                   </a>
                 </li>
-                <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Ретрокамера Das Auge IV</span>
+                <li className="breadcrumbs__item">
+                  <span className="breadcrumbs__link breadcrumbs__link--active">
+                    {name}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -37,33 +83,38 @@ function ProductScreen(): JSX.Element {
               <div className="container">
                 <div className="product__img">
                   <picture>
-                    <source type="image/webp" srcSet="img/content/das-auge.webp, img/content/das-auge@2x.webp 2x" />
-                    <img src="img/content/das-auge.jpg" srcSet="img/content/das-auge@2x.jpg 2x" width="560" height="480" alt="Ретрокамера Das Auge IV" />
+                    <source
+                      type="image/webp"
+                      srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}
+                    />
+                    <img
+                      src={`/${previewImg}`}
+                      srcSet={`/${previewImg2x} 2x`}
+                      width={560}
+                      height={480}
+                      alt={name}
+                    />
                   </picture>
                 </div>
                 <div className="product__content">
-                  <h1 className="title title--h3">Ретрокамера Das Auge IV</h1>
+                  <h1 className="title title--h3">{name}</h1>
                   <div className="rate product__rate">
-                    <svg width={17} height={16} aria-hidden="true">
-                      <use xlinkHref="#icon-full-star"></use>
-                    </svg>
-                    <svg width={17} height={16} aria-hidden="true">
-                      <use xlinkHref="#icon-full-star"></use>
-                    </svg>
-                    <svg width={17} height={16} aria-hidden="true">
-                      <use xlinkHref="#icon-full-star"></use>
-                    </svg>
-                    <svg width={17} height={16} aria-hidden="true">
-                      <use xlinkHref="#icon-full-star"></use>
-                    </svg>
-                    <svg width={17} height={16} aria-hidden="true">
-                      <use xlinkHref="#icon-star"></use>
-                    </svg>
-                    <p className="visually-hidden">Рейтинг: 4</p>
-                    <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>12</p>
+                    <RatingStarsList id={idCamera} rating={rating} />
+                    <p className="visually-hidden">Рейтинг: {rating}</p>
+                    <p className="rate__count">
+                      <span className="visually-hidden">Всего оценок:</span>
+                      {reviewCount}
+                    </p>
                   </div>
-                  <p className="product__price"><span className="visually-hidden">Цена:</span>73 450 ₽</p>
-                  <button className="btn btn--purple" type="button">
+                  <p className="product__price">
+                    <span className="visually-hidden">Цена:</span>
+                    {returnFormatedPrice(price)} ₽
+                  </p>
+                  <button
+                    className="btn btn--purple"
+                    type="button"
+                    onClick={() => setShowModal(true)}
+                  >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
                     </svg>Добавить в корзину
@@ -77,23 +128,27 @@ function ProductScreen(): JSX.Element {
                       <div className="tabs__element">
                         <ul className="product__tabs-list">
                           <li className="item-list"><span className="item-list__title">Артикул:</span>
-                            <p className="item-list__text"> DA4IU67AD5</p>
+                            <p className="item-list__text"> {vendorCode}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Категория:</span>
-                            <p className="item-list__text">Видеокамера</p>
+                            <p className="item-list__text">{category}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Тип камеры:</span>
-                            <p className="item-list__text">Коллекционная</p>
+                            <p className="item-list__text">{type}</p>
                           </li>
                           <li className="item-list"><span className="item-list__title">Уровень:</span>
-                            <p className="item-list__text">Любительский</p>
+                            <p className="item-list__text">{level}</p>
                           </li>
                         </ul>
                       </div>
                       <div className="tabs__element is-active">
                         <div className="product__tabs-text">
-                          <p>Немецкий концерн BRW разработал видеокамеру Das Auge IV в&nbsp;начале 80-х годов, однако она до&nbsp;сих пор пользуется популярностью среди коллекционеров и&nbsp;яростных почитателей старинной техники.</p>
-                          <p>Вы&nbsp;тоже можете прикоснуться к&nbsp;волшебству аналоговой съёмки, заказав этот чудо-аппарат. Кто знает, может с&nbsp;Das Auge IV&nbsp;начнётся ваш путь к&nbsp;наградам всех престижных кинофестивалей.</p>
+                          {splitedDescription.map((paragraph, index) => (
+                            <p key={paragraph}>
+                              {paragraph}
+                              {index < splitedDescription.length - 1 ? '.' : ''}
+                            </p>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -473,6 +528,10 @@ function ProductScreen(): JSX.Element {
             </section>
           </div>
         </div>
+        {showModal && createPortal(
+          <AddItemPopup onClose={() => setShowModal(false)} />,
+          document.body
+        )}
       </main>
       <a className="up-btn" href="#header">
         <svg width={12} height={18} aria-hidden="true">

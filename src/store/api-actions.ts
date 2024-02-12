@@ -35,3 +35,16 @@ export const fetchPromoAction = createAsyncThunk<
     return data;
   }
 );
+
+export const fetchOneCameraAction = createAsyncThunk<
+  Camera,
+  string,
+  AsyncActionType
+>(
+  `${NameSpace.Camera}/fetchOneCamera`,
+  async (id, {extra: api}) => {
+    const {data} = await api.get<Camera>(`${APIRoute.Cameras}/${id}`);
+
+    return data;
+  }
+);

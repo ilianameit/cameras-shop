@@ -1,5 +1,7 @@
+export type Id = number;
+export type Rating = number;
 export type Item = {
-  id: number;
+  id: Id;
   name: string;
   previewImg: string;
   previewImg2x: string;
@@ -14,7 +16,7 @@ category: CameraCategory;
 description: string;
 level: CameraLevel;
 price: number;
-rating: number;
+rating: Rating;
 reviewCount: number;
 }
 
