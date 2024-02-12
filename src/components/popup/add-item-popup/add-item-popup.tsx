@@ -1,9 +1,12 @@
-import React from 'react';
+import ModalWindow from '../../modal-window/modal-window';
 
-function AddItemPopup(): JSX.Element {
+type AddItemPopupProps = {
+  onClose: () => void;
+}
+
+function AddItemPopup({onClose}:AddItemPopupProps): JSX.Element {
   return(
-    <React.Fragment>
-      <p className="title title--h4">Добавить товар в корзину</p>
+    <ModalWindow title='Добавить товар в корзину' onClose={onClose} isOpen={false}>
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
           <picture>
@@ -29,7 +32,7 @@ function AddItemPopup(): JSX.Element {
           </svg>Добавить в корзину
         </button>
       </div>
-    </React.Fragment>
+    </ModalWindow>
   );
 }
 

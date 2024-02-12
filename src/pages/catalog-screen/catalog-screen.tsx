@@ -7,8 +7,9 @@ import { getCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
-import ModalWindow from '../../components/modal-window/modal-window';
+import { useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
+import { createPortal } from 'react-dom';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -24,6 +25,8 @@ function CatalogScreen(): JSX.Element {
   function handlePaginateClick(pageNumber: number) {
     setSearchParams({page: String(pageNumber)});
   }
+
+  const [showModal, setShowModal] = useState(false);
 
   return(
     <div className="wrapper">
@@ -167,7 +170,7 @@ function CatalogScreen(): JSX.Element {
                       </div>
                     </form>
                   </div>
-                  <CardsList cameras={currentCameras}/>
+                  <CardsList cameras={currentCameras} onBuyClick={() => setShowModal(true)}/>
                   {
                     cameras.length > MAX_COUNT_ITEM_PAGE &&
                     <Pagination currentPage={currentPage} totalItems={cameras.length} itemsPerPage={MAX_COUNT_ITEM_PAGE} onPageClick={handlePaginateClick}/>
@@ -177,11 +180,12 @@ function CatalogScreen(): JSX.Element {
             </div>
           </section>
         </div>
+        {showModal && createPortal(
+          <AddItemPopup onClose={() => setShowModal(false)} />,
+          document.body
+        )}
       </main>
       <Footer />
-      <ModalWindow>
-        <AddItemPopup />
-      </ModalWindow>
     </div>
   );
 }

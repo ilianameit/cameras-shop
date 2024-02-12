@@ -1,18 +1,17 @@
 import { Camera } from '../../types/types';
 import { AppRoutes, RATING_STAR } from '../../const/const';
 import { Link } from 'react-router-dom';
-import { useAppDispatch } from '../../hooks';
-import { setActiveModal } from '../../store/app-slice/app-slice';
+
 type CardItemProps = {
   camera: Camera;
+  onBuyClick: () => void;
 }
 
-function CardItem({camera}: CardItemProps): JSX.Element{
+function CardItem({camera, onBuyClick}: CardItemProps): JSX.Element{
   const {id, previewImgWebp, previewImgWebp2x, previewImg, previewImg2x, name, rating, reviewCount, price} = camera;
-  const dispath = useAppDispatch();
 
   function handleOpenModalClick() {
-    dispath(setActiveModal());
+    onBuyClick();
   }
 
   return(
