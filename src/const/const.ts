@@ -22,6 +22,3 @@ export enum APIRoute {
   Coupons = '/coupons',
   Orders = '/orders',
 }
-
-export const RATING_STAR = 5;
-

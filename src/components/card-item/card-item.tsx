@@ -1,6 +1,8 @@
 import { Camera } from '../../types/types';
-import { AppRoutes, RATING_STAR } from '../../const/const';
+import { AppRoutes } from '../../const/const';
 import { Link } from 'react-router-dom';
+import RatingStarsList from '../rating-stars-list/rating-stars-list';
+import { returnFormatedPrice } from '../../utils/common';
 
 type CardItemProps = {
   camera: Camera;
@@ -24,18 +26,12 @@ function CardItem({camera, onBuyClick}: CardItemProps): JSX.Element{
       </div>
       <div className="product-card__info">
         <div className="rate product-card__rate">
-          {
-            Array.from({length: RATING_STAR}, (_, index) => index).map((value) => (
-              <svg key={`${id}-rating-${value}`} width="17" height="16" aria-hidden="true">
-                <use xlinkHref={value < rating ? '#icon-full-star' : '#icon-star'}></use>
-              </svg>
-            ))
-          }
+          <RatingStarsList id={id} rating={rating} />
           <p className="visually-hidden">Рейтинг: {rating}</p>
           <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{reviewCount}</p>
         </div>
         <p className="product-card__title">{name}</p>
-        <p className="product-card__price"><span className="visually-hidden">Цена:</span>{price.toLocaleString('ru-RU')} ₽
+        <p className="product-card__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)} ₽
         </p>
       </div>
       <div className="product-card__buttons">
