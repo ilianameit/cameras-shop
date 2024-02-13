@@ -22,3 +22,8 @@ export enum APIRoute {
   Coupons = '/coupons',
   Orders = '/orders',
 }
+
+export enum TabName {
+  Feature = 'feature',
+  Description = 'description',
+}

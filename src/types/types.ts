@@ -1,5 +1,14 @@
 export type Id = number;
 export type Rating = number;
+export type Description = string;
+
+export type FeatureItem = {
+  vendorCode: string;
+  category: CameraCategory;
+  type: CameraType;
+  level: CameraLevel;
+}
+
 export type Item = {
   id: Id;
   name: string;
@@ -9,12 +18,8 @@ export type Item = {
   previewImgWebp2x: string;
 }
 
-export type Camera = Item & {
-vendorCode: string;
-type: CameraType;
-category: CameraCategory;
-description: string;
-level: CameraLevel;
+export type Camera = Item & FeatureItem &{
+description: Description;
 price: number;
 rating: Rating;
 reviewCount: number;
@@ -25,3 +30,5 @@ type CameraType = 'Коллекционная' | 'Моментальная' | '�
 type CameraCategory = 'Видеокамера' | 'Фотоаппарат'
 
 type CameraLevel = 'Нулевой' | 'Любительский' | 'Профессиональный'
+
+export type TabType = 'feature' | 'description';
