@@ -32,3 +32,17 @@ type CameraCategory = 'Видеокамера' | 'Фотоаппарат'
 type CameraLevel = 'Нулевой' | 'Любительский' | 'Профессиональный'
 
 export type TabType = 'feature' | 'description';
+
+export type Review = ReviewAdding & {
+  id: string;
+  createAt: string;
+}
+
+export type ReviewAdding = {
+  cameraId: Id;
+  userName: string;
+  advantage: string;
+  disadvantage: string;
+  review: string;
+  rating: number;
+}
