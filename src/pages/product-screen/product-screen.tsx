@@ -3,9 +3,9 @@ import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getOneCamera, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
+import { getOneCamera, getSimilarCameras, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
 import { useEffect, useState } from 'react';
-import { fetchOneCameraAction } from '../../store/api-actions';
+import { fetchOneCameraAction, fetchSimilarCamerasAction } from '../../store/api-actions';
 import { dropCamera } from '../../store/camera-slice/camera-slice';
 import LoadingScreen from '../loading-screen/loading-screen';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
@@ -29,6 +29,7 @@ function ProductScreen(): JSX.Element {
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showModal, setShowModal] = useState(false);
+  const similarCameras = useAppSelector(getSimilarCameras);
 
   useEffect(() => {
     if(!id) {
@@ -36,6 +37,7 @@ function ProductScreen(): JSX.Element {
     }
 
     dispatch(fetchOneCameraAction(id));
+    dispatch(fetchSimilarCamerasAction(id));
 
     return () => {
       dispatch(dropCamera());
@@ -136,7 +138,10 @@ function ProductScreen(): JSX.Element {
               </div>
             </section>
           </div>
-          <ProductSimilarSlider id={id} onBuyClick={() => setShowModal(true)} />
+          {
+            similarCameras.length > 0 &&
+              <ProductSimilarSlider onBuyClick={() => setShowModal(true)} similarCameras={similarCameras}/>
+          }
           <div className="page-content__section">
             <section className="review-block">
               <div className="container">

@@ -3,26 +3,17 @@ import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
 
 import 'swiper/css';
 
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getSimilarCameras } from '../../store/camera-slice/selectors';
-import { fetchSimilarCamerasAction } from '../../store/api-actions';
 import CardItem from '../card-item/card-item';
 import styles from './style.module.css';
+import { Camera } from '../../types/types';
 
 type ProductSimilarSliderProps = {
-  id: string;
   onBuyClick: () => void;
+  similarCameras: Camera[];
 }
 
-function ProductSimilarSlider({id, onBuyClick}: ProductSimilarSliderProps): JSX.Element {
+function ProductSimilarSlider({onBuyClick, similarCameras}: ProductSimilarSliderProps): JSX.Element {
   const swiper = useSwiper();
-  const dispatch = useAppDispatch();
-  const similarCameras = useAppSelector(getSimilarCameras);
-
-  useEffect(() => {
-    dispatch(fetchSimilarCamerasAction(id));
-  }, [id, dispatch]);
 
   return(
     <div className="page-content__section">
