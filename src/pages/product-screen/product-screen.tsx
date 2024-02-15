@@ -136,7 +136,7 @@ function ProductScreen(): JSX.Element {
               </div>
             </section>
           </div>
-          <ProductSimilarSlider id={id}/>
+          <ProductSimilarSlider id={id} onBuyClick={() => setShowModal(true)} />
           <div className="page-content__section">
             <section className="review-block">
               <div className="container">

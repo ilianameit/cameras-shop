@@ -7,3 +7,5 @@ export const getStatusLoadingCameras = (state: State) => state[NameSpace.Camera]
 
 export const getOneCamera = (state: State) => state[NameSpace.Camera].oneCamera;
 export const getStatusLoadingOneCamera = (state: State) => state[NameSpace.Camera].loadingOneCamera;
+
+export const getSimilarCameras = (state: State) => state[NameSpace.Camera].similarCameras;

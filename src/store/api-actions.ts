@@ -48,3 +48,16 @@ export const fetchOneCameraAction = createAsyncThunk<
     return data;
   }
 );
+
+export const fetchSimilarCamerasAction = createAsyncThunk<
+  Camera[],
+  string,
+  AsyncActionType
+>(
+  `${NameSpace.Similar}/fetchSimilarCameras`,
+  async (id, {extra: api}) => {
+    const {data} = await api.get<Camera[]>(`${APIRoute.Cameras}/${id}${APIRoute.Similar}`);
+
+    return data;
+  }
+);

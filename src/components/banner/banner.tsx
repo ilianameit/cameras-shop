@@ -1,6 +1,6 @@
+import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useEffect, useRef } from 'react';
-import { Autoplay, Pagination } from 'swiper/modules';
 import { getPromo } from '../../store/camera-slice/selectors';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchPromoAction } from '../../store/api-actions';
