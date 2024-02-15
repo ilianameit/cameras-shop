@@ -58,7 +58,7 @@ function ProductSimilarSlider({id, onBuyClick}: ProductSimilarSliderProps): JSX.
               ))}
 
               <button
-                className="slider-controls slider-controls--prev"
+                className="slider-controls--prev"
                 type="button"
                 aria-label="Предыдущий слайд"
                 onClick={() => swiper.slidePrev()}
@@ -69,7 +69,7 @@ function ProductSimilarSlider({id, onBuyClick}: ProductSimilarSliderProps): JSX.
                 </svg>
               </button>
               <button
-                className="slider-controls slider-controls--next"
+                className="slider-controls--next"
                 type="button"
                 aria-label="Следующий слайд"
                 onClick={() => swiper.slideNext()}
