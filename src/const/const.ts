@@ -23,5 +23,7 @@ export enum APIRoute {
   Orders = '/orders',
 }
 
-export const RATING_STAR = 5;
-
+export enum TabName {
+  Feature = 'feature',
+  Description = 'description',
+}
