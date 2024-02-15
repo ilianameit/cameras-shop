@@ -2,7 +2,7 @@ import { Id, Rating } from '../../types/types';
 
 const RATING_STAR = 5;
 type RatingStarsListProps = {
-  id: Id;
+  id: Id | string;
   rating: Rating;
 }
 function RatingStarsList({id, rating}: RatingStarsListProps): React.ReactElement[]{
