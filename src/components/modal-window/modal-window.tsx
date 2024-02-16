@@ -3,13 +3,11 @@ import { ReactNode, KeyboardEvent } from 'react';
 
 type ModalWindowProps = {
   title: string;
-  isOpen: boolean;
   isResponse?: boolean;
   onClose: () => void;
-  // onSubmit: () => void;
   children: ReactNode;
 }
-function ModalWindow({title, isOpen, onClose, children, isResponse = false}: ModalWindowProps): JSX.Element {
+function ModalWindow({title, onClose, children, isResponse = false}: ModalWindowProps): JSX.Element {
 
 
   function handleEscapeKeyDown(evt: KeyboardEvent<HTMLDivElement>) {
@@ -19,43 +17,42 @@ function ModalWindow({title, isOpen, onClose, children, isResponse = false}: Mod
     }
   }
   return(
-    {isOpen} &&
+    <div
+      className={
+        classNames(
+          'modal',
+          'is-active',
+          {'modal--narrow': isResponse}
+        )
+      }
+      tabIndex={0}
+      onKeyDown={handleEscapeKeyDown}
+    >
+      <div className="modal__wrapper">
         <div
-          className={
-            classNames(
-              'modal',
-              'is-active',
-              {'modal--narrow': isResponse}
-            )
-          }
-          tabIndex={0}
-          onKeyDown={handleEscapeKeyDown}
+          className="modal__overlay"
+          onClick={onClose}
         >
-          <div className="modal__wrapper">
-            <div
-              className="modal__overlay"
-              onClick={onClose}
-            >
-            </div>
-            <div
-              className="modal__content"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <p className="title title--h4">{title}</p>
-              {children}
-              <button
-                className="cross-btn"
-                type="button"
-                aria-label="Закрыть попап"
-                onClick={onClose}
-              >
-                <svg width="10" height="10" aria-hidden="true">
-                  <use xlinkHref="#icon-close"></use>
-                </svg>
-              </button>
-            </div>
-          </div>
         </div>
+        <div
+          className="modal__content"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <p className="title title--h4">{title}</p>
+          {children}
+          <button
+            className="cross-btn"
+            type="button"
+            aria-label="Закрыть попап"
+            onClick={onClose}
+          >
+            <svg width="10" height="10" aria-hidden="true">
+              <use xlinkHref="#icon-close"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
