@@ -19,6 +19,7 @@ import ProductTabs from '../../components/product-tabs/product-tabs';
 import ProductSimilarSlider from '../../components/product-similar-slider/product-similar-slider';
 import ReviewList from '../../components/review-list/review-list';
 import ButtonUp from '../../components/button-up/button-up';
+import ReviewPopup from '../../components/popup/review-popup/review-popup';
 
 function ProductScreen(): JSX.Element {
 
@@ -30,7 +31,8 @@ function ProductScreen(): JSX.Element {
 
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddItemModal, setAddItemModal] = useState(false);
+  const [showReviewModal, setReviewModal] = useState(false);
   const similarCameras = useAppSelector(getSimilarCameras);
 
   useEffect(() => {
@@ -129,7 +131,7 @@ function ProductScreen(): JSX.Element {
                   <button
                     className="btn btn--purple"
                     type="button"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => setAddItemModal(true)}
                   >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -142,12 +144,17 @@ function ProductScreen(): JSX.Element {
           </div>
           {
             similarCameras.length > 0 &&
-              <ProductSimilarSlider onBuyClick={() => setShowModal(true)} similarCameras={similarCameras}/>
+              <ProductSimilarSlider onBuyClick={() => setAddItemModal(true)} similarCameras={similarCameras}/>
           }
-          <ReviewList id={id}/>
+          <ReviewList id={id} onReviewClick={() => setReviewModal(true)}/>
         </div>
-        {showModal && createPortal(
-          <AddItemPopup onClose={() => setShowModal(false)} />,
+        {showAddItemModal && createPortal(
+          <AddItemPopup onClose={() => setAddItemModal(false)} />,
+          document.body
+        )}
+
+        {showReviewModal && createPortal(
+          <ReviewPopup idCamera={idCamera} onClose={() => setReviewModal(false)} />,
           document.body
         )}
       </main>
