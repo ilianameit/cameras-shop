@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 type PaginationProps = {
   currentPage: number;
@@ -41,42 +42,51 @@ function Pagination({currentPage, totalItems, itemsPerPage, onPageClick}: Pagina
       <ul className="pagination__list">
         {
           currentPage > MAX_PAGES_ON_SCREEN && (
-            <li className="pagination__item">
-              <a
+            <li
+              className="pagination__item"
+              onClick={handlePaginateBackClick}
+            >
+              <Link
                 className="pagination__link pagination__link--text"
-                onClick={handlePaginateBackClick}
+                to=''
               >
                 Назад
-              </a>
+              </Link>
             </li>
           )
         }
         {
           pageNumbers.map((number) => (
-            <li key={`${number}-page`} className="pagination__item">
-              <a
-                onClick={() => onPageClick(number)}
+            <li
+              key={`${number}-page`}
+              className="pagination__item"
+              onClick={() => onPageClick(number)}
+            >
+              <Link
                 className={
                   classNames(
                     'pagination__link',
                     {'pagination__link--active': currentPage === number}
                   )
                 }
+                to=''
               >
                 {number}
-              </a>
+              </Link>
             </li>
           ))
         }
         {
           currentPagination < paginationCount && (
-            <li className="pagination__item">
-              <a
-                className="pagination__link pagination__link--text"
-                onClick={handlePaginateNextClick}
+            <li
+              className="pagination__item"
+              onClick={handlePaginateNextClick}
+            >
+              <Link
+                className="pagination__link pagination__link--text" to=''
               >
                 Далее
-              </a>
+              </Link>
             </li>
           )
         }
