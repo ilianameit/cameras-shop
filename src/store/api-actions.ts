@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { AppDispatch, State } from '../types/state';
-import { Camera, Item, Review } from '../types/types';
+import { Camera, Item, Review, ReviewAdding } from '../types/types';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { APIRoute, NameSpace } from '../const/const';
 
@@ -73,4 +73,17 @@ export const fetchReviewsAction = createAsyncThunk<
 
     return data;
   }
+);
+
+export const fetchAddReviewAction = createAsyncThunk<
+  Review,
+  ReviewAdding,
+  AsyncActionType
+>(
+  `${NameSpace.Review}/fetchAddReview`,
+  async (arg, { extra: api }) => {
+    const { data } = await api.post<Review>(APIRoute.Reviews, arg);
+
+    return data;
+  },
 );

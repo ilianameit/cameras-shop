@@ -1,6 +1,16 @@
 import dayjs from 'dayjs';
 import { Review } from '../../types/types';
 import RatingStarsList from '../rating-stars-list/rating-stars-list';
+import updateLocale from 'dayjs/plugin/updateLocale';
+
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale('en', {
+  months: [
+    'Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля',
+    'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'
+  ]
+});
 
 type ReviewIpemProps = {
   review: Review;

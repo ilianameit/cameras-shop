@@ -8,11 +8,12 @@ import { Review } from '../../types/types';
 
 type ReviewListProps = {
   id: string;
+  onReviewClick: () => void;
 }
 
 const REVIEWS_PER_COUNT = 3;
 
-function ReviewList({id}: ReviewListProps): JSX.Element {
+function ReviewList({id, onReviewClick}: ReviewListProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const reviews = useAppSelector(getReviews);
@@ -35,7 +36,13 @@ function ReviewList({id}: ReviewListProps): JSX.Element {
         <div className="container">
           <div className="page-content__headed">
             <h2 className="title title--h3">Отзывы</h2>
-            <button className="btn" type="button">Оставить свой отзыв</button>
+            <button
+              className="btn"
+              type="button"
+              onClick={onReviewClick}
+            >
+              Оставить свой отзыв
+            </button>
           </div>
           <ul className="review-block__list">
             {
@@ -45,7 +52,7 @@ function ReviewList({id}: ReviewListProps): JSX.Element {
             }
           </ul>
           {
-            shownReviews <= reviews.length &&
+            shownReviews < reviews.length &&
             <div className="review-block__buttons">
               <button
                 className="btn btn--purple"
