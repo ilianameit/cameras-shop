@@ -40,8 +40,8 @@ function ProductScreen(): JSX.Element {
       return;
     }
 
-    dispatch(fetchOneCameraAction(id));
-    dispatch(fetchSimilarCamerasAction(id));
+    dispatch(fetchOneCameraAction(Number(id)));
+    dispatch(fetchSimilarCamerasAction(Number(id)));
 
     return () => {
       dispatch(dropCamera());
@@ -146,7 +146,7 @@ function ProductScreen(): JSX.Element {
             similarCameras.length > 0 &&
               <ProductSimilarSlider onBuyClick={() => setAddItemModal(true)} similarCameras={similarCameras}/>
           }
-          <ReviewList id={id} onReviewClick={() => setReviewModal(true)}/>
+          <ReviewList id={idCamera} onReviewClick={() => setReviewModal(true)}/>
         </div>
         {showAddItemModal && createPortal(
           <AddItemPopup onClose={() => setAddItemModal(false)} />,

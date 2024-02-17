@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { AppDispatch, State } from '../types/state';
-import { Camera, Item, Review, ReviewAdding } from '../types/types';
+import { Camera, Id, Item, Review, ReviewAdding } from '../types/types';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { APIRoute, NameSpace } from '../const/const';
 
@@ -38,7 +38,7 @@ export const fetchPromoAction = createAsyncThunk<
 
 export const fetchOneCameraAction = createAsyncThunk<
   Camera,
-  string,
+  Id,
   AsyncActionType
 >(
   `${NameSpace.Camera}/fetchOneCamera`,
@@ -51,7 +51,7 @@ export const fetchOneCameraAction = createAsyncThunk<
 
 export const fetchSimilarCamerasAction = createAsyncThunk<
   Camera[],
-  string,
+  Id,
   AsyncActionType
 >(
   `${NameSpace.Similar}/fetchSimilarCameras`,
@@ -64,7 +64,7 @@ export const fetchSimilarCamerasAction = createAsyncThunk<
 
 export const fetchReviewsAction = createAsyncThunk<
   Review[],
-  string,
+  Id,
   AsyncActionType
 >(
   `${NameSpace.Review}/fetchReviews`,

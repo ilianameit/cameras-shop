@@ -4,10 +4,10 @@ import { getReviews } from '../../store/review/selectors';
 import { sortByDate } from '../../utils/common';
 import { fetchReviewsAction } from '../../store/api-actions';
 import ReviewItem from '../review-item/review-item';
-import { Review } from '../../types/types';
+import { Id, Review } from '../../types/types';
 
 type ReviewListProps = {
-  id: string;
+  id: Id;
   onReviewClick: () => void;
 }
 
