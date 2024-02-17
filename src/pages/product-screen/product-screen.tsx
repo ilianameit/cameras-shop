@@ -4,7 +4,7 @@ import Footer from '../../components/footer/footer';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getOneCamera, getSimilarCameras, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchOneCameraAction, fetchSimilarCamerasAction } from '../../store/api-actions';
 import { dropCamera } from '../../store/camera-slice/camera-slice';
 import LoadingScreen from '../loading-screen/loading-screen';
@@ -27,13 +27,23 @@ function ProductScreen(): JSX.Element {
   const {id} = useParams();
 
   const [tabParams, setTabParams] = useSearchParams({ tab: TabName.Description });
-  const currentTab = tabParams.get('tab') as TabType;
+  const currentTab = useMemo(() => tabParams.get('tab') as TabType, [tabParams]);
 
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showAddItemModal, setAddItemModal] = useState(false);
   const [showReviewModal, setReviewModal] = useState(false);
   const similarCameras = useAppSelector(getSimilarCameras);
+
+  const handleAddItemModal = useCallback(() => setAddItemModal(true), []);
+  const handleCloseAddItemModal = useCallback(() => setAddItemModal(false), []);
+
+  const handleTabButtonClick = useCallback((type: TabType) => {
+    setTabParams({ tab: type });
+  }, [setTabParams]);
+
+  const handleAddReviewModal = useCallback(() => setReviewModal(true), []);
+  const handleCloseAddReviewModal = useCallback(() => setReviewModal(false), []);
 
   useEffect(() => {
     if(!id) {
@@ -56,12 +66,9 @@ function ProductScreen(): JSX.Element {
     return <NotFoundScreen />;
   }
 
-  function handleTabButtonClick(type: TabType) {
-    setTabParams({ tab: type });
-  }
-
   const {id: idCamera, name, reviewCount, rating, price, description, vendorCode, category, type, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x} = camera;
   const features = { vendorCode, category, type, level };
+
 
   return(
     <div className="wrapper">
@@ -131,7 +138,7 @@ function ProductScreen(): JSX.Element {
                   <button
                     className="btn btn--purple"
                     type="button"
-                    onClick={() => setAddItemModal(true)}
+                    onClick={handleAddItemModal}
                   >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -144,17 +151,17 @@ function ProductScreen(): JSX.Element {
           </div>
           {
             similarCameras.length > 0 &&
-              <ProductSimilarSlider onBuyClick={() => setAddItemModal(true)} similarCameras={similarCameras}/>
+              <ProductSimilarSlider onBuyClick={handleAddItemModal} similarCameras={similarCameras}/>
           }
-          <ReviewList id={idCamera} onReviewClick={() => setReviewModal(true)}/>
+          <ReviewList id={idCamera} onReviewClick={handleAddReviewModal}/>
         </div>
         {showAddItemModal && createPortal(
-          <AddItemPopup onClose={() => setAddItemModal(false)} />,
+          <AddItemPopup onClose={handleCloseAddItemModal} />,
           document.body
         )}
 
         {showReviewModal && createPortal(
-          <ReviewPopup idCamera={idCamera} onClose={() => setReviewModal(false)} />,
+          <ReviewPopup idCamera={idCamera} onClose={handleCloseAddReviewModal} />,
           document.body
         )}
       </main>

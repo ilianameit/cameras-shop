@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, memo, useEffect, useState } from 'react';
 import ModalWindow from '../../modal-window/modal-window';
 import { ratingStarsName } from '../../../const/const';
 import { Rating, ReviewAdding } from '../../../types/types';
@@ -24,7 +24,7 @@ type FormValues = {
   ['user-comment']: string;
 }
 
-function ReviewPopup({onClose, idCamera}: ReviewPopupProps): JSX.Element {
+function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Element {
   const dispatch = useAppDispatch();
   const isLoadingReview = useAppSelector(getStatusLoadingReview);
   const isAddReviewSucces = useAppSelector(getAddReviewSuccessStatus);
@@ -234,4 +234,5 @@ function ReviewPopup({onClose, idCamera}: ReviewPopupProps): JSX.Element {
   );
 }
 
+const ReviewPopup = memo(ReviewPopupComponent);
 export default ReviewPopup;

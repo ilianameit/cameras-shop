@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getReviews } from '../../store/review/selectors';
 import { sortByDate } from '../../utils/common';
@@ -13,15 +13,15 @@ type ReviewListProps = {
 
 const REVIEWS_PER_COUNT = 3;
 
-function ReviewList({id, onReviewClick}: ReviewListProps): JSX.Element {
+function ReviewListComponent({id, onReviewClick}: ReviewListProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const reviews = useAppSelector(getReviews);
-  const reviewsSorted = reviews.slice().sort(sortByDate);
+  const reviewsSorted = useMemo(() => reviews.slice().sort(sortByDate), [reviews]);
 
   const [shownReviews, setShownReviews] = useState(REVIEWS_PER_COUNT);
 
-  const currentPerReviews: Review[] = reviewsSorted.slice(0, shownReviews);
+  const currentPerReviews: Review[] = useMemo(() => reviewsSorted.slice(0, shownReviews), [reviewsSorted, shownReviews]);
 
   function handleLoadReviewsClick() {
     setShownReviews((prevShownReviews) => prevShownReviews + REVIEWS_PER_COUNT);
@@ -69,4 +69,5 @@ function ReviewList({id, onReviewClick}: ReviewListProps): JSX.Element {
   );
 }
 
+const ReviewList = memo(ReviewListComponent);
 export default ReviewList;

@@ -1,8 +1,8 @@
-import { Fragment, useEffect, useRef } from 'react';
+import { Fragment, memo, useEffect, useRef } from 'react';
 import { AppRoutes } from '../../../const/const';
 import { useNavigate } from 'react-router-dom';
 
-function ThanksPopup(): JSX.Element {
+function ThanksPopupComponent(): JSX.Element {
   const navigate = useNavigate();
 
   function handleReturnButtonClick() {
@@ -36,4 +36,5 @@ function ThanksPopup(): JSX.Element {
   );
 }
 
+const ThanksPopup = memo(ThanksPopupComponent);
 export default ThanksPopup;

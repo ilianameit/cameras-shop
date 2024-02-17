@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import ModalWindow from '../../modal-window/modal-window';
 
 type AddItemPopupProps = {
   onClose: () => void;
 }
 
-function AddItemPopup({onClose}:AddItemPopupProps): JSX.Element {
+function AddItemPopupComponent({onClose}:AddItemPopupProps): JSX.Element {
   const focusElement = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -48,4 +48,5 @@ function AddItemPopup({onClose}:AddItemPopupProps): JSX.Element {
   );
 }
 
+const AddItemPopup = memo(AddItemPopupComponent);
 export default AddItemPopup;

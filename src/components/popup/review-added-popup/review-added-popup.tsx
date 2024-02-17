@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import ModalWindow from '../../modal-window/modal-window';
 import ThanksPopup from '../thanks-popup/thanks-popup';
 
@@ -5,7 +6,7 @@ type ReviewAddedPopupProps = {
   onClose: () => void;
 }
 
-function ReviewAddedPopup({onClose}: ReviewAddedPopupProps): JSX.Element {
+function ReviewAddedPopupComponent({onClose}: ReviewAddedPopupProps): JSX.Element {
   return(
     <ModalWindow title={'Спасибо за отзыв'} onClose={onClose} isResponse>
       <ThanksPopup />
@@ -13,4 +14,5 @@ function ReviewAddedPopup({onClose}: ReviewAddedPopupProps): JSX.Element {
   );
 }
 
+const ReviewAddedPopup = memo(ReviewAddedPopupComponent);
 export default ReviewAddedPopup;

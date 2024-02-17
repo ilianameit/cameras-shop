@@ -3,8 +3,9 @@ import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import { Link } from 'react-router-dom';
 import { AppRoutes } from '../../const/const';
+import { memo } from 'react';
 
-function NotFoundScreen():JSX.Element {
+function NotFoundScreenComponent():JSX.Element {
   return(
     <div className="wrapper">
       <Helmet>
@@ -21,4 +22,6 @@ function NotFoundScreen():JSX.Element {
     </div>
   );
 }
+
+const NotFoundScreen = memo(NotFoundScreenComponent);
 export default NotFoundScreen;

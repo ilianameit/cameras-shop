@@ -1,4 +1,6 @@
-function ButtonUp(): JSX.Element {
+import { memo } from 'react';
+
+function ButtonUpComponent(): JSX.Element {
 
   function handleButtonUpClick() {
     window.scrollTo({
@@ -17,4 +19,5 @@ function ButtonUp(): JSX.Element {
   );
 }
 
+const ButtonUp = memo(ButtonUpComponent);
 export default ButtonUp;

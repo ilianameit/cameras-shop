@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ReactNode, KeyboardEvent } from 'react';
+import { ReactNode, KeyboardEvent, memo } from 'react';
 
 type ModalWindowProps = {
   title: string;
@@ -7,7 +7,7 @@ type ModalWindowProps = {
   onClose: () => void;
   children: ReactNode;
 }
-function ModalWindow({title, onClose, children, isResponse = false}: ModalWindowProps): JSX.Element {
+function ModalWindowComponent({title, onClose, children, isResponse = false}: ModalWindowProps): JSX.Element {
 
 
   function handleEscapeKeyDown(evt: KeyboardEvent<HTMLDivElement>) {
@@ -56,4 +56,5 @@ function ModalWindow({title, onClose, children, isResponse = false}: ModalWindow
   );
 }
 
+const ModalWindow = memo(ModalWindowComponent);
 export default ModalWindow;

@@ -1,6 +1,6 @@
-import classNames from 'classnames';
-import { useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import PaginationItem from './pagination-item';
 
 type PaginationProps = {
   currentPage: number;
@@ -10,17 +10,22 @@ type PaginationProps = {
 }
 
 const MAX_PAGES_ON_SCREEN = 3;
-function Pagination({currentPage, totalItems, itemsPerPage, onPageClick}: PaginationProps): JSX.Element {
-  const pagesTotal = Math.ceil(totalItems / itemsPerPage);
-  const paginationCount = Math.ceil(pagesTotal / MAX_PAGES_ON_SCREEN);
-  const [currentPagination, setCurrentPagination] = useState(Math.ceil(currentPage / MAX_PAGES_ON_SCREEN));
-  const startNumber = currentPagination * MAX_PAGES_ON_SCREEN - MAX_PAGES_ON_SCREEN + 1;
-  const endNumber = currentPagination < paginationCount ? startNumber + MAX_PAGES_ON_SCREEN : pagesTotal + 1;
-  const pageNumbers: number[] = [];
+function PaginationComponent({currentPage, totalItems, itemsPerPage, onPageClick}: PaginationProps): JSX.Element {
 
-  for(let i = startNumber; i < endNumber; i++){
-    pageNumbers.push(i);
-  }
+  const pagesTotal = useMemo(() => Math.ceil(totalItems / itemsPerPage), [itemsPerPage, totalItems]);
+  const paginationCount = useMemo(() => Math.ceil(pagesTotal / MAX_PAGES_ON_SCREEN), [pagesTotal]);
+  const currentGroupPagination = useMemo(() => Math.ceil(currentPage / MAX_PAGES_ON_SCREEN), [currentPage]);
+  const [currentPagination, setCurrentPagination] = useState(currentGroupPagination);
+  const startNumber = useMemo(() => currentPagination * MAX_PAGES_ON_SCREEN - MAX_PAGES_ON_SCREEN + 1, [currentPagination]);
+  const endNumber = currentPagination < paginationCount ? startNumber + MAX_PAGES_ON_SCREEN : pagesTotal + 1;
+  const pageNumbers = useMemo(() => {
+    const pages = [];
+    for(let i = startNumber; i < endNumber; i++){
+      pages.push(i);
+    }
+    return pages;
+  }, [endNumber, startNumber]);
+
 
   function handlePaginateBackClick() {
     if(currentPage <= pagesTotal){
@@ -57,23 +62,7 @@ function Pagination({currentPage, totalItems, itemsPerPage, onPageClick}: Pagina
         }
         {
           pageNumbers.map((number) => (
-            <li
-              key={`${number}-page`}
-              className="pagination__item"
-              onClick={() => onPageClick(number)}
-            >
-              <Link
-                className={
-                  classNames(
-                    'pagination__link',
-                    {'pagination__link--active': currentPage === number}
-                  )
-                }
-                to=''
-              >
-                {number}
-              </Link>
-            </li>
+            <PaginationItem key={`page-${number}`} number={number} onPageClick={onPageClick} currentPage={currentPage} />
           ))
         }
         {
@@ -95,4 +84,5 @@ function Pagination({currentPage, totalItems, itemsPerPage, onPageClick}: Pagina
   );
 }
 
+const Pagination = memo(PaginationComponent);
 export default Pagination;
