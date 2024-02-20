@@ -1,6 +1,7 @@
 import { Camera } from '../../types/types';
 import classNames from 'classnames';
 import DefaultCardItem from './default-card-item';
+import { memo, useCallback } from 'react';
 
 type CardItemProps = {
   camera: Camera;
@@ -8,11 +9,11 @@ type CardItemProps = {
   isSwiperCard?: boolean;
 }
 
-function CardItem({camera, onBuyClick, isSwiperCard = false}: CardItemProps): JSX.Element{
+function CardItemComponent({camera, onBuyClick, isSwiperCard = false}: CardItemProps): JSX.Element{
 
-  function handleBuyClick() {
+  const handleBuyClick = useCallback(() => {
     onBuyClick();
-  }
+  }, [onBuyClick]);
 
   if(isSwiperCard) {
     return(
@@ -32,4 +33,5 @@ function CardItem({camera, onBuyClick, isSwiperCard = false}: CardItemProps): JS
 
 }
 
+const CardItem = memo(CardItemComponent);
 export default CardItem;

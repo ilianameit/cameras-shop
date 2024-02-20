@@ -1,6 +1,6 @@
 import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { getPromo } from '../../store/camera-slice/selectors';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchPromoAction } from '../../store/api-actions';
@@ -11,14 +11,15 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './pagination.css';
 
-function Banner(): JSX.Element {
-  const PROMO_COUNT = 3;
+const PROMO_COUNT = 3;
+function BannerComponent(): JSX.Element {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(fetchPromoAction());
   }, [dispatch]);
 
-  const promos = useAppSelector(getPromo).slice(0, PROMO_COUNT);
+  const currentPromo = useAppSelector(getPromo);
+  const promos = useMemo(() => currentPromo.slice(0, PROMO_COUNT), [currentPromo]);
   const progressContent = useRef(null);
   return(
     <Swiper
@@ -55,4 +56,5 @@ function Banner(): JSX.Element {
   );
 }
 
+const Banner = memo(BannerComponent);
 export default Banner;

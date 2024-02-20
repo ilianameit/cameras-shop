@@ -3,19 +3,20 @@ import { Camera } from '../../types/types';
 import RatingStarsList from '../rating-stars-list/rating-stars-list';
 import { returnFormatedPrice } from '../../utils/common';
 import { AppRoutes } from '../../const/const';
+import { memo } from 'react';
 
 type DefaultCardItemProps = {
   camera: Camera;
   onBuyClick: () => void;
 }
-function DefaultCardItem({camera, onBuyClick}: DefaultCardItemProps): JSX.Element {
+function DefaultCardItemComponent({camera, onBuyClick}: DefaultCardItemProps): JSX.Element {
   const {id, previewImgWebp, previewImgWebp2x, previewImg, previewImg2x, name, rating, reviewCount, price} = camera;
   return(
     <>
       <div className="product-card__img">
         <picture>
           <source type="image/webp" srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`}/>
-          <img src={`/${previewImg}`} srcSet={`/${previewImg2x} 2x`} width="280" height="240" alt={name} />
+          <img src={`/${previewImg}`} srcSet={`/${previewImg2x} 2x`} width={280} height={240} alt={name} />
         </picture>
       </div>
       <div className="product-card__info">
@@ -50,4 +51,5 @@ function DefaultCardItem({camera, onBuyClick}: DefaultCardItemProps): JSX.Elemen
   );
 }
 
+const DefaultCardItem = memo(DefaultCardItemComponent);
 export default DefaultCardItem;

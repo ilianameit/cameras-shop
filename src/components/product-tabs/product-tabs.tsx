@@ -3,6 +3,7 @@ import { TabName } from '../../const/const';
 import { Description, FeatureItem, TabType } from '../../types/types';
 import DescriptionTabContent from '../tabs-content/description-tab-content/description-tab-content';
 import FeatureTabContent from '../tabs-content/feature-tab-content/feature-tab-content';
+import { memo } from 'react';
 
 type ProductTabsProps = {
   currentTab: TabType;
@@ -10,7 +11,7 @@ type ProductTabsProps = {
   description: Description;
   onTabButtonClick: (type: TabType) => void;
 }
-function ProductTabs({currentTab, features, description, onTabButtonClick}: ProductTabsProps): JSX.Element {
+function ProductTabsComponent({currentTab, features, description, onTabButtonClick}: ProductTabsProps): JSX.Element {
   const { vendorCode, category, type, level } = features;
   return(
     <div className="tabs product__tabs">
@@ -56,4 +57,5 @@ function ProductTabs({currentTab, features, description, onTabButtonClick}: Prod
   );
 }
 
+const ProductTabs = memo(ProductTabsComponent);
 export default ProductTabs;

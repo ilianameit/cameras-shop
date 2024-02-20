@@ -4,7 +4,7 @@ import Footer from '../../components/footer/footer';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getOneCamera, getSimilarCameras, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchOneCameraAction, fetchSimilarCamerasAction } from '../../store/api-actions';
 import { dropCamera } from '../../store/camera-slice/camera-slice';
 import LoadingScreen from '../loading-screen/loading-screen';
@@ -19,6 +19,7 @@ import ProductTabs from '../../components/product-tabs/product-tabs';
 import ProductSimilarSlider from '../../components/product-similar-slider/product-similar-slider';
 import ReviewList from '../../components/review-list/review-list';
 import ButtonUp from '../../components/button-up/button-up';
+import ReviewPopup from '../../components/popup/review-popup/review-popup';
 
 function ProductScreen(): JSX.Element {
 
@@ -26,20 +27,31 @@ function ProductScreen(): JSX.Element {
   const {id} = useParams();
 
   const [tabParams, setTabParams] = useSearchParams({ tab: TabName.Description });
-  const currentTab = tabParams.get('tab') as TabType;
+  const currentTab = useMemo(() => tabParams.get('tab') as TabType, [tabParams]);
 
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddItemModal, setAddItemModal] = useState(false);
+  const [showReviewModal, setReviewModal] = useState(false);
   const similarCameras = useAppSelector(getSimilarCameras);
+
+  const handleAddItemModal = useCallback(() => setAddItemModal(true), []);
+  const handleCloseAddItemModal = useCallback(() => setAddItemModal(false), []);
+
+  const handleTabButtonClick = useCallback((type: TabType) => {
+    setTabParams({ tab: type });
+  }, [setTabParams]);
+
+  const handleAddReviewModal = useCallback(() => setReviewModal(true), []);
+  const handleCloseAddReviewModal = useCallback(() => setReviewModal(false), []);
 
   useEffect(() => {
     if(!id) {
       return;
     }
 
-    dispatch(fetchOneCameraAction(id));
-    dispatch(fetchSimilarCamerasAction(id));
+    dispatch(fetchOneCameraAction(Number(id)));
+    dispatch(fetchSimilarCamerasAction(Number(id)));
 
     return () => {
       dispatch(dropCamera());
@@ -54,12 +66,9 @@ function ProductScreen(): JSX.Element {
     return <NotFoundScreen />;
   }
 
-  function handleTabButtonClick(type: TabType) {
-    setTabParams({ tab: type });
-  }
-
   const {id: idCamera, name, reviewCount, rating, price, description, vendorCode, category, type, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x} = camera;
   const features = { vendorCode, category, type, level };
+
 
   return(
     <div className="wrapper">
@@ -129,7 +138,7 @@ function ProductScreen(): JSX.Element {
                   <button
                     className="btn btn--purple"
                     type="button"
-                    onClick={() => setShowModal(true)}
+                    onClick={handleAddItemModal}
                   >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -142,12 +151,17 @@ function ProductScreen(): JSX.Element {
           </div>
           {
             similarCameras.length > 0 &&
-              <ProductSimilarSlider onBuyClick={() => setShowModal(true)} similarCameras={similarCameras}/>
+              <ProductSimilarSlider onBuyClick={handleAddItemModal} similarCameras={similarCameras}/>
           }
-          <ReviewList id={id}/>
+          <ReviewList id={idCamera} onReviewClick={handleAddReviewModal}/>
         </div>
-        {showModal && createPortal(
-          <AddItemPopup onClose={() => setShowModal(false)} />,
+        {showAddItemModal && createPortal(
+          <AddItemPopup onClose={handleCloseAddItemModal} />,
+          document.body
+        )}
+
+        {showReviewModal && createPortal(
+          <ReviewPopup idCamera={idCamera} onClose={handleCloseAddReviewModal} />,
           document.body
         )}
       </main>

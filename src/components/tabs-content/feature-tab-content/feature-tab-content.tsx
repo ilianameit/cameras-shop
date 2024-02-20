@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { FeatureItem } from '../../../types/types';
 
 type FeatureTabContentProps = {
@@ -6,7 +7,7 @@ type FeatureTabContentProps = {
  type: FeatureItem['type'];
  level: FeatureItem['level'];
 }
-function FeatureTabContent({vendorCode, category, type, level}: FeatureTabContentProps): JSX.Element {
+function FeatureTabContentComponent({vendorCode, category, type, level}: FeatureTabContentProps): JSX.Element {
   return(
     <ul className="product__tabs-list">
       <li className="item-list"><span className="item-list__title">Артикул:</span>
@@ -25,4 +26,5 @@ function FeatureTabContent({vendorCode, category, type, level}: FeatureTabConten
   );
 }
 
+const FeatureTabContent = memo(FeatureTabContentComponent);
 export default FeatureTabContent;

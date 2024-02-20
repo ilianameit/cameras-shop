@@ -7,26 +7,30 @@ import { getCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { createPortal } from 'react-dom';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
-function CatalogScreen(): JSX.Element {
+function CatalogScreenComponent(): JSX.Element {
+
   const cameras = useAppSelector(getCameras);
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentPage = Number(searchParams.get('page') || 1);
-  const beginItem = (currentPage - 1) * MAX_COUNT_ITEM_PAGE;
-  const endItem = currentPage * MAX_COUNT_ITEM_PAGE;
+  const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
+  const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
+  const endItem = useMemo(() => currentPage * MAX_COUNT_ITEM_PAGE, [currentPage]);
 
-  const currentCameras = cameras.slice(beginItem, endItem);
+  const currentCameras = useMemo(() => cameras.slice(beginItem, endItem), [beginItem, cameras, endItem]);
 
-  function handlePaginateClick(pageNumber: number) {
+  const handlePaginateClick = useCallback((pageNumber: number) =>{
     setSearchParams({page: String(pageNumber)});
-  }
+  }, [setSearchParams]);
 
   const [showModal, setShowModal] = useState(false);
+
+  const handleBuyClick = useCallback(() => setShowModal(true), []);
+  const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
   return(
     <div className="wrapper">
@@ -170,7 +174,7 @@ function CatalogScreen(): JSX.Element {
                       </div>
                     </form>
                   </div>
-                  <CardsList cameras={currentCameras} onBuyClick={() => setShowModal(true)}/>
+                  <CardsList cameras={currentCameras} onBuyClick={handleBuyClick}/>
                   {
                     cameras.length > MAX_COUNT_ITEM_PAGE &&
                     <Pagination currentPage={currentPage} totalItems={cameras.length} itemsPerPage={MAX_COUNT_ITEM_PAGE} onPageClick={handlePaginateClick}/>
@@ -181,7 +185,7 @@ function CatalogScreen(): JSX.Element {
           </section>
         </div>
         {showModal && createPortal(
-          <AddItemPopup onClose={() => setShowModal(false)} />,
+          <AddItemPopup onClose={handleCloseBuyItemClick} />,
           document.body
         )}
       </main>
@@ -190,4 +194,5 @@ function CatalogScreen(): JSX.Element {
   );
 }
 
+const CatalogScreen = memo(CatalogScreenComponent);
 export default CatalogScreen;

@@ -6,13 +6,14 @@ import 'swiper/css';
 import CardItem from '../card-item/card-item';
 import styles from './style.module.css';
 import { Camera } from '../../types/types';
+import { memo } from 'react';
 
 type ProductSimilarSliderProps = {
   onBuyClick: () => void;
   similarCameras: Camera[];
 }
 
-function ProductSimilarSlider({onBuyClick, similarCameras}: ProductSimilarSliderProps): JSX.Element {
+function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimilarSliderProps): JSX.Element {
   const swiper = useSwiper();
 
   return(
@@ -78,4 +79,5 @@ function ProductSimilarSlider({onBuyClick, similarCameras}: ProductSimilarSlider
   );
 }
 
+const ProductSimilarSlider = memo(ProductSimilarSliderComponent);
 export default ProductSimilarSlider;

@@ -1,11 +1,22 @@
 import dayjs from 'dayjs';
 import { Review } from '../../types/types';
 import RatingStarsList from '../rating-stars-list/rating-stars-list';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import { memo } from 'react';
+
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale('en', {
+  months: [
+    'Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля',
+    'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'
+  ]
+});
 
 type ReviewIpemProps = {
   review: Review;
 }
-function ReviewItem({review}: ReviewIpemProps): JSX.Element{
+function ReviewItemComponent({review}: ReviewIpemProps): JSX.Element{
   const {id, createAt, userName, advantage, disadvantage, review: reviewText, rating} = review;
   return(
     <li className="review-card">
@@ -34,4 +45,5 @@ function ReviewItem({review}: ReviewIpemProps): JSX.Element{
   );
 }
 
+const ReviewItem = memo(ReviewItemComponent);
 export default ReviewItem;
