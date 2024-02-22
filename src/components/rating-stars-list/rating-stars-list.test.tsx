@@ -15,4 +15,4 @@ describe('Component Stars Rating List', () => {
   });
 
 });
-......
+//stars
