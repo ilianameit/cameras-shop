@@ -44,7 +44,7 @@ function PaginationComponent({currentPage, totalItems, itemsPerPage, onPageClick
 
   return(
     <div className="pagination">
-      <ul className="pagination__list">
+      <ul className="pagination__list" data-testid='pagination'>
         {
           currentPage > MAX_PAGES_ON_SCREEN && (
             <li

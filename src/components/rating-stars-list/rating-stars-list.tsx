@@ -9,7 +9,8 @@ type RatingStarsListProps = {
 function RatingStarsListComponent({id, rating}: RatingStarsListProps): React.ReactElement[]{
   return(
     Array.from({length: RATING_STAR}, (_, index) => index).map((value) => (
-      <svg key={`${id}-rating-${value}`} width="17" height="16" aria-hidden="true">
+      <svg key={`${id}-rating-${value}`} width="17" height="16" aria-hidden="true" data-icon='stars'>
+        <title>stars</title>
         <use xlinkHref={value < rating ? '#icon-full-star' : '#icon-star'}></use>
       </svg>
     ))
