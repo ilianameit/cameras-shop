@@ -11,7 +11,7 @@ function ButtonUpComponent(): JSX.Element {
   }
 
   return(
-    <a className="up-btn" onClick={handleButtonUpClick}>
+    <a className="up-btn" onClick={handleButtonUpClick} data-testid="scroll up">
       <svg width={12} height={18} aria-hidden="true">
         <use xlinkHref="#icon-arrow2"></use>
       </svg>

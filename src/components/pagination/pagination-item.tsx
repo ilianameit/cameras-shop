@@ -14,6 +14,7 @@ function PaginationItemComponent({number, onPageClick, currentPage}: PaginationI
       key={`${number}-page`}
       className="pagination__item"
       onClick={() => onPageClick(number)}
+      data-testid='pagination-item'
     >
       <Link
         className={

@@ -32,6 +32,7 @@ function ModalWindowComponent({title, onClose, children, isResponse = false}: Mo
         <div
           className="modal__overlay"
           onClick={onClose}
+          data-testid="modal"
         >
         </div>
         <div

@@ -225,6 +225,7 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
             <button
               className="btn btn--purple form-review__btn"
               type="submit"
+              aria-label="отправить отзыв"
             >
               { !isLoadingReview ? 'Отправить отзыв' : '...Отправка'}
             </button>

@@ -25,6 +25,7 @@ function ProductTabsComponent({currentTab, features, description, onTabButtonCli
           }
           type="button"
           onClick={() => onTabButtonClick(TabName.Feature)}
+          aria-label="Features"
         >
           Характеристики
         </button>
@@ -37,12 +38,13 @@ function ProductTabsComponent({currentTab, features, description, onTabButtonCli
           }
           type="button"
           onClick={() => onTabButtonClick(TabName.Description)}
+          aria-label="Description"
         >
           Описание
         </button>
       </div>
       <div className="tabs__content">
-        <div className="tabs__element is-active">
+        <div className="tabs__element is-active" data-testid="tabFeatureContent">
           {
             currentTab === TabName.Feature &&
             <FeatureTabContent vendorCode={vendorCode} category={category} type={type} level={level} />

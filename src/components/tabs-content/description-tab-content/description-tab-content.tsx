@@ -8,7 +8,7 @@ type DescriptionTabContentProps = {
 function DescriptionTabContentComponent({description}: DescriptionTabContentProps): JSX.Element {
   const splitedDescription = useMemo(() => description.split('. '), [description]);
   return(
-    <div className="product__tabs-text">
+    <div className="product__tabs-text" data-testid='text-description'>
       {splitedDescription.map((paragraph, index) => (
         <p key={paragraph}>
           {paragraph}

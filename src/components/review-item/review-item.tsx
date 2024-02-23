@@ -22,7 +22,7 @@ function ReviewItemComponent({review}: ReviewIpemProps): JSX.Element{
     <li className="review-card">
       <div className="review-card__head">
         <p className="title title--h4">{userName}</p>
-        <time className="review-card__data" dateTime={createAt.split('T')[0]}>
+        <time className="review-card__data" dateTime={createAt.split('T')[0]} data-testid='data'>
           {dayjs(review.createAt).format('DD MMMM')}
         </time>
       </div>

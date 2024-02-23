@@ -9,7 +9,7 @@ type CardListProps = {
 
 function CardsListComponent({cameras, onBuyClick}: CardListProps): JSX.Element {
   return(
-    <div className="cards catalog__cards">
+    <div className="cards catalog__cards" data-testid="cardsList">
       {
         cameras.map((camera) => (
           <CardItem key={`${camera.id}-camera`} camera={camera} onBuyClick={onBuyClick}/>
