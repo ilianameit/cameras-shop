@@ -11,15 +11,16 @@ import LoadingScreen from '../loading-screen/loading-screen';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import RatingStarsList from '../../components/rating-stars-list/rating-stars-list';
 import { returnFormatedPrice } from '../../utils/common';
-import { createPortal } from 'react-dom';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { TabName } from '../../const/const';
-import { TabType } from '../../types/types';
+import { AppRoutes, TabName } from '../../const/const';
+import { Breadcrumb, TabType } from '../../types/types';
 import ProductTabs from '../../components/product-tabs/product-tabs';
 import ProductSimilarSlider from '../../components/product-similar-slider/product-similar-slider';
 import ReviewList from '../../components/review-list/review-list';
 import ButtonUp from '../../components/button-up/button-up';
 import ReviewPopup from '../../components/popup/review-popup/review-popup';
+import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import ModalWindow from '../../components/modal-window/modal-window';
 
 function ProductScreen(): JSX.Element {
 
@@ -28,7 +29,6 @@ function ProductScreen(): JSX.Element {
 
   const [tabParams, setTabParams] = useSearchParams({ tab: TabName.Description });
   const currentTab = useMemo(() => tabParams.get('tab') as TabType, [tabParams]);
-
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showAddItemModal, setAddItemModal] = useState(false);
@@ -52,11 +52,12 @@ function ProductScreen(): JSX.Element {
 
     dispatch(fetchOneCameraAction(Number(id)));
     dispatch(fetchSimilarCamerasAction(Number(id)));
+    setTabParams({ tab: currentTab });
 
     return () => {
       dispatch(dropCamera());
     };
-  }, [dispatch, id]);
+  }, [currentTab, dispatch, id, setTabParams]);
 
   if(!camera && isLoading) {
     return <LoadingScreen />;
@@ -69,6 +70,8 @@ function ProductScreen(): JSX.Element {
   const {id: idCamera, name, reviewCount, rating, price, description, vendorCode, category, type, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x} = camera;
   const features = { vendorCode, category, type, level };
 
+  const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог', href: AppRoutes.Root}, {title: name}];
+
 
   return(
     <div className="wrapper">
@@ -78,31 +81,7 @@ function ProductScreen(): JSX.Element {
       <Header />
       <main>
         <div className="page-content">
-          <div className="breadcrumbs">
-            <div className="container">
-              <ul className="breadcrumbs__list">
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="index.html">Главная
-                    <svg width={5} height={8} aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="catalog.html">Каталог
-                    <svg width={5} height={8} aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item">
-                  <span className="breadcrumbs__link breadcrumbs__link--active">
-                    {name}
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <Breadcrumbs breadcrumbs={breadcrumbsScreen} />
           <div className="page-content__section">
             <section className="product">
               <div className="container">
@@ -157,15 +136,24 @@ function ProductScreen(): JSX.Element {
           }
           <ReviewList id={idCamera} onReviewClick={handleAddReviewModal}/>
         </div>
-        {showAddItemModal && createPortal(
-          <AddItemPopup onClose={handleCloseAddItemModal} />,
-          document.body
-        )}
-
-        {showReviewModal && createPortal(
-          <ReviewPopup idCamera={idCamera} onClose={handleCloseAddReviewModal} />,
-          document.body
-        )}
+        {
+          showAddItemModal && (
+            <ModalWindow
+              title='Добавить товар в корзину'
+              onClose={handleCloseAddItemModal}
+            >
+              <AddItemPopup/>
+            </ModalWindow>)
+        }
+        {
+          showReviewModal &&
+          <ModalWindow
+            title={'Оставить отзыв'}
+            onClose={handleCloseAddReviewModal}
+          >
+            <ReviewPopup idCamera={idCamera} onClose={handleCloseAddReviewModal}/>
+          </ModalWindow>
+        }
       </main>
       <ButtonUp />
       <Footer />

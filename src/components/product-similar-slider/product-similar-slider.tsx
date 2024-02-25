@@ -7,6 +7,7 @@ import CardItem from '../card-item/card-item';
 import styles from './style.module.css';
 import { Camera } from '../../types/types';
 import { memo } from 'react';
+import classNames from 'classnames';
 
 type ProductSimilarSliderProps = {
   onBuyClick: () => void;
@@ -41,7 +42,10 @@ function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimi
                   slidesPerGroup: 3,
                 },
               }}
-              className="product-similar__slider-list"
+              className={classNames(
+                'product-similar__slider-list',
+                {[`${styles['static-position']}`]: true}
+              )}
             >
               {similarCameras.map((cameraValue) => (
                 <SwiperSlide key={`similar-item-${cameraValue.id}`} className={`product-card is-active ${styles.card}`}>

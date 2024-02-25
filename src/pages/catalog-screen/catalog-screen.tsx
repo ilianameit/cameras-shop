@@ -9,7 +9,10 @@ import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
 import { memo, useCallback, useMemo, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { createPortal } from 'react-dom';
+import { AppRoutes } from '../../const/const';
+import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import { Breadcrumb } from '../../types/types';
+import ModalWindow from '../../components/modal-window/modal-window';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -32,6 +35,8 @@ function CatalogScreenComponent(): JSX.Element {
   const handleBuyClick = useCallback(() => setShowModal(true), []);
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
+  const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог'}];
+
   return(
     <div className="wrapper">
       <Helmet>
@@ -41,21 +46,7 @@ function CatalogScreenComponent(): JSX.Element {
       <main>
         <Banner />
         <div className="page-content">
-          <div className="breadcrumbs">
-            <div className="container">
-              <ul className="breadcrumbs__list">
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="index.html">Главная
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Каталог</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <Breadcrumbs breadcrumbs={breadcrumbsScreen} />
           <section className="catalog">
             <div className="container">
               <h1 className="title title--h2">Каталог фото- и видеотехники</h1>
@@ -83,7 +74,7 @@ function CatalogScreenComponent(): JSX.Element {
                         <legend className="title title--h5">Категория</legend>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="photocamera" checked /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
+                            <input type="checkbox" name="photocamera" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
@@ -96,7 +87,7 @@ function CatalogScreenComponent(): JSX.Element {
                         <legend className="title title--h5">Тип камеры</legend>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="digital" checked /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
+                            <input type="checkbox" name="digital" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
@@ -111,7 +102,7 @@ function CatalogScreenComponent(): JSX.Element {
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="collection" checked disabled /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
+                            <input type="checkbox" name="collection" disabled /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
                           </label>
                         </div>
                       </fieldset>
@@ -119,7 +110,7 @@ function CatalogScreenComponent(): JSX.Element {
                         <legend className="title title--h5">Уровень</legend>
                         <div className="custom-checkbox catalog-filter__item">
                           <label>
-                            <input type="checkbox" name="zero" checked /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
+                            <input type="checkbox" name="zero" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
                           </label>
                         </div>
                         <div className="custom-checkbox catalog-filter__item">
@@ -145,7 +136,7 @@ function CatalogScreenComponent(): JSX.Element {
                         <p className="title title--h5">Сортировать:</p>
                         <div className="catalog-sort__type">
                           <div className="catalog-sort__btn-text">
-                            <input type="radio" id="sortPrice" name="sort" checked />
+                            <input type="radio" id="sortPrice" name="sort" />
                             <label htmlFor="sortPrice">по цене</label>
                           </div>
                           <div className="catalog-sort__btn-text">
@@ -155,7 +146,7 @@ function CatalogScreenComponent(): JSX.Element {
                         </div>
                         <div className="catalog-sort__order">
                           <div className="catalog-sort__btn catalog-sort__btn--up">
-                            <input type="radio" id="up" name="sort-icon" checked aria-label="По возрастанию" />
+                            <input type="radio" id="up" name="sort-icon" aria-label="По возрастанию" />
                             <label htmlFor="up">
                               <svg width="16" height="14" aria-hidden="true">
                                 <use xlinkHref="#icon-sort"></use>
@@ -184,10 +175,15 @@ function CatalogScreenComponent(): JSX.Element {
             </div>
           </section>
         </div>
-        {showModal && createPortal(
-          <AddItemPopup onClose={handleCloseBuyItemClick} />,
-          document.body
-        )}
+        {
+          showModal && (
+            <ModalWindow
+              title='Добавить товар в корзину'
+              onClose={handleCloseBuyItemClick}
+            >
+              <AddItemPopup/>
+            </ModalWindow>)
+        }
       </main>
       <Footer />
     </div>

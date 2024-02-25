@@ -46,3 +46,8 @@ export type ReviewAdding = {
   review: string;
   rating: number;
 }
+
+export type Breadcrumb = {
+  title: string;
+  href?: string;
+}

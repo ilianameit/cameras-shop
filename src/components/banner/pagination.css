@@ -1,5 +1,8 @@
 .swiper-pagination-bullet{
-  background: #fff;
+  background: #F4F4FC;
+  height: 16px;
+  width: 16px;
+  opacity: 1;
 }
 
 .swiper-pagination-bullet-active{
@@ -8,4 +11,8 @@
 
 .swiper-pagination{
   text-align: right;
+}
+
+.swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet{
+  margin: 0 6px;
 }

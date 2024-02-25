@@ -1,11 +1,6 @@
 import { memo, useEffect, useRef } from 'react';
-import ModalWindow from '../../modal-window/modal-window';
 
-type AddItemPopupProps = {
-  onClose: () => void;
-}
-
-function AddItemPopupComponent({onClose}:AddItemPopupProps): JSX.Element {
+function AddItemPopupComponent(): JSX.Element {
   const focusElement = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -14,7 +9,7 @@ function AddItemPopupComponent({onClose}:AddItemPopupProps): JSX.Element {
     }
   }, [focusElement]);
   return(
-    <ModalWindow title='Добавить товар в корзину' onClose={onClose}>
+    <>
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
           <picture>
@@ -44,7 +39,7 @@ function AddItemPopupComponent({onClose}:AddItemPopupProps): JSX.Element {
           </svg>Добавить в корзину
         </button>
       </div>
-    </ModalWindow>
+    </>
   );
 }
 

@@ -10,9 +10,8 @@ describe('Component Stars Rating List', () => {
       render(
         <RatingStarsList id={mockCamera.id} rating={1} />
       );
-      expect(screen.getAllByTitle('stars')).toBeInTheDocument();
+      expect(screen.getAllByTitle('stars').length).toBe(5);
     });
   });
 
 });
-//stars
