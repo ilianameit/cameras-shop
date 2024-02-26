@@ -1,5 +1,5 @@
 import { Navigation, A11y, Keyboard } from 'swiper/modules';
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import 'swiper/css';
 
@@ -15,7 +15,6 @@ type ProductSimilarSliderProps = {
 }
 
 function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimilarSliderProps): JSX.Element {
-  const swiper = useSwiper();
 
   return(
     <div className="page-content__section">
@@ -57,7 +56,6 @@ function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimi
                 className="slider-controls--prev"
                 type="button"
                 aria-label="Предыдущий слайд"
-                onClick={() => swiper.slidePrev()}
                 style={{ pointerEvents: 'auto' }}
               >
                 <svg width={7} height={12} aria-hidden="true">
@@ -68,7 +66,6 @@ function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimi
                 className="slider-controls--next"
                 type="button"
                 aria-label="Следующий слайд"
-                onClick={() => swiper.slideNext()}
                 style={{ pointerEvents: 'auto' }}
               >
                 <svg width={7} height={12} aria-hidden="true">

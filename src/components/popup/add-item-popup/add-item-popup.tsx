@@ -13,8 +13,8 @@ function AddItemPopupComponent(): JSX.Element {
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
           <picture>
-            <source type="image/webp" srcSet="img/content/orlenok.webp, img/content/orlenok@2x.webp 2x" />
-            <img src="img/content/orlenok.jpg" srcSet="img/content/orlenok@2x.jpg 2x" width={140} height={120} alt="Фотоаппарат «Орлёнок»" />
+            <source type="image/webp" srcSet="/img/content/orlenok.webp, /img/content/orlenok@2x.webp 2x" />
+            <img src="/img/content/orlenok.jpg" srcSet="/img/content/orlenok@2x.jpg 2x" width={140} height={120} alt="Фотоаппарат «Орлёнок»" />
           </picture>
         </div>
         <div className="basket-item__description">

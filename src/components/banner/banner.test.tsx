@@ -1,20 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import { withHistory, withStore } from '../../utils/mock-component';
 import Banner from './banner';
-import { mockPromo } from '../../utils/mocks';
+import { MockStore, mockPromo } from '../../utils/mocks';
 import { NameSpace } from '../../const/const';
 
 describe('Component Banner', () => {
   describe('should render correctly',() => {
     it('should render slides', () => {
-      const { withStoreComponent } = withStore(<Banner />, {[NameSpace.Camera]: {
+      const { withStoreComponent } = withStore(<Banner />, MockStore({[NameSpace.Camera]: {
         promo: mockPromo,
         cameras: [],
         loadingCameras: false,
         oneCamera: null,
         loadingOneCamera: false,
         similarCameras: []
-      }});
+      }}));
 
       const preparedComponent = withHistory(withStoreComponent);
       render(preparedComponent);
