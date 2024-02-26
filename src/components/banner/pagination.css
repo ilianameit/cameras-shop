@@ -14,5 +14,11 @@
 }
 
 .swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet{
-  margin: 0 6px;
+  margin: 0 7px;
+}
+
+.banner-swiper.swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal {
+  bottom: 22px;
+  right: 33px;
+  width: auto;
 }

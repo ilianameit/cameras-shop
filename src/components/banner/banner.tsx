@@ -1,6 +1,6 @@
 import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { getPromo } from '../../store/camera-slice/selectors';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchPromoAction } from '../../store/api-actions';
@@ -20,9 +20,9 @@ function BannerComponent(): JSX.Element {
 
   const currentPromo = useAppSelector(getPromo);
   const promos = useMemo(() => currentPromo.slice(0, PROMO_COUNT), [currentPromo]);
-  const progressContent = useRef(null);
   return(
     <Swiper
+      className='banner-swiper'
       spaceBetween={30}
       centeredSlides
       autoplay={{
@@ -49,9 +49,6 @@ function BannerComponent(): JSX.Element {
           </SwiperSlide>
         ))
       }
-      <div className="autoplay-progress" >
-        <span ref={progressContent}></span>
-      </div>
     </Swiper>
   );
 }
