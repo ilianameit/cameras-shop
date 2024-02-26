@@ -19,6 +19,9 @@
 
 .banner-swiper.swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal {
   bottom: 22px;
-  right: 33px;
-  width: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  right: 40px;
+  max-width: 1200px;
+  width: calc(100% - 80px);
 }
