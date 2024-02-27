@@ -50,6 +50,7 @@ function ProductScreen(): JSX.Element {
   const handleAddReviewModal = useCallback(() => setReviewModal(true), []);
   const handleCloseAddReviewModal = useCallback(() => setReviewModal(false), []);
 
+
   useEffect(() => {
     if(!id) {
       return;
@@ -57,12 +58,16 @@ function ProductScreen(): JSX.Element {
 
     dispatch(fetchOneCameraAction(Number(id)));
     dispatch(fetchSimilarCamerasAction(Number(id)));
-    setTabParams({ tab: currentTab });
 
     return () => {
       dispatch(dropCamera());
     };
-  }, [currentTab, dispatch, id, setTabParams]);
+
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    setTabParams({ tab: currentTab });
+  }, [currentTab, setTabParams]);
 
   if(!camera && isLoading) {
     return <LoadingScreen />;
