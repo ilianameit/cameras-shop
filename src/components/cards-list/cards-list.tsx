@@ -4,7 +4,7 @@ import CardItem from '../card-item/card-item';
 
 type CardListProps = {
   cameras: Camera[];
-  onBuyClick: () => void;
+  onBuyClick: (camera: Camera) => void;
 }
 
 function CardsListComponent({cameras, onBuyClick}: CardListProps): JSX.Element {

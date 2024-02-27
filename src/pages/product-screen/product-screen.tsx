@@ -13,7 +13,7 @@ import RatingStarsList from '../../components/rating-stars-list/rating-stars-lis
 import { returnFormatedPrice } from '../../utils/common';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { AppRoutes, TabName } from '../../const/const';
-import { Breadcrumb, TabType } from '../../types/types';
+import { Breadcrumb, Camera, TabType } from '../../types/types';
 import ProductTabs from '../../components/product-tabs/product-tabs';
 import ProductSimilarSlider from '../../components/product-similar-slider/product-similar-slider';
 import ReviewList from '../../components/review-list/review-list';
@@ -32,10 +32,15 @@ function ProductScreen(): JSX.Element {
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showAddItemModal, setAddItemModal] = useState(false);
+  const [cameraCard, setCameraCard] = useState<Camera | null>(null);
+
   const [showReviewModal, setReviewModal] = useState(false);
   const similarCameras = useAppSelector(getSimilarCameras);
 
-  const handleAddItemModal = useCallback(() => setAddItemModal(true), []);
+  const handleAddItemModal = useCallback((cameraCardModal: Camera) => {
+    setAddItemModal(true);
+    setCameraCard(cameraCardModal);
+  }, []);
   const handleCloseAddItemModal = useCallback(() => setAddItemModal(false), []);
 
   const handleTabButtonClick = useCallback((type: TabType) => {
@@ -118,7 +123,7 @@ function ProductScreen(): JSX.Element {
                     className="btn btn--purple"
                     type="button"
                     data-testid="button-to-basket"
-                    onClick={handleAddItemModal}
+                    onClick={() => handleAddItemModal(camera)}
                   >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -142,7 +147,7 @@ function ProductScreen(): JSX.Element {
               title='Добавить товар в корзину'
               onClose={handleCloseAddItemModal}
             >
-              <AddItemPopup/>
+              <AddItemPopup camera={cameraCard}/>
             </ModalWindow>)
         }
         {

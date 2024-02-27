@@ -10,7 +10,7 @@ import { memo } from 'react';
 import classNames from 'classnames';
 
 type ProductSimilarSliderProps = {
-  onBuyClick: () => void;
+  onBuyClick: (camera: Camera) => void;
   similarCameras: Camera[];
 }
 
@@ -48,7 +48,7 @@ function ProductSimilarSliderComponent({onBuyClick, similarCameras}: ProductSimi
             >
               {similarCameras.map((cameraValue) => (
                 <SwiperSlide key={`similar-item-${cameraValue.id}`} className={`product-card is-active ${styles.card}`}>
-                  <CardItem camera={cameraValue} onBuyClick={onBuyClick} isSwiperCard />
+                  <CardItem camera={cameraValue} onBuyClick={() => onBuyClick(cameraValue)} isSwiperCard />
                 </SwiperSlide>
               ))}
 

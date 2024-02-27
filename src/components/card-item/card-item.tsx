@@ -5,15 +5,15 @@ import { memo, useCallback } from 'react';
 
 type CardItemProps = {
   camera: Camera;
-  onBuyClick: () => void;
+  onBuyClick: (camera: Camera) => void;
   isSwiperCard?: boolean;
 }
 
 function CardItemComponent({camera, onBuyClick, isSwiperCard = false}: CardItemProps): JSX.Element{
 
   const handleBuyClick = useCallback(() => {
-    onBuyClick();
-  }, [onBuyClick]);
+    onBuyClick(camera);
+  }, [camera, onBuyClick]);
 
   if(isSwiperCard) {
     return(

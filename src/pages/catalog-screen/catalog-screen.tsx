@@ -11,7 +11,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { AppRoutes } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
-import { Breadcrumb } from '../../types/types';
+import { Breadcrumb, Camera } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
 
 const MAX_COUNT_ITEM_PAGE = 9;
@@ -31,8 +31,12 @@ function CatalogScreenComponent(): JSX.Element {
   }, [setSearchParams]);
 
   const [showModal, setShowModal] = useState(false);
+  const [cameraCard, setCameraCard] = useState<Camera | null>(null);
 
-  const handleBuyClick = useCallback(() => setShowModal(true), []);
+  const handleBuyClick = useCallback((camera: Camera) => {
+    setShowModal(true);
+    setCameraCard(camera);
+  }, []);
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
   const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог'}];
@@ -181,7 +185,7 @@ function CatalogScreenComponent(): JSX.Element {
               title='Добавить товар в корзину'
               onClose={handleCloseBuyItemClick}
             >
-              <AddItemPopup/>
+              <AddItemPopup camera={cameraCard}/>
             </ModalWindow>)
         }
       </main>

@@ -1,6 +1,12 @@
 import { memo, useEffect, useRef } from 'react';
+import { Camera } from '../../../types/types';
+import { returnFormatedPrice } from '../../../utils/common';
 
-function AddItemPopupComponent(): JSX.Element {
+type AddItemPopupComponentProps = {
+  camera: Camera | null;
+}
+
+function AddItemPopupComponent({camera}: AddItemPopupComponentProps): JSX.Element {
   const focusElement = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -8,24 +14,31 @@ function AddItemPopupComponent(): JSX.Element {
       focusElement.current.focus();
     }
   }, [focusElement]);
+
+  if (!camera) {
+    return <div>Loading...</div>;
+  }
+
+  const {previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, name, vendorCode, category, type, level, price} = camera;
   return(
     <>
       <div className="basket-item basket-item--short">
         <div className="basket-item__img">
           <picture>
-            <source type="image/webp" srcSet="/img/content/orlenok.webp, /img/content/orlenok@2x.webp 2x" />
-            <img src="/img/content/orlenok.jpg" srcSet="/img/content/orlenok@2x.jpg 2x" width={140} height={120} alt="Фотоаппарат «Орлёнок»" />
+            <source type="image/webp" srcSet={`/${previewImgWebp}, /${previewImgWebp2x} 2x`} />
+            <img src={`/${previewImg}`} srcSet={`/${previewImg2x} 2x`} width={140} height={120} alt={`${category} «${name}»`} />
           </picture>
         </div>
         <div className="basket-item__description">
-          <p className="basket-item__title">Орлёнок</p>
+          <p className="basket-item__title">{name}</p>
           <ul className="basket-item__list">
-            <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">O78DFGSD832</span>
+            <li className="basket-item__list-item">
+              <span className="basket-item__article">Артикул:</span> <span className="basket-item__number">{vendorCode}</span>
             </li>
-            <li className="basket-item__list-item">Плёночная фотокамера</li>
-            <li className="basket-item__list-item">Любительский уровень</li>
+            <li className="basket-item__list-item">{type} {category === 'Фотоаппарат' ? 'фотокамера' : 'видеокамера'}</li>
+            <li className="basket-item__list-item">{level} уровень</li>
           </ul>
-          <p className="basket-item__price"><span className="visually-hidden">Цена:</span>18 970 ₽</p>
+          <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)} ₽</p>
         </div>
       </div>
       <div className="modal__buttons">
