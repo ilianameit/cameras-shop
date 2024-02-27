@@ -27,8 +27,8 @@ function ProductScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const {id} = useParams();
 
-  const [tabParams, setTabParams] = useSearchParams({ tab: TabName.Description });
-  const currentTab = useMemo(() => tabParams.get('tab') as TabType, [tabParams]);
+  const [tabParams, setTabParams] = useSearchParams();
+  const currentTab = useMemo(() => tabParams.get('tab') as TabType || TabName.Description, [tabParams]);
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showAddItemModal, setAddItemModal] = useState(false);
