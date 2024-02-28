@@ -3,22 +3,34 @@ import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
 import CardsList from '../../components/cards-list/cards-list';
 import { useAppSelector } from '../../hooks';
-import { getCameras } from '../../store/camera-slice/selectors';
+import { getSortedCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, memo, useCallback, useMemo, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { AppRoutes } from '../../const/const';
+import { AppRoutes, sortBy, sortType } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
-import { Breadcrumb, Camera } from '../../types/types';
+import { Breadcrumb, Camera, SortTypeBy, SortTypeName } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
 function CatalogScreenComponent(): JSX.Element {
 
-  const cameras = useAppSelector(getCameras);
+  const [sortTypeName, setSortTypeName] = useState<SortTypeName>('sortPrice');
+  const [sortTypeBy, setSortTypeBy] = useState<SortTypeBy>('up');
+
+  const handleSortTypeNameChange = (evt: ChangeEvent<HTMLInputElement>) => {
+    setSortTypeName(evt.target.id as SortTypeName);
+  };
+
+  const handleSortTypeByChange = (evt: ChangeEvent<HTMLInputElement>) => {
+    setSortTypeBy(evt.target.id as SortTypeBy);
+  };
+
+  const cameras = useAppSelector((state) => getSortedCameras(state, sortTypeName, sortTypeBy));
+
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
   const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
@@ -139,32 +151,43 @@ function CatalogScreenComponent(): JSX.Element {
                       <div className="catalog-sort__inner">
                         <p className="title title--h5">Сортировать:</p>
                         <div className="catalog-sort__type">
-                          <div className="catalog-sort__btn-text">
-                            <input type="radio" id="sortPrice" name="sort" />
-                            <label htmlFor="sortPrice">по цене</label>
-                          </div>
-                          <div className="catalog-sort__btn-text">
-                            <input type="radio" id="sortPopular" name="sort" />
-                            <label htmlFor="sortPopular">по популярности</label>
-                          </div>
+                          {
+                            Object.entries(sortType)
+                              .map(([type, value]) => (
+                                <div key={type} className="catalog-sort__btn-text">
+                                  <input
+                                    type="radio"
+                                    id={type}
+                                    name="sort"
+                                    checked={sortTypeName === type}
+                                    onChange={handleSortTypeNameChange}
+                                  />
+                                  <label htmlFor={type}>по {value}</label>
+                                </div>
+                              ))
+                          }
                         </div>
                         <div className="catalog-sort__order">
-                          <div className="catalog-sort__btn catalog-sort__btn--up">
-                            <input type="radio" id="up" name="sort-icon" aria-label="По возрастанию" />
-                            <label htmlFor="up">
-                              <svg width="16" height="14" aria-hidden="true">
-                                <use xlinkHref="#icon-sort"></use>
-                              </svg>
-                            </label>
-                          </div>
-                          <div className="catalog-sort__btn catalog-sort__btn--down">
-                            <input type="radio" id="down" name="sort-icon" aria-label="По убыванию" />
-                            <label htmlFor="down">
-                              <svg width="16" height="14" aria-hidden="true">
-                                <use xlinkHref="#icon-sort"></use>
-                              </svg>
-                            </label>
-                          </div>
+                          {
+                            Object.entries(sortBy)
+                              .map(([type, value]) => (
+                                <div key={type} className={`catalog-sort__btn catalog-sort__btn--${type}`}>
+                                  <input
+                                    type="radio"
+                                    id={type}
+                                    name="sort-icon"
+                                    aria-label={value}
+                                    checked={sortTypeBy === type}
+                                    onChange={handleSortTypeByChange}
+                                  />
+                                  <label htmlFor={type}>
+                                    <svg width={16} height={14} aria-hidden="true">
+                                      <use xlinkHref="#icon-sort"></use>
+                                    </svg>
+                                  </label>
+                                </div>
+                              ))
+                          }
                         </div>
                       </div>
                     </form>

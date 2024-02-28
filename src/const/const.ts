@@ -1,3 +1,5 @@
+import {SortTypeByState, SortTypeState } from '../types/types';
+
 export enum AppRoutes {
   Root = '/',
   Product = '/product/',
@@ -34,4 +36,14 @@ export const ratingStarsName = {
   3: 'Нормально',
   4: 'Хорошо',
   5: 'Отлично'
+};
+
+export const sortType: SortTypeState = {
+  sortPrice: 'цене',
+  sortPopular: 'популярности'
+};
+
+export const sortBy: SortTypeByState = {
+  up: 'возрастанию',
+  down: 'убыванию',
 };

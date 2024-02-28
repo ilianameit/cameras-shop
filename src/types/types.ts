@@ -51,3 +51,13 @@ export type Breadcrumb = {
   title: string;
   href?: string;
 }
+
+export type SortTypeName = 'sortPrice' | 'sortPopular';
+export type SortTypeState = {
+  [Key in SortTypeName]: string;
+};
+
+export type SortTypeBy = 'up' | 'down';
+export type SortTypeByState = {
+  [Key in SortTypeBy]: string;
+};
