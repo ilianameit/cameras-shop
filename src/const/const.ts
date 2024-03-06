@@ -47,3 +47,5 @@ export const sortBy: SortTypeByState = {
   up: 'возрастанию',
   down: 'убыванию',
 };
+
+export const MIN_COUNT_SEARCH_VALUE = 3;
