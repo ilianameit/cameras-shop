@@ -14,19 +14,20 @@ export const getSimilarCameras = (state: State) => state[NameSpace.Camera].simil
 
 export const getSortedCameras = createSelector(
   [
-    (_: State, sortingType: SortTypeName, sortingBy: SortTypeBy) => ({sortingType, sortingBy}),
+    (_: State, sortingType: SortTypeName | '', sortingBy: SortTypeBy | '') => ({sortingType, sortingBy}),
     getCameras
   ],
   ({sortingType, sortingBy}, cameras) => {
-    const sortByItem = `${sortingType}-${sortingBy}`;
-    switch (sortByItem) {
-      case 'sortPrice-up':
-        return cameras.slice().sort((a, b) => a.price - b.price);
-      case 'sortPrice-down':
+    switch (sortingType) {
+      case 'sortPrice':
+        if(sortingBy === 'up') {
+          return cameras.slice().sort((a, b) => a.price - b.price);
+        }
         return cameras.slice().sort((a, b) => b.price - a.price);
-      case 'sortPopular-up':
-        return cameras.slice().sort((a, b) => a.reviewCount - b.reviewCount);
-      case 'sortPopular-down':
+      case 'sortPopular':
+        if(sortingBy === 'up') {
+          return cameras.slice().sort((a, b) => a.reviewCount - b.reviewCount);
+        }
         return cameras.slice().sort((a, b) => b.reviewCount - a.reviewCount);
       default:
         return cameras;
