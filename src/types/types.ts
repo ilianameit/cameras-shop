@@ -25,11 +25,11 @@ rating: Rating;
 reviewCount: number;
 }
 
-type CameraType = 'Коллекционная' | 'Моментальная' | 'Цифровая' | 'Плёночная'
+export type CameraType = 'Коллекционная' | 'Моментальная' | 'Цифровая' | 'Плёночная'
 
-type CameraCategory = 'Видеокамера' | 'Фотоаппарат'
+export type CameraCategory = 'Видеокамера' | 'Фотоаппарат'
 
-type CameraLevel = 'Нулевой' | 'Любительский' | 'Профессиональный'
+export type CameraLevel = 'Нулевой' | 'Любительский' | 'Профессиональный'
 
 export type TabType = 'feature' | 'description';
 
@@ -61,3 +61,6 @@ export type SortTypeBy = 'up' | 'down';
 export type SortTypeByState = {
   [Key in SortTypeBy]: string;
 };
+
+export type KeyFilters = 'cat' | 'type' | 'lvl';
+export type Filters = CameraCategory | CameraType | CameraLevel;
