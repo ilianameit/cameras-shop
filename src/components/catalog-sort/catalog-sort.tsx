@@ -3,9 +3,9 @@ import { sortBy, sortType } from '../../const/const';
 import { SortTypeBy, SortTypeName } from '../../types/types';
 
 type CatalogSortProps = {
-  sortTypeName: SortTypeName | '';
+  sortTypeName: SortTypeName | '' | 'null';
   onSortTypeNameChange: (evt: ChangeEvent<HTMLInputElement>) => void;
-  sortTypeBy: SortTypeBy | '';
+  sortTypeBy: SortTypeBy | '' | 'null';
   onSortTypeByChange: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
