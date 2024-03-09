@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { NameSpace } from '../../const/const';
 import { State } from '../../types/state';
-import { SortTypeBy, SortTypeName } from '../../types/types';
+import { Camera, CameraCategory, CameraLevel, CameraType, SortTypeBy, SortTypeName } from '../../types/types';
 
 export const getCameras = (state: State) => state[NameSpace.Camera].cameras;
 export const getPromo = (state: State) => state[NameSpace.Camera].promo;
@@ -14,10 +14,9 @@ export const getSimilarCameras = (state: State) => state[NameSpace.Camera].simil
 
 export const getSortedCameras = createSelector(
   [
-    (_: State, sortingType: SortTypeName | '', sortingBy: SortTypeBy | '') => ({sortingType, sortingBy}),
-    getCameras
+    (cameras: Camera[], sortingType: SortTypeName | '' | 'null', sortingBy: SortTypeBy | '' | 'null') => ({sortingType, sortingBy, cameras})
   ],
-  ({sortingType, sortingBy}, cameras) => {
+  ({sortingType, sortingBy, cameras}) => {
     switch (sortingType) {
       case 'sortPrice':
         if(sortingBy === 'up') {
@@ -33,4 +32,33 @@ export const getSortedCameras = createSelector(
         return cameras;
     }
   }
+);
+
+export const getFilteredCameras = createSelector(
+  [
+    (
+      _: State,
+      filterCategory: CameraCategory | '' | 'null',
+      filterType: CameraType | '' | 'null', filterLevel: CameraLevel | '' | 'null'
+    ) => ({filterCategory, filterType, filterLevel}), getCameras
+  ],
+  ({filterCategory, filterType, filterLevel}, cameras) => cameras
+    .filter((camera) => {
+      if(!filterCategory || filterCategory === 'null') {
+        return true;
+      }
+      return camera.category === filterCategory;
+    })
+    .filter((camera) => {
+      if(!filterType || filterType === 'null') {
+        return true;
+      }
+      return camera.type === filterType;
+    })
+    .filter((camera) => {
+      if(!filterLevel || filterLevel === 'null') {
+        return true;
+      }
+      return camera.level === filterLevel;
+    })
 );
