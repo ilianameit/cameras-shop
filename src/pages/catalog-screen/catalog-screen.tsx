@@ -2,19 +2,20 @@ import { Helmet } from 'react-helmet-async';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
 import CardsList from '../../components/cards-list/cards-list';
-import { useAppSelector } from '../../hooks';
-import { getFilteredCameras, getSortedCameras } from '../../store/camera-slice/selectors';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getCameras, getFilteredCameras, getPriceFilteredCameras, getSortedCameras } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
-import { ChangeEvent, KeyboardEvent, memo, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { AppRoutes, NAME_KEY_ENTER } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
-import { Breadcrumb, Camera, SortTypeBy, SortTypeName, CameraCategory, CameraType, CameraLevel, Filters, KeyFilters } from '../../types/types';
+import { Breadcrumb, Camera, SortTypeBy, SortTypeName, CameraCategory, CameraType, CameraLevel, Filters, KeyFilters, InitialPriceType, PriceFilterType } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
 import CatalogSort from '../../components/catalog-sort/catalog-sort';
 import CatalogFilter from '../../components/catalog-filter/catalog-filter';
+import { fetchCamerasPriceAction } from '../../store/api-actions';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -22,24 +23,54 @@ type Params = {
   page: string;
   sort?: SortTypeName | '' | 'null';
   dir?: SortTypeBy | '' | 'null';
-  cat?: string;
-  type?: string ;
-  lvl?: string;
+  cat?: string | undefined ;
+  type?: string | undefined;
+  lvl?: string | undefined;
 }
 
 function CatalogScreenComponent(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const totalCameras = useAppSelector(getCameras);
+  const sortedPriceTotalCameras = getSortedCameras(totalCameras, 'sortPrice', 'up');
+
+  const minPriceCameras = sortedPriceTotalCameras[0].price;
+  const maxPriceCameras = sortedPriceTotalCameras[sortedPriceTotalCameras.length - 1].price;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const filterCategory: CameraCategory | '' = searchParams.get('cat') as CameraCategory | '';
-  const filterType: CameraType | '' = searchParams.get('type') as CameraType | '';
-  const filterLevel: CameraLevel | '' = searchParams.get('lvl') as CameraLevel | '';
+  const filterCategory: CameraCategory | '' | undefined | string = searchParams.get('cat') as CameraCategory | '' | undefined | string;
+  const filterType: CameraType | '' | undefined | string = searchParams.get('type') as CameraType | '' | undefined | string;
+  const filterLevel: CameraLevel | '' | undefined | string = searchParams.get('lvl') as CameraLevel | '' | undefined | string;
 
   const sortTypeName: SortTypeName | '' | 'null' = searchParams.get('sort') as SortTypeName | '' | 'null';
   const sortTypeBy: SortTypeBy | '' | 'null' = searchParams.get('dir') as SortTypeBy | '' | 'null';
 
-  const filteredCameras = useAppSelector((state) => getFilteredCameras(state, filterCategory, filterType, filterLevel));
-  const cameras = getSortedCameras(filteredCameras, sortTypeName, sortTypeBy);
+
+  const [camerasByPriceRange, setCamerasByPriceRange] = useState<Camera[]>(totalCameras);
+
+  const filteredCameras = getFilteredCameras(camerasByPriceRange, filterCategory, filterType, filterLevel);
+  const sortedPriceCameras = getSortedCameras(filteredCameras, 'sortPrice', 'up');
+
+  const initialPrice = {
+    from: sortedPriceCameras.length ? sortedPriceCameras[0].price : 0,
+    to: sortedPriceCameras.length ? sortedPriceCameras[sortedPriceCameras.length - 1].price : 0,
+  };
+
+
+  const [filterPrice, setFilterPrice] = useState<InitialPriceType>(initialPrice);
+
+
+  useEffect(() => {
+    dispatch(fetchCamerasPriceAction(filterPrice));
+  }, [dispatch, filterPrice]);
+
+  const cameras = getSortedCameras(sortedPriceCameras, sortTypeName, sortTypeBy);
+
+  const camerasFilteredByPriceRange = useAppSelector(getPriceFilteredCameras);
+  useEffect(() => {
+    setCamerasByPriceRange(camerasFilteredByPriceRange);
+  }, [camerasFilteredByPriceRange]);
+
 
   const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
   const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
@@ -58,28 +89,69 @@ function CatalogScreenComponent(): JSX.Element {
 
   const params: Params = getParams();
 
+  const [filterPriceValue, setFilterPriceValue] = useState<InitialPriceType>({from: 0, to: 0});
+
+  function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement>, key: PriceFilterType) {
+    const value = Number(event.target.value);
+    if(value >= 0) {
+      if(key === 'from' && value < minPriceCameras) {
+        event.target.value = String(filterPrice.from);
+      } else if(key === 'to' && value > maxPriceCameras || key === 'to' && value < minPriceCameras) {
+        event.target.value = String(filterPrice.to);
+      } else{
+        setFilterPrice({ ...filterPrice, [key]: value });
+      }
+    }
+
+  }
+
+  function handleChangeSetFilterPriceValue(event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) {
+    setFilterPriceValue({...filterPriceValue, [key]: event.target.value});
+  }
+
+  const updateFilters = (updatedParams: Params) => {
+    const newFilteredCameras = getFilteredCameras(totalCameras, updatedParams.cat, updatedParams.type, updatedParams.lvl);
+    const newSortedPriceCameras = getSortedCameras(newFilteredCameras, 'sortPrice', 'up');
+
+    const newFilterPrice = {
+      from: newSortedPriceCameras.length ? newSortedPriceCameras[0].price : 0,
+      to: newSortedPriceCameras.length ? newSortedPriceCameras[newSortedPriceCameras.length - 1].price : 0,
+    };
+
+    setFilterPrice(newFilterPrice);
+  };
+
   const handleFilterChange = (evt: ChangeEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => {
     const target = evt.target;
+    const updatedParams = { ...params };
 
     if(target.checked) {
-      params[key] = filter;
+      updatedParams[key] = filter;
+
     } else {
-      delete params[key];
+      delete updatedParams[key];
     }
-    setSearchParams(params);
+
+    setSearchParams(updatedParams);
+
+    updateFilters(updatedParams);
   };
 
   const handleResetFilterClick = () => {
-    delete params.cat;
-    delete params.type;
-    delete params.lvl;
-    setSearchParams(params);
+    const updatedParams = { ...params };
+    delete updatedParams.cat;
+    delete updatedParams.type;
+    delete updatedParams.lvl;
+    setSearchParams(updatedParams);
+    updateFilters(updatedParams);
   };
 
   const handleFilterChangeKeyDown = (event: KeyboardEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => {
+    const updatedParams = { ...params };
     if (event.code === NAME_KEY_ENTER) {
-      params[key] = filter;
-      setSearchParams(params);
+      updatedParams[key] = filter;
+      setSearchParams(updatedParams);
+      updateFilters(updatedParams);
     }
   };
 
@@ -95,7 +167,7 @@ function CatalogScreenComponent(): JSX.Element {
   const handleSortTypeByChange = (evt: ChangeEvent<HTMLInputElement>) => {
     params.dir = evt.target.id as SortTypeBy;
 
-    if(!sortTypeName) {
+    if(!sortTypeName || sortTypeName === 'null') {
       params.sort = 'sortPrice';
     }
     setSearchParams(params);
@@ -140,7 +212,10 @@ function CatalogScreenComponent(): JSX.Element {
                   filterType = {filterType}
                   filterLevel = {filterLevel}
                   onFilterChangeKeyDown = {handleFilterChangeKeyDown}
-
+                  onChangeFilterPrice={handleChangeFilterPrice}
+                  filterPriceValue = {filterPriceValue}
+                  filterPrice = {filterPrice}
+                  onChangeSetFilterPriceValue = {handleChangeSetFilterPriceValue}
                 />
                 <div className="catalog__content">
                   <CatalogSort sortTypeName={sortTypeName} onSortTypeNameChange={handleSortTypeNameChange} sortTypeBy={sortTypeBy} onSortTypeByChange={handleSortTypeByChange} />

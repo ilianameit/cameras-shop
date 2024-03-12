@@ -12,6 +12,8 @@ export const getStatusLoadingOneCamera = (state: State) => state[NameSpace.Camer
 
 export const getSimilarCameras = (state: State) => state[NameSpace.Camera].similarCameras;
 
+export const getPriceFilteredCameras = (state: State) => state[NameSpace.Camera].camerasFilteredByPrice;
+
 export const getSortedCameras = createSelector(
   [
     (cameras: Camera[], sortingType: SortTypeName | '' | 'null', sortingBy: SortTypeBy | '' | 'null') => ({sortingType, sortingBy, cameras})
@@ -37,12 +39,12 @@ export const getSortedCameras = createSelector(
 export const getFilteredCameras = createSelector(
   [
     (
-      _: State,
-      filterCategory: CameraCategory | '' | 'null',
-      filterType: CameraType | '' | 'null', filterLevel: CameraLevel | '' | 'null'
-    ) => ({filterCategory, filterType, filterLevel}), getCameras
+      cameras: Camera[],
+      filterCategory: CameraCategory | '' | 'null' | undefined | string,
+      filterType: CameraType | '' | 'null' | undefined | string, filterLevel: CameraLevel | '' | 'null' | undefined | string
+    ) => ({filterCategory, filterType, filterLevel, cameras})
   ],
-  ({filterCategory, filterType, filterLevel}, cameras) => cameras
+  ({filterCategory, filterType, filterLevel, cameras}) => cameras
     .filter((camera) => {
       if(!filterCategory || filterCategory === 'null') {
         return true;

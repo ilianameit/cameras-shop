@@ -1,17 +1,21 @@
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, FocusEvent, KeyboardEvent } from 'react';
 import { FILTERS, FILTER_PRICE } from '../../const/const';
-import { CameraCategory, CameraLevel, CameraType, Filters, KeyFilters } from '../../types/types';
+import { CameraCategory, CameraLevel, CameraType, Filters, KeyFilters, InitialPriceType, PriceFilterType } from '../../types/types';
 
 type CatalogFilterProps = {
   onFilterChange: (evt: ChangeEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => void;
   onFilterChangeKeyDown: (event: KeyboardEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => void;
   onResetFilterClick: () => void;
-  filterCategory: CameraCategory | '';
-  filterType: CameraType | '';
-  filterLevel: CameraLevel | '';
+  filterCategory: CameraCategory | '' | undefined | string;
+  filterType: CameraType | '' | undefined | string;
+  filterLevel: CameraLevel | '' | undefined | string;
+  filterPriceValue: InitialPriceType;
+  onChangeFilterPrice: (event: FocusEvent<HTMLInputElement>, key: PriceFilterType) => void;
+  filterPrice: InitialPriceType;
+  onChangeSetFilterPriceValue: (event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) => void;
 }
 
-function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filterType, filterLevel, onFilterChangeKeyDown}: CatalogFilterProps): JSX.Element {
+function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filterType, filterLevel, onFilterChangeKeyDown, filterPrice, filterPriceValue, onChangeFilterPrice, onChangeSetFilterPriceValue}: CatalogFilterProps): JSX.Element {
   return(
     <div className="catalog__aside">
       <div className="catalog-filter">
@@ -22,17 +26,26 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
             <legend className="title title--h5">{FILTER_PRICE.header}</legend>
             <div className="catalog-filter__price-range">
               {
-                FILTER_PRICE.filters.map((filter) => (
-                  <div key={`${filter.name}-filter`} className="custom-input">
-                    <label>
-                      <input
-                        type="number"
-                        name={filter.name}
-                        placeholder={filter.placeholder}
-                      />
-                    </label>
-                  </div>
-                ))
+                FILTER_PRICE.filters.map((filter) => {
+                  const priceHolder = filter.name === 'price' ? filterPrice.from : filterPrice.to;
+                  const key: PriceFilterType = filter.name === 'price' ? 'from' : 'to';
+                  const priceValue = filter.name === 'price' ? filterPriceValue.from : filterPriceValue.to;
+
+                  return (
+                    <div key={`${filter.name}-filter`} className="custom-input">
+                      <label>
+                        <input
+                          type="number"
+                          name={filter.name}
+                          placeholder={String(priceHolder)}
+                          onBlur={(evt) => onChangeFilterPrice(evt, key)}
+                          onChange={(evt) => onChangeSetFilterPriceValue(evt, key)}
+                          value={priceValue > 0 ? priceValue : ''}
+                        />
+                      </label>
+                    </div>
+                  );
+                })
               }
             </div>
           </fieldset>

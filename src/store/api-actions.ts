@@ -23,6 +23,19 @@ export const fetchCamerasAction = createAsyncThunk<
   }
 );
 
+export const fetchCamerasPriceAction = createAsyncThunk<
+  Camera[],
+  {from: Camera['price']; to: Camera['price']},
+  AsyncActionType
+>(
+  `${NameSpace.Camera}/fetchPriceFilteredCameras`,
+  async ({from, to}, {extra: api}) => {
+    const {data} = await api.get<Camera[]>(`${APIRoute.Cameras}?price_gte=${from}&price_lte=${to}`);
+
+    return data;
+  }
+);
+
 export const fetchPromoAction = createAsyncThunk<
   Item[],
   undefined,

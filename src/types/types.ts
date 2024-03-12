@@ -64,3 +64,9 @@ export type SortTypeByState = {
 
 export type KeyFilters = 'cat' | 'type' | 'lvl';
 export type Filters = CameraCategory | CameraType | CameraLevel;
+
+export type PriceFilterType = 'from' | 'to';
+export type InitialPriceType = {
+  from: Camera['price'];
+  to: Camera['price'];
+};
