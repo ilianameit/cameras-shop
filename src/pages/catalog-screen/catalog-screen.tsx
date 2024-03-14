@@ -158,13 +158,11 @@ function CatalogScreenComponent(): JSX.Element {
 
     if(filterPriceValue.from && filterPriceValue.to) {
 
-      if(filterPriceValue.from < newFilterPrice.from && filterPriceValue.to < newFilterPrice.from){
-        setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.from});
-        setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.from});
-      }
-
-      if(filterPriceValue.from >= newFilterPrice.from && filterPriceValue.to <= newFilterPrice.to){
+      if(filterPriceValue.from >= newFilterPrice.from && filterPriceValue.from <= newFilterPrice.to && filterPriceValue.to <= newFilterPrice.to && filterPriceValue.to >= newFilterPrice.from){
         setFilterPrice(filterPriceValue);
+      } else {
+        setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.to});
+        setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.to});
       }
     }
 
@@ -280,8 +278,8 @@ function CatalogScreenComponent(): JSX.Element {
                 <div className="catalog__content">
                   <CatalogSort sortTypeName={sortTypeName} onSortTypeNameChange={handleSortTypeNameChange} sortTypeBy={sortTypeBy} onSortTypeByChange={handleSortTypeByChange} />
                   {
-                    cameras.length > 0 ? <EmptyListProducts /> :
-                      <CardsList cameras={currentCameras} onBuyClick={handleBuyClick}/>
+                    cameras.length > 0 ? <CardsList cameras={currentCameras} onBuyClick={handleBuyClick}/> :
+                      <EmptyListProducts />
                   }
                   {
                     cameras.length > MAX_COUNT_ITEM_PAGE &&
