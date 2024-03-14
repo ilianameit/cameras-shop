@@ -16,6 +16,7 @@ import ModalWindow from '../../components/modal-window/modal-window';
 import CatalogSort from '../../components/catalog-sort/catalog-sort';
 import CatalogFilter from '../../components/catalog-filter/catalog-filter';
 import { fetchCamerasPriceAction } from '../../store/api-actions';
+import EmptyListProducts from '../../components/empty-list-products/empty-list-products';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -31,10 +32,6 @@ type Params = {
 function CatalogScreenComponent(): JSX.Element {
   const dispatch = useAppDispatch();
   const totalCameras = useAppSelector(getCameras);
-  const sortedPriceTotalCameras = getSortedCameras(totalCameras, 'sortPrice', 'up');
-
-  const minPriceCameras = sortedPriceTotalCameras[0].price;
-  const maxPriceCameras = sortedPriceTotalCameras[sortedPriceTotalCameras.length - 1].price;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -90,23 +87,36 @@ function CatalogScreenComponent(): JSX.Element {
   const params: Params = getParams();
 
   const [filterPriceValue, setFilterPriceValue] = useState<InitialPriceType>({from: 0, to: 0});
+  const [initialPriceValueFilter, setInitialPriceValueFilter] = useState<InitialPriceType>(initialPrice);
+  let isReset = false;
 
   function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement>, key: PriceFilterType) {
     const value = Number(event.target.value);
-    if(value >= 0) {
-      if(key === 'from' && value < minPriceCameras) {
-        event.target.value = String(filterPrice.from);
-      } else if(key === 'to' && value > maxPriceCameras || key === 'to' && value < minPriceCameras) {
-        event.target.value = String(filterPrice.to);
+    if(value > 0 && event.target.value) {
+      if(key === 'from' && value < initialPriceValueFilter.from) {
+
+        setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
+      } else if(key === 'to' && value > initialPriceValueFilter.to) {
+
+        setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
+      } else if(key === 'to' && value < initialPriceValueFilter.from) {
+
+        setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
       } else{
+
+        setFilterPriceValue({ ...filterPriceValue, [key]: value });
         setFilterPrice({ ...filterPrice, [key]: value });
       }
+    }
+    if(value === 0 && !event.target.value) {
+      setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
     }
 
   }
 
   function handleChangeSetFilterPriceValue(event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) {
-    setFilterPriceValue({...filterPriceValue, [key]: event.target.value});
+    setFilterPriceValue({...filterPriceValue, [key]: Number(event.target.value)});
   }
 
   const updateFilters = (updatedParams: Params) => {
@@ -118,7 +128,55 @@ function CatalogScreenComponent(): JSX.Element {
       to: newSortedPriceCameras.length ? newSortedPriceCameras[newSortedPriceCameras.length - 1].price : 0,
     };
 
-    setFilterPrice(newFilterPrice);
+    if(filterPriceValue.from) {
+
+      if(filterPriceValue.from < newFilterPrice.from || filterPriceValue.from > newFilterPrice.to) {
+        setFilterPriceValue({ ...filterPriceValue, from: newFilterPrice.from });
+        setFilterPrice({...filterPrice, from: newFilterPrice.from});
+      } else {
+        setFilterPrice({...filterPrice, from: filterPriceValue.from});
+      }
+
+      if(filterPriceValue.from && !filterPriceValue.to) {
+        setFilterPrice({...filterPrice, to: newFilterPrice.to});
+      }
+    }
+
+    if(filterPriceValue.to) {
+
+      if(filterPriceValue.to < newFilterPrice.from || filterPriceValue.to > newFilterPrice.to) {
+        setFilterPriceValue({ ...filterPriceValue, to: newFilterPrice.to });
+        setFilterPrice({...filterPrice, to: newFilterPrice.to});
+      } else {
+        setFilterPrice({...filterPrice, to: filterPriceValue.to});
+      }
+
+      if(filterPriceValue.to && !filterPriceValue.from) {
+        setFilterPrice({...filterPrice, from: newFilterPrice.from});
+      }
+    }
+
+    if(filterPriceValue.from && filterPriceValue.to) {
+
+      if(filterPriceValue.from < newFilterPrice.from && filterPriceValue.to < newFilterPrice.from){
+        setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.from});
+        setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.from});
+      }
+
+      if(filterPriceValue.from >= newFilterPrice.from && filterPriceValue.to <= newFilterPrice.to){
+        setFilterPrice(filterPriceValue);
+      }
+    }
+
+    if(!filterPriceValue.from && !filterPriceValue.to) {
+      setFilterPrice(newFilterPrice);
+    }
+
+    if(isReset) {
+      setFilterPrice(newFilterPrice);
+      isReset = false;
+    }
+    setInitialPriceValueFilter(newFilterPrice);
   };
 
   const handleFilterChange = (evt: ChangeEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => {
@@ -132,9 +190,9 @@ function CatalogScreenComponent(): JSX.Element {
       delete updatedParams[key];
     }
 
+    updateFilters(updatedParams);
     setSearchParams(updatedParams);
 
-    updateFilters(updatedParams);
   };
 
   const handleResetFilterClick = () => {
@@ -142,6 +200,8 @@ function CatalogScreenComponent(): JSX.Element {
     delete updatedParams.cat;
     delete updatedParams.type;
     delete updatedParams.lvl;
+    isReset = true;
+    setFilterPriceValue({from: 0, to: 0});
     setSearchParams(updatedParams);
     updateFilters(updatedParams);
   };
@@ -214,12 +274,15 @@ function CatalogScreenComponent(): JSX.Element {
                   onFilterChangeKeyDown = {handleFilterChangeKeyDown}
                   onChangeFilterPrice={handleChangeFilterPrice}
                   filterPriceValue = {filterPriceValue}
-                  filterPrice = {filterPrice}
+                  initialFilterPrice = {initialPriceValueFilter}
                   onChangeSetFilterPriceValue = {handleChangeSetFilterPriceValue}
                 />
                 <div className="catalog__content">
                   <CatalogSort sortTypeName={sortTypeName} onSortTypeNameChange={handleSortTypeNameChange} sortTypeBy={sortTypeBy} onSortTypeByChange={handleSortTypeByChange} />
-                  <CardsList cameras={currentCameras} onBuyClick={handleBuyClick}/>
+                  {
+                    cameras.length > 0 ? <EmptyListProducts /> :
+                      <CardsList cameras={currentCameras} onBuyClick={handleBuyClick}/>
+                  }
                   {
                     cameras.length > MAX_COUNT_ITEM_PAGE &&
                     <Pagination currentPage={currentPage} totalItems={cameras.length} itemsPerPage={MAX_COUNT_ITEM_PAGE} onPageClick={handlePaginateClick}/>

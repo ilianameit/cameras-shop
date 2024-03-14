@@ -11,11 +11,11 @@ type CatalogFilterProps = {
   filterLevel: CameraLevel | '' | undefined | string;
   filterPriceValue: InitialPriceType;
   onChangeFilterPrice: (event: FocusEvent<HTMLInputElement>, key: PriceFilterType) => void;
-  filterPrice: InitialPriceType;
+  initialFilterPrice: InitialPriceType;
   onChangeSetFilterPriceValue: (event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) => void;
 }
 
-function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filterType, filterLevel, onFilterChangeKeyDown, filterPrice, filterPriceValue, onChangeFilterPrice, onChangeSetFilterPriceValue}: CatalogFilterProps): JSX.Element {
+function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filterType, filterLevel, onFilterChangeKeyDown, initialFilterPrice, filterPriceValue, onChangeFilterPrice, onChangeSetFilterPriceValue}: CatalogFilterProps): JSX.Element {
   return(
     <div className="catalog__aside">
       <div className="catalog-filter">
@@ -27,7 +27,7 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
             <div className="catalog-filter__price-range">
               {
                 FILTER_PRICE.filters.map((filter) => {
-                  const priceHolder = filter.name === 'price' ? filterPrice.from : filterPrice.to;
+                  const pricePlaceholder = filter.name === 'price' ? initialFilterPrice.from : initialFilterPrice.to;
                   const key: PriceFilterType = filter.name === 'price' ? 'from' : 'to';
                   const priceValue = filter.name === 'price' ? filterPriceValue.from : filterPriceValue.to;
 
@@ -37,7 +37,7 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
                         <input
                           type="number"
                           name={filter.name}
-                          placeholder={String(priceHolder)}
+                          placeholder={String(pricePlaceholder)}
                           onBlur={(evt) => onChangeFilterPrice(evt, key)}
                           onChange={(evt) => onChangeSetFilterPriceValue(evt, key)}
                           value={priceValue > 0 ? priceValue : ''}
@@ -89,7 +89,7 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
             type="reset"
             onClick={onResetFilterClick}
             disabled={
-              !filterCategory && !filterType && !filterLevel
+              !filterCategory && !filterType && !filterLevel && !filterPriceValue.from && !filterPriceValue.to
             }
           >
             Сбросить фильтры
