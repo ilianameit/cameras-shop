@@ -1,4 +1,4 @@
-import {SortTypeByState, SortTypeState } from '../types/types';
+import {Filters, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
 
 export enum AppRoutes {
   Root = '/',
@@ -49,3 +49,94 @@ export const sortBy: SortTypeByState = {
 };
 
 export const MIN_COUNT_SEARCH_VALUE = 3;
+
+export const NAME_KEY_ENTER = 'Enter';
+
+export const FILTER_PRICE: {
+  header: string;
+  filters: {
+    name: 'price' | 'priceUp';
+    placeholder: 'от' | 'до';
+  }[];
+} = {
+  header: 'Цена, ₽',
+  filters: [
+    {
+      name: 'price',
+      placeholder: 'от'
+    },
+    {
+      name: 'priceUp',
+      placeholder: 'до'
+    }
+
+  ]
+};
+
+type FiltersState = {
+  key: KeyFilters;
+  header: string;
+  filters: {
+      name: string;
+      label: Filters;
+      text?: string;
+    }[];
+}[];
+
+export const FILTERS: FiltersState = [
+  {
+    key: 'cat',
+    header: 'Категория',
+    filters: [
+      {
+        name: 'photocamera',
+        label: 'Фотоаппарат',
+        text: 'Фотокамера'
+      },
+      {
+        name: 'videocamera',
+        label: 'Видеокамера'
+      }
+    ]
+  },
+  {
+    key: 'type',
+    header: 'Тип камеры',
+    filters: [
+      {
+        name: 'digital',
+        label: 'Цифровая'
+      },
+      {
+        name: 'film',
+        label: 'Плёночная'
+      },
+      {
+        name: 'snapshot',
+        label: 'Моментальная'
+      },
+      {
+        name: 'collection',
+        label: 'Коллекционная'
+      }
+    ]
+  },
+  {
+    key: 'lvl',
+    header: 'Уровень',
+    filters: [
+      {
+        name: 'zero',
+        label: 'Нулевой'
+      },
+      {
+        name: 'non-professional',
+        label: 'Любительский'
+      },
+      {
+        name: 'professional',
+        label: 'Профессиональный'
+      }
+    ]
+  }
+];

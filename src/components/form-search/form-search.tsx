@@ -1,7 +1,7 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { getCameras } from '../../store/camera-slice/selectors';
-import { AppRoutes, MIN_COUNT_SEARCH_VALUE } from '../../const/const';
+import { AppRoutes, MIN_COUNT_SEARCH_VALUE, NAME_KEY_ENTER } from '../../const/const';
 import classNames from 'classnames';
 import { Camera } from '../../types/types';
 import { useNavigate } from 'react-router-dom';
@@ -27,10 +27,38 @@ function FormSearch(): JSX.Element {
       setIsSelectListOpen(true);
     }
     if(value.length >= MIN_COUNT_SEARCH_VALUE) {
-      const searchCameras = cameras.filter((camera) =>
-        camera.name.toLocaleLowerCase().replaceAll(' ', '')
-          .search(value) !== -1
-      );
+      let searchCameras;
+      const isSearchedNameCameras = cameras
+        .filter((camera) =>
+          camera.name.toLocaleLowerCase().replaceAll(' ', '')
+            .search(value) !== -1
+        );
+      const isSearchedCategoryCameras = cameras
+        .filter((camera) =>
+          camera.category.toLocaleLowerCase().replaceAll(' ', '')
+            .search(value) !== -1
+        );
+      const isSearchedTypeCameras = cameras
+        .filter((camera) =>
+          camera.type.toLocaleLowerCase().replaceAll(' ', '')
+            .search(value) !== -1
+        );
+      const isSearchedLevelCameras = cameras
+        .filter((camera) =>
+          camera.level.toLocaleLowerCase().replaceAll(' ', '')
+            .search(value) !== -1
+        );
+
+      if (isSearchedNameCameras.length) {
+        searchCameras = isSearchedNameCameras;
+      } else if (isSearchedCategoryCameras.length) {
+        searchCameras = isSearchedCategoryCameras;
+      } else if (isSearchedTypeCameras.length) {
+        searchCameras = isSearchedTypeCameras;
+      } else {
+        searchCameras = isSearchedLevelCameras;
+      }
+
       setFilterCameras(searchCameras);
     }
   }
@@ -46,7 +74,7 @@ function FormSearch(): JSX.Element {
   }
 
   function handleSelectItemFocusClick(event: KeyboardEvent<HTMLElement>, id: Camera['id']) {
-    if (event.code === 'Enter') {
+    if (event.code === NAME_KEY_ENTER) {
       navigate(`${AppRoutes.Product}${id}`);
     }
   }

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../const/const';
 import { Camera, Item } from '../../types/types';
-import { fetchCamerasAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
+import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
 
 type CamerasStateType = {
   cameras: Camera[];
@@ -10,6 +10,7 @@ type CamerasStateType = {
   oneCamera: Camera | null;
   loadingOneCamera: boolean;
   similarCameras: Camera[];
+  camerasFilteredByPrice: Camera[];
 }
 
 const initialState: CamerasStateType = {
@@ -19,6 +20,7 @@ const initialState: CamerasStateType = {
   oneCamera: null,
   loadingOneCamera: false,
   similarCameras: [],
+  camerasFilteredByPrice: [],
 };
 
 export const camerasSlice = createSlice({
@@ -37,6 +39,9 @@ export const camerasSlice = createSlice({
       })
       .addCase(fetchCamerasAction.pending, (state) => {
         state.loadingCameras = true;
+      })
+      .addCase(fetchCamerasPriceAction.fulfilled, (state, action) => {
+        state.camerasFilteredByPrice = action.payload;
       })
       .addCase(fetchPromoAction.fulfilled, (state, action) => {
         state.promo = action.payload;
