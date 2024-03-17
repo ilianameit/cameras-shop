@@ -51,6 +51,9 @@ export const sortBy: SortTypeByState = {
 export const MIN_COUNT_SEARCH_VALUE = 3;
 
 export const NAME_KEY_ENTER = 'Enter';
+export const NAME_KEY_UP = 'ArrowUp';
+export const NAME_KEY_DOWN = 'ArrowDown';
+export const NAME_KEY_TAB = 'Tab';
 
 export const FILTER_PRICE: {
   header: string;

@@ -7,7 +7,7 @@ import { getCameras, getFilteredCameras, getPriceFilteredCameras, getSortedCamer
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
-import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { AppRoutes, NAME_KEY_ENTER } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
@@ -34,6 +34,8 @@ function CatalogScreenComponent(): JSX.Element {
   const totalCameras = useAppSelector(getCameras);
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
 
   const filterCategory: CameraCategory | '' | undefined | string = searchParams.get('cat') as CameraCategory | '' | undefined | string;
   const filterType: CameraType | '' | undefined | string = searchParams.get('type') as CameraType | '' | undefined | string;
@@ -295,8 +297,9 @@ function CatalogScreenComponent(): JSX.Element {
             <ModalWindow
               title='Добавить товар в корзину'
               onClose={handleCloseBuyItemClick}
+              firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup}/>
             </ModalWindow>)
         }
       </main>

@@ -1,15 +1,19 @@
 import classNames from 'classnames';
-import { ReactNode, KeyboardEvent, memo, useEffect } from 'react';
+import { ReactNode, KeyboardEvent, memo, useEffect, RefObject, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { NAME_KEY_TAB } from '../../const/const';
 
 type ModalWindowProps = {
   title: string;
   isResponse?: boolean;
   onClose: () => void;
   children: ReactNode;
+  firstFocusElement?: RefObject<HTMLButtonElement | HTMLInputElement>;
 }
 
-function ModalWindowComponent({title, onClose, children, isResponse = false}: ModalWindowProps): JSX.Element{
+function ModalWindowComponent({title, onClose, children, firstFocusElement, isResponse = false}: ModalWindowProps): JSX.Element{
+  const lastRefModal = useRef(null);
+
   useEffect(() => {
     document.body.classList.add('scroll-lock');
     return () => {
@@ -22,6 +26,13 @@ function ModalWindowComponent({title, onClose, children, isResponse = false}: Mo
     if (evt.key === 'Escape') {
       evt.preventDefault();
       onClose();
+    }
+  }
+
+  function infinitelyPressTabForm(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === NAME_KEY_TAB && !event.shiftKey && lastRefModal.current && event.target === lastRefModal.current && firstFocusElement && firstFocusElement.current) {
+      event.preventDefault();
+      firstFocusElement.current.focus();
     }
   }
 
@@ -58,6 +69,8 @@ function ModalWindowComponent({title, onClose, children, isResponse = false}: Mo
                   type="button"
                   aria-label="Закрыть попап"
                   onClick={onClose}
+                  ref={lastRefModal}
+                  onKeyDown={infinitelyPressTabForm}
                 >
                   <svg width="10" height="10" aria-hidden="true">
                     <use xlinkHref="#icon-close"></use>
