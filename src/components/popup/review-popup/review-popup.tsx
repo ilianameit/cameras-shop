@@ -1,5 +1,5 @@
-import { Fragment, memo, useEffect, useState } from 'react';
-import { ratingStarsName } from '../../../const/const';
+import { Fragment, KeyboardEvent, memo, useEffect, useRef, useState } from 'react';
+import { NAME_KEY_TAB, ratingStarsName } from '../../../const/const';
 import { Rating, ReviewAdding } from '../../../types/types';
 import { useForm } from 'react-hook-form';
 import classNames from 'classnames';
@@ -62,6 +62,10 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
 
   const [rating, setRating] = useState<Rating>(0);
 
+  const lastRefModal = useRef(null);
+
+  const firstFocusThanksElement = useRef<HTMLButtonElement| null>(null);
+
   useEffect(() => {
     setFocus('user-name');
 
@@ -76,6 +80,13 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
   function handleRatingChange() {
     setRating(watch('rate'));
   }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === NAME_KEY_TAB && !event.shiftKey && event.target === lastRefModal.current) {
+      event.preventDefault();
+      setFocus('rate');
+    }
+  };
 
   function handleFormSubmit(dataValues: FormValues) {
     const data: ReviewAdding = {
@@ -92,8 +103,8 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
 
   return(
     isAddReviewSucces ?
-      <ModalWindow title={'Спасибо за отзыв'} onClose={onClose} isResponse>
-        <ThanksPopup />
+      <ModalWindow title={'Спасибо за отзыв'} onClose={onClose} firstFocusElement={firstFocusThanksElement} isResponse>
+        <ThanksPopup focusElement={firstFocusThanksElement} />
       </ModalWindow> :
       <div className="form-review">
         <form
@@ -250,6 +261,8 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
             className="btn btn--purple form-review__btn"
             type="submit"
             aria-label="отправить отзыв"
+            ref={lastRefModal}
+            onKeyDown={handleKeyDown}
           >
             { !isLoadingReview ? 'Отправить отзыв' : '...Отправка'}
           </button>

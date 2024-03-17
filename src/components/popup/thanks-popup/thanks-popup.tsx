@@ -1,18 +1,20 @@
-import { Fragment, memo, useEffect, useRef } from 'react';
+import { Fragment, RefObject, memo, useEffect } from 'react';
 import { AppRoutes } from '../../../const/const';
 import { useNavigate } from 'react-router-dom';
 
-function ThanksPopupComponent(): JSX.Element {
+type ThanksPopupComponentProps = {
+  focusElement: RefObject<HTMLButtonElement>;
+}
+
+function ThanksPopupComponent({focusElement}: ThanksPopupComponentProps): JSX.Element {
   const navigate = useNavigate();
 
   function handleReturnButtonClick() {
     navigate(AppRoutes.Root);
   }
 
-  const focusElement = useRef<HTMLButtonElement | null>(null);
-
   useEffect(() => {
-    if (focusElement.current) {
+    if (focusElement && focusElement.current) {
       focusElement.current.focus();
     }
   }, [focusElement]);

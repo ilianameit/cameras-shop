@@ -4,7 +4,7 @@ import Footer from '../../components/footer/footer';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { getOneCamera, getSimilarCameras, getStatusLoadingOneCamera } from '../../store/camera-slice/selectors';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchOneCameraAction, fetchSimilarCamerasAction } from '../../store/api-actions';
 import { dropCamera } from '../../store/camera-slice/camera-slice';
 import LoadingScreen from '../loading-screen/loading-screen';
@@ -26,6 +26,8 @@ function ProductScreen(): JSX.Element {
 
   const dispatch = useAppDispatch();
   const {id} = useParams();
+
+  const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
 
   const [tabParams, setTabParams] = useSearchParams();
   const currentTab = useMemo(() => tabParams.get('tab') as TabType || TabName.Description, [tabParams]);
@@ -151,8 +153,9 @@ function ProductScreen(): JSX.Element {
             <ModalWindow
               title='Добавить товар в корзину'
               onClose={handleCloseAddItemModal}
+              firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup}/>
             </ModalWindow>)
         }
         {
@@ -161,7 +164,10 @@ function ProductScreen(): JSX.Element {
             title={'Оставить отзыв'}
             onClose={handleCloseAddReviewModal}
           >
-            <ReviewPopup idCamera={idCamera} onClose={handleCloseAddReviewModal}/>
+            <ReviewPopup
+              idCamera={idCamera}
+              onClose={handleCloseAddReviewModal}
+            />
           </ModalWindow>
         }
       </main>

@@ -1,7 +1,7 @@
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { getCameras } from '../../store/camera-slice/selectors';
-import { AppRoutes, MIN_COUNT_SEARCH_VALUE, NAME_KEY_ENTER } from '../../const/const';
+import { AppRoutes, MIN_COUNT_SEARCH_VALUE, NAME_KEY_DOWN, NAME_KEY_ENTER, NAME_KEY_UP } from '../../const/const';
 import classNames from 'classnames';
 import { Camera } from '../../types/types';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,15 @@ function FormSearch(): JSX.Element {
   const [searchValue, setSearchValue] = useState('');
   const [isSelectListOpen, setIsSelectListOpen] = useState(false);
   const [filterCameras, setFilterCameras] = useState<Camera[]>([]);
+  const [selectedItem, setSelectedItem] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const activeItemRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    if (activeItemRef.current) {
+      activeItemRef.current.focus();
+    }
+  }, [selectedItem]);
 
   function handleChangeSearchValue(event: ChangeEvent<HTMLInputElement>) {
     const target = event.target.value;
@@ -67,6 +76,10 @@ function FormSearch(): JSX.Element {
     setSearchValue('');
     setIsSelectListOpen(false);
     setFilterCameras([]);
+    setSelectedItem(-1);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }
 
   function handleSelectCameraClick(id: Camera['id']) {
@@ -79,24 +92,51 @@ function FormSearch(): JSX.Element {
     }
   }
 
+  function handleFormSearchKeydown(event: KeyboardEvent<HTMLFormElement>) {
+    if (event.key === NAME_KEY_UP) {
+      event.preventDefault();
+      if (selectedItem === -1) {
+        setSelectedItem(0);
+      }
+      setSelectedItem((prevSelectedItem) =>
+        prevSelectedItem === 0 ? 0 : prevSelectedItem - 1
+      );
+    } else if (event.key === NAME_KEY_DOWN) {
+      event.preventDefault();
+      setSelectedItem((prevSelectedItem) =>
+        prevSelectedItem === filterCameras.length - 1 ? filterCameras.length - 1 : prevSelectedItem + 1
+      );
+    }
+  }
+
   return(
     <div className={classNames(
       'form-search',
       {'list-opened':  isSelectListOpen}
     )}
     >
-      <form>
+      <form
+        onKeyDown={handleFormSearchKeydown}
+      >
         <label>
           <svg className="form-search__icon" width="16" height="16" aria-hidden="true">
             <use xlinkHref="#icon-lens"></use>
           </svg>
-          <input className="form-search__input" type="text" autoComplete="off" placeholder="Поиск по сайту" onChange={handleChangeSearchValue} value={searchValue}/>
+          <input
+            className="form-search__input"
+            type="text"
+            autoComplete="off"
+            placeholder="Поиск по сайту"
+            onChange={handleChangeSearchValue}
+            value={searchValue}
+            ref={inputRef}
+          />
         </label>
         {
           filterCameras.length > 0 &&
             <ul className="form-search__select-list">
               {
-                filterCameras.map((camera) =>
+                filterCameras.map((camera, index) =>
                   (
                     <li
                       key={`${camera.id}-search`}
@@ -104,6 +144,7 @@ function FormSearch(): JSX.Element {
                       tabIndex={0}
                       onClick={() => handleSelectCameraClick(camera.id)}
                       onKeyDown={(event) => handleSelectItemFocusClick(event, camera.id)}
+                      ref={selectedItem === index ? activeItemRef : null}
                     >
                       {camera.name}
                     </li>
