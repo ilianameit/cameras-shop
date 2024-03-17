@@ -9,6 +9,7 @@ describe('Component Breadcrumbs', () => {
       render(<Breadcrumbs breadcrumbs={[{title: 'Главная'}]} />);
 
       expect(screen.getByTestId(/breadcrumbs/i)).toBeInTheDocument();
+      expect(screen.getByText(/Главная/i)).toBeInTheDocument();
     });
 
   });

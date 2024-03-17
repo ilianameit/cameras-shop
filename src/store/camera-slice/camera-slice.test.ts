@@ -1,5 +1,5 @@
 import { mockCamera, mockCameras, mockPromo } from '../../utils/mocks';
-import { fetchCamerasAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
+import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
 import { camerasSlice, dropCamera } from './camera-slice';
 
 describe('CameraSlice', () => {
@@ -13,6 +13,7 @@ describe('CameraSlice', () => {
         loadingOneCamera: false,
         oneCamera: null,
         similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(expectedState, emptyAction);
@@ -29,6 +30,7 @@ describe('CameraSlice', () => {
         loadingOneCamera: false,
         oneCamera: null,
         similarCameras: [],
+        camerasFilteredByPrice:  []
       };
 
       const result = camerasSlice.reducer(undefined, emptyAction);
@@ -45,6 +47,7 @@ describe('CameraSlice', () => {
         loadingOneCamera: false,
         oneCamera: mockCamera,
         similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const expectedState = {
@@ -70,7 +73,8 @@ describe('CameraSlice', () => {
         loadingCameras: false,
         loadingOneCamera: false,
         oneCamera: null,
-        similarCameras: []
+        similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(
@@ -88,7 +92,8 @@ describe('CameraSlice', () => {
         loadingCameras: true,
         loadingOneCamera: false,
         oneCamera: null,
-        similarCameras: []
+        similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(
@@ -98,6 +103,26 @@ describe('CameraSlice', () => {
       expect(result).toEqual(expectedState);
     });
   });
+
+  describe('fetchCamerasPriceAction', () => {
+    it('should return cameras array on filter price with fetchCamerasPriceAction action', () => {
+      const expectedState = {
+        cameras: [],
+        promo: [],
+        loadingCameras: false,
+        loadingOneCamera: false,
+        oneCamera: null,
+        similarCameras: [],
+        camerasFilteredByPrice: mockCameras,
+      };
+      const result = camerasSlice.reducer(
+        undefined,
+        fetchCamerasPriceAction.fulfilled(mockCameras, '', {from: 2000, to: 5000})
+      );
+      expect(result).toEqual(expectedState);
+    });
+  });
+
   describe('fetchPromoAction', () => {
     it('should return promo array with fetchPromoAction action', () => {
       const expectedState = {
@@ -106,7 +131,8 @@ describe('CameraSlice', () => {
         loadingCameras: false,
         loadingOneCamera: false,
         oneCamera: null,
-        similarCameras: []
+        similarCameras: [],
+        camerasFilteredByPrice: [],
       };
       const result = camerasSlice.reducer(
         undefined,
@@ -126,7 +152,8 @@ describe('CameraSlice', () => {
         loadingCameras: false,
         loadingOneCamera: false,
         oneCamera: mockCamera,
-        similarCameras: []
+        similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(
@@ -146,7 +173,8 @@ describe('CameraSlice', () => {
         loadingCameras: false,
         loadingOneCamera: true,
         oneCamera: null,
-        similarCameras: []
+        similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(
@@ -169,7 +197,8 @@ describe('CameraSlice', () => {
         loadingCameras: false,
         loadingOneCamera: false,
         oneCamera: null,
-        similarCameras: [...mockCameras]
+        similarCameras: [...mockCameras],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(

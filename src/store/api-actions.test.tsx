@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import thunk from 'redux-thunk';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import { Action } from 'redux';
-import { fetchReviewsAction, fetchAddReviewAction, fetchCamerasAction, fetchPromoAction, fetchOneCameraAction, fetchSimilarCamerasAction } from './api-actions';
+import { fetchReviewsAction, fetchAddReviewAction, fetchCamerasAction, fetchPromoAction, fetchOneCameraAction, fetchSimilarCamerasAction, fetchCamerasPriceAction } from './api-actions';
 import { APIRoute } from '../const/const';
 import { extractActionsTypes, AppThunkDispatch } from '../utils/mocks';
 import { ReviewAdding } from '../types/types';
@@ -36,6 +36,21 @@ describe('API ACTIONS', () => {
       ]);
     });
 
+  });
+  describe('fetchCamerasPriceAction', () => {
+    it('should dispatch fetchCamerasPriceAction.fulfilled  with thunk fetchCamerasPriceAction', async () => {
+      const from = 2000;
+      const to = 5000;
+      mockAxiosAdapter.onGet(`${APIRoute.Cameras}?price_gte=${from}&price_lte=${to}`).reply(200);
+
+      await store.dispatch((fetchCamerasPriceAction({from, to})));
+      const actions = extractActionsTypes(store.getActions());
+
+      expect(actions).toEqual([
+        fetchCamerasPriceAction.pending.type,
+        fetchCamerasPriceAction.fulfilled.type
+      ]);
+    });
   });
   describe('fetchPromoAction', () => {
 
