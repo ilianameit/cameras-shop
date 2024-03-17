@@ -1,16 +1,16 @@
-import { memo, useEffect, useRef } from 'react';
+import { RefObject, memo, useEffect } from 'react';
 import { Camera } from '../../../types/types';
 import { returnFormatedPrice } from '../../../utils/common';
 
 type AddItemPopupComponentProps = {
   camera: Camera | null;
+  focusElement: RefObject<HTMLButtonElement>;
 }
 
-function AddItemPopupComponent({camera}: AddItemPopupComponentProps): JSX.Element {
-  const focusElement = useRef<HTMLButtonElement | null>(null);
+function AddItemPopupComponent({camera, focusElement}: AddItemPopupComponentProps): JSX.Element {
 
   useEffect(() => {
-    if (focusElement.current) {
+    if (focusElement && focusElement.current) {
       focusElement.current.focus();
     }
   }, [focusElement]);
