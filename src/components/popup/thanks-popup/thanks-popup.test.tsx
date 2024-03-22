@@ -5,8 +5,9 @@ import ThanksPopup from './thanks-popup';
 
 describe('Component Thanks modal', () => {
   describe('should render correctly', () => {
+    const focusElement = { current: document.createElement('button') };
     it('should render', () => {
-      const preparedComponent = withHistory(<ThanksPopup/>);
+      const preparedComponent = withHistory(<ThanksPopup focusElement={focusElement}/>);
 
       render(preparedComponent);
       expect(screen.getByRole('button', { name: /Вернуться к покупкам/i})).toBeInTheDocument();

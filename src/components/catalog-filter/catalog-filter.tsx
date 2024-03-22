@@ -1,14 +1,14 @@
 import { ChangeEvent, FocusEvent, KeyboardEvent } from 'react';
-import { FILTERS, FILTER_PRICE } from '../../const/const';
-import { CameraCategory, CameraLevel, CameraType, Filters, KeyFilters, InitialPriceType, PriceFilterType } from '../../types/types';
+import { FILTERS, FILTER_PRICE, filterCategoryParamsState, filterTypeParamState } from '../../const/const';
+import { KeyFilters, InitialPriceType, PriceFilterType, FiltersParams, CameraCategoryParams, CameraTypeParams, CameraLevelParams } from '../../types/types';
 
 type CatalogFilterProps = {
-  onFilterChange: (evt: ChangeEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => void;
-  onFilterChangeKeyDown: (event: KeyboardEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => void;
+  onFilterChange: (evt: ChangeEvent<HTMLInputElement>, filter: FiltersParams, key: KeyFilters) => void;
+  onFilterChangeKeyDown: (event: KeyboardEvent<HTMLInputElement>, filter: FiltersParams, key: KeyFilters) => void;
   onResetFilterClick: () => void;
-  filterCategory: CameraCategory | '' | undefined | string;
-  filterType: CameraType | '' | undefined | string;
-  filterLevel: CameraLevel | '' | undefined | string;
+  filterCategory: CameraCategoryParams | undefined;
+  filterType: CameraTypeParams | undefined;
+  filterLevel: CameraLevelParams | undefined;
   filterPriceValue: InitialPriceType;
   onChangeFilterPrice: (event: FocusEvent<HTMLInputElement>, key: PriceFilterType) => void;
   initialFilterPrice: InitialPriceType;
@@ -61,14 +61,14 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
                         <input
                           type="checkbox"
                           name={name}
-                          onChange={(evt) => onFilterChange(evt, label, key)}
-                          onKeyDown={(evt) => onFilterChangeKeyDown(evt, label, key)}
+                          onChange={(evt) => onFilterChange(evt, name, key)}
+                          onKeyDown={(evt) => onFilterChangeKeyDown(evt, name, key)}
                           checked = {
-                            label === filterCategory || label === filterType || label === filterLevel
+                            name === filterCategory || name === filterType || name === filterLevel
                           }
                           disabled = {
-                            label === 'Плёночная' && filterCategory === 'Видеокамера' ||
-                            label === 'Моментальная' && filterCategory === 'Видеокамера'
+                            name === filterTypeParamState.film.name && filterCategory === filterCategoryParamsState.videocamera.name ||
+                            name === filterTypeParamState.snapshot.name && filterCategory === filterCategoryParamsState.videocamera.name
                           }
                         />
                         <span className="custom-checkbox__icon"></span>

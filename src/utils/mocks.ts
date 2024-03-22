@@ -117,7 +117,8 @@ export const MockStore = (initialState?: Partial<State>): State => ({
     loadingCameras: false,
     oneCamera: mockCamera,
     loadingOneCamera: false,
-    similarCameras: []
+    similarCameras: [],
+    camerasFilteredByPrice: []
   },
   REVIEW: {
     reviews: [],

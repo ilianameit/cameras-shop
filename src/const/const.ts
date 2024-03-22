@@ -1,4 +1,4 @@
-import {Filters, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
+import { CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
 
 export enum AppRoutes {
   Root = '/',
@@ -76,11 +76,74 @@ export const FILTER_PRICE: {
   ]
 };
 
+export const filterCategoryParamsState: {
+  [Key in CameraCategoryParams]: {
+    name: Key;
+    label: CameraCategory;
+    text?: string;
+  }
+} = {
+  photocamera: {
+    name: 'photocamera',
+    label: 'Фотоаппарат',
+    text: 'Фотокамера'
+  },
+  videocamera: {
+    name: 'videocamera',
+    label: 'Видеокамера'
+  }
+};
+
+export const filterTypeParamState: {
+  [Key in CameraTypeParams]: {
+    name: Key;
+    label: CameraType;
+  }
+} = {
+  digital: {
+    name: 'digital',
+    label: 'Цифровая'
+  },
+  film: {
+    name: 'film',
+    label: 'Плёночная'
+  },
+  snapshot: {
+    name: 'snapshot',
+    label: 'Моментальная'
+  },
+  collection: {
+    name: 'collection',
+    label: 'Коллекционная'
+  }
+};
+
+export const filterLevelParamState: {
+  [Key in CameraLevelParams]: {
+    name: Key;
+    label: CameraLevel;
+  }
+} = {
+  zero: {
+    name: 'zero',
+    label: 'Нулевой'
+  },
+  ['non-professional']: {
+    name: 'non-professional',
+    label: 'Любительский'
+  },
+  professional: {
+    name: 'professional',
+    label: 'Профессиональный'
+  }
+};
+
+
 type FiltersState = {
   key: KeyFilters;
   header: string;
   filters: {
-      name: string;
+      name: FiltersParams;
       label: Filters;
       text?: string;
     }[];
@@ -91,55 +154,27 @@ export const FILTERS: FiltersState = [
     key: 'cat',
     header: 'Категория',
     filters: [
-      {
-        name: 'photocamera',
-        label: 'Фотоаппарат',
-        text: 'Фотокамера'
-      },
-      {
-        name: 'videocamera',
-        label: 'Видеокамера'
-      }
+      filterCategoryParamsState.photocamera,
+      filterCategoryParamsState.videocamera,
     ]
   },
   {
     key: 'type',
     header: 'Тип камеры',
     filters: [
-      {
-        name: 'digital',
-        label: 'Цифровая'
-      },
-      {
-        name: 'film',
-        label: 'Плёночная'
-      },
-      {
-        name: 'snapshot',
-        label: 'Моментальная'
-      },
-      {
-        name: 'collection',
-        label: 'Коллекционная'
-      }
+      filterTypeParamState.digital,
+      filterTypeParamState.film,
+      filterTypeParamState.snapshot,
+      filterTypeParamState.collection
     ]
   },
   {
     key: 'lvl',
     header: 'Уровень',
     filters: [
-      {
-        name: 'zero',
-        label: 'Нулевой'
-      },
-      {
-        name: 'non-professional',
-        label: 'Любительский'
-      },
-      {
-        name: 'professional',
-        label: 'Профессиональный'
-      }
+      filterLevelParamState.zero,
+      filterLevelParamState['non-professional'],
+      filterLevelParamState.professional
     ]
   }
 ];
