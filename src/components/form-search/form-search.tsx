@@ -130,6 +130,7 @@ function FormSearch(): JSX.Element {
             onChange={handleChangeSearchValue}
             value={searchValue}
             ref={inputRef}
+            aria-label='Поиск по сайту'
           />
         </label>
         {

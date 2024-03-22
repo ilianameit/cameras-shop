@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { withHistory, withStore } from '../../utils/mock-component';
 import { MockStore } from '../../utils/mocks';
 import FormSearch from './form-search';
@@ -17,7 +17,7 @@ describe('Component FormSearch', () => {
       expect(screen.getByRole('button', { name: /сбросить поиск/i})).toBeInTheDocument();
     });
 
-    it('should render input search with placeholder', ()=> {
+    it('should render input search with placeholder', () => {
       expect(screen.getByPlaceholderText(/Поиск по сайту/i)).toBeInTheDocument();
     });
 

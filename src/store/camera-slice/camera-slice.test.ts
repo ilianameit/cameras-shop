@@ -57,6 +57,7 @@ describe('CameraSlice', () => {
         loadingOneCamera: false,
         oneCamera: null,
         similarCameras: [],
+        camerasFilteredByPrice: [],
       };
 
       const result = camerasSlice.reducer(initialState, dropCamera());

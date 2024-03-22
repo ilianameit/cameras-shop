@@ -63,7 +63,13 @@ export type SortTypeByState = {
 };
 
 export type KeyFilters = 'cat' | 'type' | 'lvl';
+
+export type CameraCategoryParams = 'photocamera' | 'videocamera';
+export type CameraTypeParams = 'digital' | 'film' | 'snapshot' | 'collection';
+export type CameraLevelParams = 'zero' | 'non-professional' | 'professional';
+
 export type Filters = CameraCategory | CameraType | CameraLevel;
+export type FiltersParams = CameraCategoryParams | CameraTypeParams | CameraLevelParams;
 
 export type PriceFilterType = 'from' | 'to';
 export type InitialPriceType = {

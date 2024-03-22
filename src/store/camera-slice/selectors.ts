@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { NameSpace } from '../../const/const';
+import { NameSpace, filterCategoryParamsState, filterLevelParamState, filterTypeParamState } from '../../const/const';
 import { State } from '../../types/state';
-import { Camera, CameraCategory, CameraLevel, CameraType, SortTypeBy, SortTypeName } from '../../types/types';
+import { Camera, CameraCategoryParams, CameraLevelParams, CameraTypeParams, SortTypeBy, SortTypeName } from '../../types/types';
 
 export const getCameras = (state: State) => state[NameSpace.Camera].cameras;
 export const getPromo = (state: State) => state[NameSpace.Camera].promo;
@@ -16,7 +16,7 @@ export const getPriceFilteredCameras = (state: State) => state[NameSpace.Camera]
 
 export const getSortedCameras = createSelector(
   [
-    (cameras: Camera[], sortingType: SortTypeName | '' | 'null', sortingBy: SortTypeBy | '' | 'null') => ({sortingType, sortingBy, cameras})
+    (cameras: Camera[], sortingType: SortTypeName | undefined, sortingBy: SortTypeBy | undefined) => ({sortingType, sortingBy, cameras})
   ],
   ({sortingType, sortingBy, cameras}) => {
     switch (sortingType) {
@@ -40,27 +40,34 @@ export const getFilteredCameras = createSelector(
   [
     (
       cameras: Camera[],
-      filterCategory: CameraCategory | '' | 'null' | undefined | string,
-      filterType: CameraType | '' | 'null' | undefined | string, filterLevel: CameraLevel | '' | 'null' | undefined | string
-    ) => ({filterCategory, filterType, filterLevel, cameras})
+      filterCategoryParams: CameraCategoryParams | undefined | string,
+      filterTypeParams: CameraTypeParams | undefined | string,
+      filterLevelParams: CameraLevelParams | undefined | string
+    ) => ({filterCategoryParams, filterTypeParams, filterLevelParams, cameras})
   ],
-  ({filterCategory, filterType, filterLevel, cameras}) => cameras
-    .filter((camera) => {
-      if(!filterCategory || filterCategory === 'null') {
-        return true;
-      }
-      return camera.category === filterCategory;
-    })
-    .filter((camera) => {
-      if(!filterType || filterType === 'null') {
-        return true;
-      }
-      return camera.type === filterType;
-    })
-    .filter((camera) => {
-      if(!filterLevel || filterLevel === 'null') {
-        return true;
-      }
-      return camera.level === filterLevel;
-    })
+  ({filterCategoryParams, filterTypeParams, filterLevelParams, cameras}) => {
+    const filterCategories = filterCategoryParams ? filterCategoryParamsState[filterCategoryParams as CameraCategoryParams] : undefined;
+    const filterType = filterTypeParams ? filterTypeParamState[filterTypeParams as CameraTypeParams] : undefined;
+    const filterLevel = filterLevelParams ? filterLevelParamState[filterLevelParams as CameraLevelParams] : undefined;
+    return cameras
+      .filter((camera) => {
+
+        if(!filterCategories?.label) {
+          return true;
+        }
+        return camera.category === filterCategories.label;
+      })
+      .filter((camera) => {
+        if(!filterType?.label) {
+          return true;
+        }
+        return camera.type === filterType.label;
+      })
+      .filter((camera) => {
+        if(!filterLevel?.label) {
+          return true;
+        }
+        return camera.level === filterLevel.label;
+      });
+  }
 );

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { withStore } from '../../utils/mock-component';
 import CatalogFilter from './catalog-filter';
 
@@ -31,9 +31,9 @@ describe('Component CatalogFilter', () => {
         onFilterChange={onFilterChange}
         onFilterChangeKeyDown={onFilterChangeKeyDown}
         onResetFilterClick={onResetFilterClick}
-        filterCategory={'Видеокамера'}
-        filterType={'Коллекционная'}
-        filterLevel={''}
+        filterCategory={'videocamera'}
+        filterType={'collection'}
+        filterLevel={undefined}
         filterPriceValue={{
           from: 0,
           to: 0
@@ -55,8 +55,10 @@ describe('Component CatalogFilter', () => {
       expect(screen.getByText(/уровень/i)).toBeInTheDocument();
     });
 
-    it('should render reset button', () => {
-      expect(screen.getByRole('button', { name: /Сбросить фильтры/i})).toBeInTheDocument();
+    it('should render reset button', async () => {
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /сбросить фильтры/i})).toBeInTheDocument();
+      });
     });
   });
 

@@ -11,7 +11,7 @@ import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, u
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
 import { AppRoutes, NAME_KEY_ENTER } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
-import { Breadcrumb, Camera, SortTypeBy, SortTypeName, CameraCategory, CameraType, CameraLevel, Filters, KeyFilters, InitialPriceType, PriceFilterType } from '../../types/types';
+import { Breadcrumb, Camera, SortTypeBy, SortTypeName, KeyFilters, InitialPriceType, PriceFilterType, FiltersParams, CameraCategoryParams, CameraTypeParams, CameraLevelParams } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
 import CatalogSort from '../../components/catalog-sort/catalog-sort';
 import CatalogFilter from '../../components/catalog-filter/catalog-filter';
@@ -22,8 +22,8 @@ const MAX_COUNT_ITEM_PAGE = 9;
 
 type Params = {
   page: string;
-  sort?: SortTypeName | '' | 'null';
-  dir?: SortTypeBy | '' | 'null';
+  sort?: SortTypeName | undefined;
+  dir?: SortTypeBy | undefined;
   cat?: string | undefined ;
   type?: string | undefined;
   lvl?: string | undefined;
@@ -37,19 +37,16 @@ function CatalogScreenComponent(): JSX.Element {
 
   const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
 
-  const filterCategory: CameraCategory | '' | undefined | string = searchParams.get('cat') as CameraCategory | '' | undefined | string;
-  const filterType: CameraType | '' | undefined | string = searchParams.get('type') as CameraType | '' | undefined | string;
-  const filterLevel: CameraLevel | '' | undefined | string = searchParams.get('lvl') as CameraLevel | '' | undefined | string;
+  const filterCategory: CameraCategoryParams | undefined = searchParams.get('cat') as CameraCategoryParams | undefined;
+  const filterType: CameraTypeParams | undefined = searchParams.get('type') as CameraTypeParams | undefined;
+  const filterLevel: CameraLevelParams | undefined = searchParams.get('lvl') as CameraLevelParams | undefined;
 
-  const sortTypeName: SortTypeName | '' | 'null' = searchParams.get('sort') as SortTypeName | '' | 'null';
-  const sortTypeBy: SortTypeBy | '' | 'null' = searchParams.get('dir') as SortTypeBy | '' | 'null';
-
+  const sortTypeName: SortTypeName | undefined = searchParams.get('sort') as SortTypeName | undefined ;
+  const sortTypeBy: SortTypeBy | undefined = searchParams.get('dir') as SortTypeBy | undefined;
 
   const [camerasByPriceRange, setCamerasByPriceRange] = useState<Camera[]>(totalCameras);
-
   const filteredCameras = getFilteredCameras(camerasByPriceRange, filterCategory, filterType, filterLevel);
   const sortedPriceCameras = getSortedCameras(filteredCameras, 'sortPrice', 'up');
-
   const initialPrice = {
     from: sortedPriceCameras.length ? sortedPriceCameras[0].price : 0,
     to: sortedPriceCameras.length ? sortedPriceCameras[sortedPriceCameras.length - 1].price : 0,
@@ -76,7 +73,7 @@ function CatalogScreenComponent(): JSX.Element {
   const endItem = useMemo(() => currentPage * MAX_COUNT_ITEM_PAGE, [currentPage]);
 
   function getParams() {
-    return {
+    const params: Params = {
       page: '1',
       sort: sortTypeName,
       dir: sortTypeBy,
@@ -84,6 +81,14 @@ function CatalogScreenComponent(): JSX.Element {
       type: filterType,
       lvl: filterLevel,
     };
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (!value) {
+        delete params[key as keyof Params];
+      }
+    });
+
+    return params;
   }
 
   const params: Params = getParams();
@@ -98,10 +103,14 @@ function CatalogScreenComponent(): JSX.Element {
       if(key === 'from' && value < initialPriceValueFilter.from) {
 
         setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
+      } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
+
+        setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
       } else if(key === 'to' && value > initialPriceValueFilter.to) {
 
         setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
-      } else if(key === 'to' && value < initialPriceValueFilter.from) {
+      } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
 
         setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
         setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
@@ -179,7 +188,7 @@ function CatalogScreenComponent(): JSX.Element {
     setInitialPriceValueFilter(newFilterPrice);
   };
 
-  const handleFilterChange = (evt: ChangeEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => {
+  const handleFilterChange = (evt: ChangeEvent<HTMLInputElement>, filter: FiltersParams, key: KeyFilters) => {
     const target = evt.target;
     const updatedParams = { ...params };
 
@@ -206,7 +215,7 @@ function CatalogScreenComponent(): JSX.Element {
     updateFilters(updatedParams);
   };
 
-  const handleFilterChangeKeyDown = (event: KeyboardEvent<HTMLInputElement>, filter: Filters, key: KeyFilters) => {
+  const handleFilterChangeKeyDown = (event: KeyboardEvent<HTMLInputElement>, filter: FiltersParams, key: KeyFilters) => {
     const updatedParams = { ...params };
     if (event.code === NAME_KEY_ENTER) {
       updatedParams[key] = filter;
@@ -218,7 +227,7 @@ function CatalogScreenComponent(): JSX.Element {
   const handleSortTypeNameChange = (evt: ChangeEvent<HTMLInputElement>) => {
     params.sort = evt.target.id as SortTypeName;
 
-    if(!sortTypeBy || sortTypeBy === 'null') {
+    if(!sortTypeBy) {
       params.dir = 'up';
     }
     setSearchParams(params);
@@ -227,7 +236,7 @@ function CatalogScreenComponent(): JSX.Element {
   const handleSortTypeByChange = (evt: ChangeEvent<HTMLInputElement>) => {
     params.dir = evt.target.id as SortTypeBy;
 
-    if(!sortTypeName || sortTypeName === 'null') {
+    if(!sortTypeName) {
       params.sort = 'sortPrice';
     }
     setSearchParams(params);
