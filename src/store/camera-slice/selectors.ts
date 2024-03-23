@@ -13,6 +13,7 @@ export const getStatusLoadingOneCamera = (state: State) => state[NameSpace.Camer
 export const getSimilarCameras = (state: State) => state[NameSpace.Camera].similarCameras;
 
 export const getPriceFilteredCameras = (state: State) => state[NameSpace.Camera].camerasFilteredByPrice;
+export const getStatusLoadingPriceFiltered = (state: State) => state[NameSpace.Camera].camerasFilteredByPriceLoading;
 
 export const getSortedCameras = createSelector(
   [

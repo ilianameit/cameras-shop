@@ -3,7 +3,7 @@ import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
 import CardsList from '../../components/cards-list/cards-list';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getCameras, getFilteredCameras, getPriceFilteredCameras, getSortedCameras } from '../../store/camera-slice/selectors';
+import { getCameras, getFilteredCameras, getPriceFilteredCameras, getSortedCameras, getStatusLoadingPriceFiltered } from '../../store/camera-slice/selectors';
 import Banner from '../../components/banner/banner';
 import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -33,6 +33,7 @@ function CatalogScreenComponent(): JSX.Element {
   const dispatch = useAppDispatch();
   const totalCameras = useAppSelector(getCameras);
 
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
@@ -44,7 +45,22 @@ function CatalogScreenComponent(): JSX.Element {
   const sortTypeName: SortTypeName | undefined = searchParams.get('sort') as SortTypeName | undefined ;
   const sortTypeBy: SortTypeBy | undefined = searchParams.get('dir') as SortTypeBy | undefined;
 
+  const priceForTotalCamerasInitional = {
+    from: 0,
+    to: Infinity
+  };
+  const isLoadingPriceFiltered = useAppSelector(getStatusLoadingPriceFiltered);
+  const [priceForTotalCameras, ] = useState<InitialPriceType>(priceForTotalCamerasInitional);
+  const camerasFilteredByPriceRange = useAppSelector(getPriceFilteredCameras);
   const [camerasByPriceRange, setCamerasByPriceRange] = useState<Camera[]>(totalCameras);
+  useEffect(() => {
+    dispatch(fetchCamerasPriceAction(priceForTotalCameras));
+  }, [dispatch, priceForTotalCameras]);
+
+  useEffect(() => {
+    setCamerasByPriceRange(camerasFilteredByPriceRange);
+  }, [camerasFilteredByPriceRange]);
+
   const filteredCameras = getFilteredCameras(camerasByPriceRange, filterCategory, filterType, filterLevel);
   const sortedPriceCameras = getSortedCameras(filteredCameras, 'sortPrice', 'up');
   const initialPrice = {
@@ -52,21 +68,8 @@ function CatalogScreenComponent(): JSX.Element {
     to: sortedPriceCameras.length ? sortedPriceCameras[sortedPriceCameras.length - 1].price : 0,
   };
 
-
   const [filterPrice, setFilterPrice] = useState<InitialPriceType>(initialPrice);
-
-
-  useEffect(() => {
-    dispatch(fetchCamerasPriceAction(filterPrice));
-  }, [dispatch, filterPrice]);
-
-  const cameras = getSortedCameras(sortedPriceCameras, sortTypeName, sortTypeBy);
-
-  const camerasFilteredByPriceRange = useAppSelector(getPriceFilteredCameras);
-  useEffect(() => {
-    setCamerasByPriceRange(camerasFilteredByPriceRange);
-  }, [camerasFilteredByPriceRange]);
-
+  const cameras = getSortedCameras(filteredCameras, sortTypeName, sortTypeBy);
 
   const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
   const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
@@ -118,12 +121,13 @@ function CatalogScreenComponent(): JSX.Element {
 
         setFilterPriceValue({ ...filterPriceValue, [key]: value });
         setFilterPrice({ ...filterPrice, [key]: value });
+        dispatch(fetchCamerasPriceAction({...filterPrice, [key]: value}));
       }
     }
     if(value === 0 && !event.target.value) {
       setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+      dispatch(fetchCamerasPriceAction({...filterPrice, [key]: priceForTotalCameras[key]}));
     }
-
   }
 
   function handleChangeSetFilterPriceValue(event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) {
@@ -131,61 +135,69 @@ function CatalogScreenComponent(): JSX.Element {
   }
 
   const updateFilters = (updatedParams: Params) => {
-    const newFilteredCameras = getFilteredCameras(totalCameras, updatedParams.cat, updatedParams.type, updatedParams.lvl);
-    const newSortedPriceCameras = getSortedCameras(newFilteredCameras, 'sortPrice', 'up');
+    if(!isLoadingPriceFiltered){
 
-    const newFilterPrice = {
-      from: newSortedPriceCameras.length ? newSortedPriceCameras[0].price : 0,
-      to: newSortedPriceCameras.length ? newSortedPriceCameras[newSortedPriceCameras.length - 1].price : 0,
-    };
+      const newFilteredCameras = getFilteredCameras(totalCameras, updatedParams.cat, updatedParams.type, updatedParams.lvl);
+      const newSortedPriceCameras = getSortedCameras(newFilteredCameras, 'sortPrice', 'up');
 
-    if(filterPriceValue.from) {
+      const newFilterPrice = {
+        from: newSortedPriceCameras.length ? newSortedPriceCameras[0].price : 0,
+        to: newSortedPriceCameras.length ? newSortedPriceCameras[newSortedPriceCameras.length - 1].price : 0,
+      };
+      dispatch(fetchCamerasPriceAction(newFilterPrice));
+      if(filterPriceValue.from) {
 
-      if(filterPriceValue.from < newFilterPrice.from || filterPriceValue.from > newFilterPrice.to) {
-        setFilterPriceValue({ ...filterPriceValue, from: newFilterPrice.from });
-        setFilterPrice({...filterPrice, from: newFilterPrice.from});
-      } else {
-        setFilterPrice({...filterPrice, from: filterPriceValue.from});
+        if(filterPriceValue.from < newFilterPrice.from || filterPriceValue.from > newFilterPrice.to) {
+          setFilterPriceValue({ ...filterPriceValue, from: newFilterPrice.from });
+          setFilterPrice({...filterPrice, from: newFilterPrice.from});
+        } else {
+          setFilterPrice({...filterPrice, from: filterPriceValue.from});
+          dispatch(fetchCamerasPriceAction({...filterPrice, from: filterPriceValue.from}));
+        }
+
+        if(filterPriceValue.from && !filterPriceValue.to) {
+          setFilterPrice({...filterPrice, to: newFilterPrice.to});
+
+        }
       }
 
-      if(filterPriceValue.from && !filterPriceValue.to) {
-        setFilterPrice({...filterPrice, to: newFilterPrice.to});
+      if(filterPriceValue.to) {
+
+        if(filterPriceValue.to < newFilterPrice.from || filterPriceValue.to > newFilterPrice.to) {
+          setFilterPriceValue({ ...filterPriceValue, to: newFilterPrice.to });
+          setFilterPrice({...filterPrice, to: newFilterPrice.to});
+        } else {
+          setFilterPrice({...filterPrice, to: filterPriceValue.to});
+          dispatch(fetchCamerasPriceAction({...filterPrice, to: filterPriceValue.to}));
+
+        }
+
+        if(filterPriceValue.to && !filterPriceValue.from) {
+          setFilterPrice({...filterPrice, from: newFilterPrice.from});
+        }
       }
-    }
 
-    if(filterPriceValue.to) {
+      if(filterPriceValue.from && filterPriceValue.to) {
 
-      if(filterPriceValue.to < newFilterPrice.from || filterPriceValue.to > newFilterPrice.to) {
-        setFilterPriceValue({ ...filterPriceValue, to: newFilterPrice.to });
-        setFilterPrice({...filterPrice, to: newFilterPrice.to});
-      } else {
-        setFilterPrice({...filterPrice, to: filterPriceValue.to});
+        if(filterPriceValue.from >= newFilterPrice.from && filterPriceValue.from <= newFilterPrice.to && filterPriceValue.to <= newFilterPrice.to && filterPriceValue.to >= newFilterPrice.from){
+          setFilterPrice(filterPriceValue);
+          dispatch(fetchCamerasPriceAction(filterPriceValue));
+        } else {
+          setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.to});
+          setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.to});
+        }
       }
 
-      if(filterPriceValue.to && !filterPriceValue.from) {
-        setFilterPrice({...filterPrice, from: newFilterPrice.from});
+      if(!filterPriceValue.from && !filterPriceValue.to) {
+        setFilterPrice(newFilterPrice);
       }
-    }
 
-    if(filterPriceValue.from && filterPriceValue.to) {
-
-      if(filterPriceValue.from >= newFilterPrice.from && filterPriceValue.from <= newFilterPrice.to && filterPriceValue.to <= newFilterPrice.to && filterPriceValue.to >= newFilterPrice.from){
-        setFilterPrice(filterPriceValue);
-      } else {
-        setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.to});
-        setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.to});
+      if(isReset) {
+        setFilterPrice(newFilterPrice);
+        isReset = false;
       }
+      setInitialPriceValueFilter(newFilterPrice);
     }
-
-    if(!filterPriceValue.from && !filterPriceValue.to) {
-      setFilterPrice(newFilterPrice);
-    }
-
-    if(isReset) {
-      setFilterPrice(newFilterPrice);
-      isReset = false;
-    }
-    setInitialPriceValueFilter(newFilterPrice);
   };
 
   const handleFilterChange = (evt: ChangeEvent<HTMLInputElement>, filter: FiltersParams, key: KeyFilters) => {
