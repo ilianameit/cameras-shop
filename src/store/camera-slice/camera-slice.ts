@@ -11,6 +11,7 @@ type CamerasStateType = {
   loadingOneCamera: boolean;
   similarCameras: Camera[];
   camerasFilteredByPrice: Camera[];
+  camerasFilteredByPriceLoading: boolean;
 }
 
 const initialState: CamerasStateType = {
@@ -21,6 +22,7 @@ const initialState: CamerasStateType = {
   loadingOneCamera: false,
   similarCameras: [],
   camerasFilteredByPrice: [],
+  camerasFilteredByPriceLoading: false,
 };
 
 export const camerasSlice = createSlice({
@@ -42,6 +44,10 @@ export const camerasSlice = createSlice({
       })
       .addCase(fetchCamerasPriceAction.fulfilled, (state, action) => {
         state.camerasFilteredByPrice = action.payload;
+        state.camerasFilteredByPriceLoading = false;
+      })
+      .addCase(fetchCamerasPriceAction.pending, (state) => {
+        state.camerasFilteredByPriceLoading = true;
       })
       .addCase(fetchPromoAction.fulfilled, (state, action) => {
         state.promo = action.payload;

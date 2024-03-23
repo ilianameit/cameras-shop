@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { withStore } from '../../utils/mock-component';
 import CatalogFilter from './catalog-filter';
 
@@ -49,17 +49,14 @@ describe('Component CatalogFilter', () => {
 
     render(withStoreComponent);
 
-    it('should render categories of filter', () => {
+    it('should render categories of filter and reset button filter', () => {
       expect(screen.getByText(/категория/i)).toBeInTheDocument();
       expect(screen.getByText(/тип камеры/i)).toBeInTheDocument();
       expect(screen.getByText(/уровень/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /сбросить фильтры/i})).toBeInTheDocument();
     });
 
-    it('should render reset button', async () => {
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /сбросить фильтры/i})).toBeInTheDocument();
-      });
-    });
+
   });
 
 });

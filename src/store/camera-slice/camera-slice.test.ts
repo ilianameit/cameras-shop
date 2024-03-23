@@ -14,6 +14,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(expectedState, emptyAction);
@@ -30,7 +31,8 @@ describe('CameraSlice', () => {
         loadingOneCamera: false,
         oneCamera: null,
         similarCameras: [],
-        camerasFilteredByPrice:  []
+        camerasFilteredByPrice:  [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(undefined, emptyAction);
@@ -48,6 +50,7 @@ describe('CameraSlice', () => {
         oneCamera: mockCamera,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const expectedState = {
@@ -58,6 +61,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(initialState, dropCamera());
@@ -76,6 +80,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(
@@ -95,6 +100,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(
@@ -115,6 +121,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: mockCameras,
+        camerasFilteredByPriceLoading: false,
       };
       const result = camerasSlice.reducer(
         undefined,
@@ -134,6 +141,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
       const result = camerasSlice.reducer(
         undefined,
@@ -155,6 +163,7 @@ describe('CameraSlice', () => {
         oneCamera: mockCamera,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(
@@ -176,6 +185,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(
@@ -200,6 +210,7 @@ describe('CameraSlice', () => {
         oneCamera: null,
         similarCameras: [...mockCameras],
         camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       };
 
       const result = camerasSlice.reducer(

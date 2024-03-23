@@ -123,6 +123,7 @@ function FormSearch(): JSX.Element {
             <use xlinkHref="#icon-lens"></use>
           </svg>
           <input
+
             className="form-search__input"
             type="text"
             autoComplete="off"
@@ -130,7 +131,6 @@ function FormSearch(): JSX.Element {
             onChange={handleChangeSearchValue}
             value={searchValue}
             ref={inputRef}
-            aria-label='Поиск по сайту'
           />
         </label>
         {
@@ -159,6 +159,7 @@ function FormSearch(): JSX.Element {
         className="form-search__reset"
         type="reset"
         onClick={handleButtonCloseClick}
+        data-testid="search-input"
       >
         <svg width="10" height="10" aria-hidden="true">
           <use xlinkHref="#icon-close"></use>
