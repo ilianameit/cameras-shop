@@ -17,6 +17,7 @@ import CatalogSort from '../../components/catalog-sort/catalog-sort';
 import CatalogFilter from '../../components/catalog-filter/catalog-filter';
 import { fetchCamerasPriceAction } from '../../store/api-actions';
 import EmptyListProducts from '../../components/empty-list-products/empty-list-products';
+import LoadingScreen from '../loading-screen/loading-screen';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -32,7 +33,17 @@ type Params = {
 function CatalogScreenComponent(): JSX.Element {
   const dispatch = useAppDispatch();
   const totalCameras = useAppSelector(getCameras);
+  const isLoadingPriceFiltered = useAppSelector(getStatusLoadingPriceFiltered);
+  const camerasFilteredByPriceRange = useAppSelector(getPriceFilteredCameras);
 
+  const priceForTotalCamerasInitional = {
+    from: 0,
+    to: Infinity
+  };
+  const [priceForTotalCameras, ] = useState<InitialPriceType>(priceForTotalCamerasInitional);
+  useEffect(() => {
+    dispatch(fetchCamerasPriceAction(priceForTotalCameras));
+  }, [dispatch, priceForTotalCameras]);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -45,35 +56,29 @@ function CatalogScreenComponent(): JSX.Element {
   const sortTypeName: SortTypeName | undefined = searchParams.get('sort') as SortTypeName | undefined ;
   const sortTypeBy: SortTypeBy | undefined = searchParams.get('dir') as SortTypeBy | undefined;
 
-  const priceForTotalCamerasInitional = {
-    from: 0,
-    to: Infinity
-  };
-  const isLoadingPriceFiltered = useAppSelector(getStatusLoadingPriceFiltered);
-  const [priceForTotalCameras, ] = useState<InitialPriceType>(priceForTotalCamerasInitional);
-  const camerasFilteredByPriceRange = useAppSelector(getPriceFilteredCameras);
-  const [camerasByPriceRange, setCamerasByPriceRange] = useState<Camera[]>(totalCameras);
-  useEffect(() => {
-    dispatch(fetchCamerasPriceAction(priceForTotalCameras));
-  }, [dispatch, priceForTotalCameras]);
+  const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
+  const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
+  const endItem = useMemo(() => currentPage * MAX_COUNT_ITEM_PAGE, [currentPage]);
 
-  useEffect(() => {
-    setCamerasByPriceRange(camerasFilteredByPriceRange);
-  }, [camerasFilteredByPriceRange]);
+  const [filteredCameras, setFilteredCameras] = useState(getFilteredCameras(totalCameras, filterCategory, filterType, filterLevel));
 
-  const filteredCameras = getFilteredCameras(camerasByPriceRange, filterCategory, filterType, filterLevel);
   const sortedPriceCameras = getSortedCameras(filteredCameras, 'sortPrice', 'up');
+
+  useEffect(() => {
+    if(!isLoadingPriceFiltered) {
+      setFilteredCameras(getFilteredCameras(camerasFilteredByPriceRange, filterCategory, filterType, filterLevel));
+    }
+  }, [camerasFilteredByPriceRange, filterCategory, filterLevel, filterType, isLoadingPriceFiltered]);
+
   const initialPrice = {
     from: sortedPriceCameras.length ? sortedPriceCameras[0].price : 0,
     to: sortedPriceCameras.length ? sortedPriceCameras[sortedPriceCameras.length - 1].price : 0,
   };
 
   const [filterPrice, setFilterPrice] = useState<InitialPriceType>(initialPrice);
+
   const cameras = getSortedCameras(filteredCameras, sortTypeName, sortTypeBy);
 
-  const currentPage = useMemo(() => Number(searchParams.get('page') || 1), [searchParams]);
-  const beginItem = useMemo(() => (currentPage - 1) * MAX_COUNT_ITEM_PAGE, [currentPage]);
-  const endItem = useMemo(() => currentPage * MAX_COUNT_ITEM_PAGE, [currentPage]);
 
   function getParams() {
     const params: Params = {
@@ -126,7 +131,7 @@ function CatalogScreenComponent(): JSX.Element {
     }
     if(value === 0 && !event.target.value) {
       setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-      dispatch(fetchCamerasPriceAction({...filterPrice, [key]: priceForTotalCameras[key]}));
+      dispatch(fetchCamerasPriceAction({...filterPrice, [key]: initialPriceValueFilter[key]}));
     }
   }
 
@@ -135,28 +140,32 @@ function CatalogScreenComponent(): JSX.Element {
   }
 
   const updateFilters = (updatedParams: Params) => {
+    dispatch(fetchCamerasPriceAction(priceForTotalCameras));
     if(!isLoadingPriceFiltered){
-
-      const newFilteredCameras = getFilteredCameras(totalCameras, updatedParams.cat, updatedParams.type, updatedParams.lvl);
+      const newFilteredCameras = getFilteredCameras(camerasFilteredByPriceRange, updatedParams.cat, updatedParams.type, updatedParams.lvl);
       const newSortedPriceCameras = getSortedCameras(newFilteredCameras, 'sortPrice', 'up');
 
       const newFilterPrice = {
         from: newSortedPriceCameras.length ? newSortedPriceCameras[0].price : 0,
         to: newSortedPriceCameras.length ? newSortedPriceCameras[newSortedPriceCameras.length - 1].price : 0,
       };
-      dispatch(fetchCamerasPriceAction(newFilterPrice));
+
       if(filterPriceValue.from) {
 
         if(filterPriceValue.from < newFilterPrice.from || filterPriceValue.from > newFilterPrice.to) {
           setFilterPriceValue({ ...filterPriceValue, from: newFilterPrice.from });
           setFilterPrice({...filterPrice, from: newFilterPrice.from});
+          dispatch(fetchCamerasPriceAction({...filterPrice, from: newFilterPrice.from}));
         } else {
+
           setFilterPrice({...filterPrice, from: filterPriceValue.from});
           dispatch(fetchCamerasPriceAction({...filterPrice, from: filterPriceValue.from}));
         }
 
-        if(filterPriceValue.from && !filterPriceValue.to) {
+        if(!filterPriceValue.to) {
+
           setFilterPrice({...filterPrice, to: newFilterPrice.to});
+          dispatch(fetchCamerasPriceAction({...filterPrice, to: newFilterPrice.to}));
 
         }
       }
@@ -166,14 +175,16 @@ function CatalogScreenComponent(): JSX.Element {
         if(filterPriceValue.to < newFilterPrice.from || filterPriceValue.to > newFilterPrice.to) {
           setFilterPriceValue({ ...filterPriceValue, to: newFilterPrice.to });
           setFilterPrice({...filterPrice, to: newFilterPrice.to});
+          dispatch(fetchCamerasPriceAction({...filterPrice, to: newFilterPrice.to}));
         } else {
           setFilterPrice({...filterPrice, to: filterPriceValue.to});
           dispatch(fetchCamerasPriceAction({...filterPrice, to: filterPriceValue.to}));
 
         }
 
-        if(filterPriceValue.to && !filterPriceValue.from) {
+        if(!filterPriceValue.from) {
           setFilterPrice({...filterPrice, from: newFilterPrice.from});
+          dispatch(fetchCamerasPriceAction({...filterPrice, from: newFilterPrice.from}));
         }
       }
 
@@ -185,6 +196,7 @@ function CatalogScreenComponent(): JSX.Element {
         } else {
           setFilterPrice({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.to});
           setFilterPriceValue({...filterPriceValue, from: newFilterPrice.from, to: newFilterPrice.to});
+          dispatch(fetchCamerasPriceAction({...filterPrice, from: newFilterPrice.from, to: newFilterPrice.to}));
         }
       }
 
@@ -194,6 +206,8 @@ function CatalogScreenComponent(): JSX.Element {
 
       if(isReset) {
         setFilterPrice(newFilterPrice);
+        dispatch(fetchCamerasPriceAction(priceForTotalCameras));
+        setFilterPriceValue({from: 0, to: 0});
         isReset = false;
       }
       setInitialPriceValueFilter(newFilterPrice);
@@ -222,7 +236,6 @@ function CatalogScreenComponent(): JSX.Element {
     delete updatedParams.type;
     delete updatedParams.lvl;
     isReset = true;
-    setFilterPriceValue({from: 0, to: 0});
     setSearchParams(updatedParams);
     updateFilters(updatedParams);
   };
@@ -271,6 +284,10 @@ function CatalogScreenComponent(): JSX.Element {
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
   const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог'}];
+
+  if(isLoadingPriceFiltered) {
+    return <LoadingScreen />;
+  }
 
   return(
     <div className="wrapper">
