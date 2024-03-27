@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { NameSpace, filterCategoryParamsState, filterLevelParamState, filterTypeParamState } from '../../const/const';
 import { State } from '../../types/state';
-import { Camera, CameraCategoryParams, CameraLevelParams, CameraTypeParams, SortTypeBy, SortTypeName } from '../../types/types';
+import { Camera, CameraCategoryParams, CameraLevelParams, CameraTypeParams, InitialPriceType, SortTypeBy, SortTypeName } from '../../types/types';
 
 export const getCameras = (state: State) => state[NameSpace.Camera].cameras;
 export const getPromo = (state: State) => state[NameSpace.Camera].promo;
@@ -71,4 +71,15 @@ export const getFilteredCameras = createSelector(
         return camera.level === filterLevel.label;
       });
   }
+);
+
+export const getFilteredCamerasRangePrice = createSelector(
+  [
+    (
+      cameras: Camera[],
+      priceRange: InitialPriceType,
+    ) => ({priceRange, cameras})
+  ],
+  ({cameras, priceRange}) => cameras
+    .filter((camera) => camera.price >= priceRange.from && camera.price <= priceRange.to)
 );
