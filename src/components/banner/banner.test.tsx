@@ -14,7 +14,8 @@ describe('Component Banner', () => {
         oneCamera: null,
         loadingOneCamera: false,
         similarCameras: [],
-        camerasFilteredByPrice: []
+        camerasFilteredByPrice: [],
+        camerasFilteredByPriceLoading: false,
       }}));
 
       const preparedComponent = withHistory(withStoreComponent);
