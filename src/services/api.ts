@@ -8,7 +8,13 @@ type DetailMessageType = {
 
 const StatusCodeMapping: Record<number, boolean> = {
   [StatusCodes.BAD_REQUEST]: true,
-  [StatusCodes.NOT_FOUND]: true
+  [StatusCodes.NOT_FOUND]: true,
+  [StatusCodes.GATEWAY_TIMEOUT]: true,
+  [StatusCodes.BAD_GATEWAY]: true,
+  [StatusCodes.EXPECTATION_FAILED]: true,
+  [StatusCodes.FORBIDDEN]: true,
+  [StatusCodes.NOT_ACCEPTABLE]: true,
+  [StatusCodes.PRECONDITION_REQUIRED]: true,
 };
 
 const shouldDisplayError = (response: AxiosResponse) => !!StatusCodeMapping[response.status];
@@ -26,8 +32,8 @@ export const createAPI = (): AxiosInstance => {
     (response) => response,
     (error: AxiosError<DetailMessageType>) => {
       if (error.response && shouldDisplayError(error.response)) {
-        const detailMessage = (error.response.data);
-        toast.warn(detailMessage.error);
+        const detailMessage = (error.message);
+        toast.warn(detailMessage);
       }
 
       throw error;
