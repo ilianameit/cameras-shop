@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { NameSpace, filterCategoryParamsState, filterLevelParamState, filterTypeParamState } from '../../const/const';
 import { State } from '../../types/state';
-import { Camera, CameraCategoryParams, CameraLevelParams, CameraTypeParams, InitialPriceType, SortTypeBy, SortTypeName } from '../../types/types';
+import { Camera, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, InitialPriceType, SortTypeBy, SortTypeName } from '../../types/types';
 
 export const getCameras = (state: State) => state[NameSpace.Camera].cameras;
 export const getPromo = (state: State) => state[NameSpace.Camera].promo;
@@ -48,8 +48,18 @@ export const getFilteredCameras = createSelector(
   ],
   ({filterCategoryParams, filterTypeParams, filterLevelParams, cameras}) => {
     const filterCategories = filterCategoryParams ? filterCategoryParamsState[filterCategoryParams as CameraCategoryParams] : undefined;
-    const filterType = filterTypeParams ? filterTypeParamState[filterTypeParams as CameraTypeParams] : undefined;
-    const filterLevel = filterLevelParams ? filterLevelParamState[filterLevelParams as CameraLevelParams] : undefined;
+
+    const filterType: CameraType[] = [];
+    const existingValuesTypes = filterTypeParams?.split(',');
+    existingValuesTypes?.forEach((type) => {
+      filterType.push(filterTypeParamState[type as CameraTypeParams].label);
+    });
+
+    const filterLevel: CameraLevel[] = [];
+    const existingValuesLevels = filterLevelParams?.split(',');
+    existingValuesLevels?.forEach((level) => {
+      filterLevel.push(filterLevelParamState[level as CameraLevelParams].label);
+    });
     return cameras
       .filter((camera) => {
 
@@ -59,16 +69,18 @@ export const getFilteredCameras = createSelector(
         return camera.category === filterCategories.label;
       })
       .filter((camera) => {
-        if(!filterType?.label) {
+        if(!filterType.length) {
           return true;
         }
-        return camera.type === filterType.label;
+
+        return filterType.some((type) => camera.type.includes(type));
       })
       .filter((camera) => {
-        if(!filterLevel?.label) {
+        if(!filterLevel.length) {
           return true;
         }
-        return camera.level === filterLevel.label;
+        return filterLevel.some((level) => camera.level.includes(level));
+
       });
   }
 );

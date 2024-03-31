@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { fetchCamerasAction } from './store/api-actions';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 store.dispatch(fetchCamerasAction());
 
