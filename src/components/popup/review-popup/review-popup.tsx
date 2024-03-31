@@ -1,9 +1,8 @@
 import { Fragment, KeyboardEvent, memo, useEffect, useRef, useState } from 'react';
 import { NAME_KEY_TAB, ratingStarsName } from '../../../const/const';
-import { Rating, ReviewAdding } from '../../../types/types';
+import { Id, Rating, ReviewAdding } from '../../../types/types';
 import { useForm } from 'react-hook-form';
 import classNames from 'classnames';
-import { Id } from 'react-toastify';
 import { fetchAddReviewAction } from '../../../store/api-actions';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { getAddReviewSuccessStatus, getStatusLoadingReview } from '../../../store/review/selectors';
@@ -90,7 +89,7 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
 
   function handleFormSubmit(dataValues: FormValues) {
     const data: ReviewAdding = {
-      cameraId: Number(idCamera),
+      cameraId: idCamera,
       userName: dataValues['user-name'],
       advantage: dataValues['user-plus'],
       disadvantage: dataValues['user-minus'],
