@@ -68,6 +68,7 @@ function CatalogScreenComponent(): JSX.Element {
   }, [isLoadingPriceFiltered, totalCamerasFilteredByPriceRange]);
 
   const filteredCameras = getFilteredCameras(camerasByPrice, filterCategory, filterType, filterLevel);
+
   const sortedPriceCameras = getSortedCameras(filteredCameras, 'sortPrice', 'up');
 
   const initialPrice = {
@@ -107,39 +108,42 @@ function CatalogScreenComponent(): JSX.Element {
   const [filterPriceValue, setFilterPriceValue] = useState<InitialPriceType>({from: 0, to: 0});
   const [initialPriceValueFilter, setInitialPriceValueFilter] = useState<InitialPriceType>(initialPrice);
 
-  function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement>, key: PriceFilterType) {
-    const value = Number(event.target.value);
-    if(value > 0 && event.target.value) {
+  function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>, key: PriceFilterType) {
+    if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'focusout') {
 
-      setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-      changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+      const value = Number((event.target as HTMLInputElement).value);
+      if(value > 0 && (event.target as HTMLInputElement).value) {
 
-      if(key === 'from' && value < initialPriceValueFilter.from) {
+        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
 
-        setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
+        if(key === 'from' && value < initialPriceValueFilter.from) {
 
-      } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
+          setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
 
-        setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+        } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
 
-      } else if(key === 'to' && value > initialPriceValueFilter.to) {
+          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
-      } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
+        } else if(key === 'to' && value > initialPriceValueFilter.to) {
 
-        setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+          setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
+        } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
 
-      } else{
+          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        setFilterPriceValue({ ...filterPriceValue, [key]: value });
-        setFilterPrice({ ...filterPrice, [key]: value });
-        changeFilterPriceCameras({ ...filterPrice, [key]: value });
+        } else{
 
+          setFilterPriceValue({ ...filterPriceValue, [key]: value });
+          setFilterPrice({ ...filterPrice, [key]: value });
+          changeFilterPriceCameras({ ...filterPrice, [key]: value });
+
+        }
       }
-    }
-    if(value === 0 && !event.target.value) {
-      setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-      changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+      if(value === 0 && !(event.target as HTMLInputElement).value) {
+        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+      }
     }
   }
 
@@ -171,10 +175,38 @@ function CatalogScreenComponent(): JSX.Element {
     const updatedParams = { ...params };
 
     if(target.checked) {
-      updatedParams[key] = filter;
+      if(key === 'cat'){
+        delete updatedParams['type'];
+        updatedParams[key] = filter;
+      } else {
+        if (!Object.prototype.hasOwnProperty.call(updatedParams, key)) {
+          updatedParams[key] = filter;
+        } else {
+          const existingValues = updatedParams[key];
+          updatedParams[key] = existingValues ? `${existingValues},${filter}` : existingValues;
+        }
+      }
 
     } else {
-      delete updatedParams[key];
+      if(key === 'cat') {
+        delete updatedParams[key];
+      } else {
+        if (Object.prototype.hasOwnProperty.call(updatedParams, key)) {
+
+          const existingValues = updatedParams[key]?.split(',') || [];
+
+          const index = existingValues.indexOf(filter);
+          if (index !== -1) {
+            existingValues.splice(index, 1);
+            if (existingValues.length === 0) {
+              delete updatedParams[key];
+            } else {
+              updatedParams[key] = existingValues.join(',');
+            }
+          }
+
+        }
+      }
     }
 
     updateFilters(updatedParams);

@@ -10,12 +10,18 @@ type CatalogFilterProps = {
   filterType: CameraTypeParams | undefined;
   filterLevel: CameraLevelParams | undefined;
   filterPriceValue: InitialPriceType;
-  onChangeFilterPrice: (event: FocusEvent<HTMLInputElement>, key: PriceFilterType) => void;
+  onChangeFilterPrice: (event: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>, key: PriceFilterType) => void;
   initialFilterPrice: InitialPriceType;
   onChangeSetFilterPriceValue: (event: ChangeEvent<HTMLInputElement>, key: PriceFilterType) => void;
 }
 
 function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filterType, filterLevel, onFilterChangeKeyDown, initialFilterPrice, filterPriceValue, onChangeFilterPrice, onChangeSetFilterPriceValue}: CatalogFilterProps): JSX.Element {
+
+  const isNameChecked = (stringToSplit : FiltersParams | undefined, name : FiltersParams) => {
+    const arrayOfStrings = stringToSplit ? stringToSplit.split(',') : [];
+    return arrayOfStrings.includes(name);
+  };
+
   return(
     <div className="catalog__aside">
       <div className="catalog-filter">
@@ -41,6 +47,7 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
                           onBlur={(evt) => onChangeFilterPrice(evt, key)}
                           onChange={(evt) => onChangeSetFilterPriceValue(evt, key)}
                           value={priceValue > 0 ? priceValue : ''}
+                          onKeyDown={(evt) => onChangeFilterPrice(evt, key)}
                         />
                       </label>
                     </div>
@@ -64,7 +71,7 @@ function CatalogFilter({onFilterChange, onResetFilterClick, filterCategory, filt
                           onChange={(evt) => onFilterChange(evt, name, key)}
                           onKeyDown={(evt) => onFilterChangeKeyDown(evt, name, key)}
                           checked = {
-                            name === filterCategory || name === filterType || name === filterLevel
+                            name === filterCategory || isNameChecked(filterType, name) || isNameChecked(filterLevel, name)
                           }
                           disabled = {
                             name === filterTypeParamState.film.name && filterCategory === filterCategoryParamsState.videocamera.name ||
