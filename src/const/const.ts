@@ -200,3 +200,13 @@ export const breadcrumbNames: Record<BreadcrumbNamesKeyType, Breadcrumb> = {
   basket: breadcrumbBasket,
 };
 
+export enum ChangeProductCount {
+  Increase = 'increase',
+  Decrease = 'decrease',
+  SetCount = 'setCount',
+}
+
+export const MIN_COUNT_ITEM_BASKET = 1;
+export const MAX_COUNT_ITEM_BASKET = 99;
+
+export const NAME_KEY_CAMERAS_STORAGE = 'cameras';

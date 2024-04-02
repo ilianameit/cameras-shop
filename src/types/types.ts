@@ -76,3 +76,7 @@ export type InitialPriceType = {
   from: Camera['price'];
   to: Camera['price'];
 };
+
+export type CameraBasket = Camera & {
+  count: number;
+};
