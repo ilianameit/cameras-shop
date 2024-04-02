@@ -9,7 +9,7 @@ import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
 import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { AppRoutes, NAME_KEY_ENTER } from '../../const/const';
+import { NAME_KEY_ENTER, breadcrumbCatalog, breadcrumbNames } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import { Breadcrumb, Camera, SortTypeBy, SortTypeName, KeyFilters, InitialPriceType, PriceFilterType, FiltersParams, CameraCategoryParams, CameraTypeParams, CameraLevelParams } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
@@ -266,7 +266,7 @@ function CatalogScreenComponent(): JSX.Element {
   }, []);
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
-  const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог'}];
+  const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, {title: breadcrumbCatalog.title}];
 
   return(
     <div className="wrapper">
@@ -316,7 +316,7 @@ function CatalogScreenComponent(): JSX.Element {
               onClose={handleCloseBuyItemClick}
               firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onClose={handleCloseBuyItemClick} isCardItem={false}/>
             </ModalWindow>)
         }
       </main>
