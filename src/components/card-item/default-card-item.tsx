@@ -31,7 +31,7 @@ function DefaultCardItemComponent({camera, onBuyClick}: DefaultCardItemProps): J
           <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{reviewCount}</p>
         </div>
         <p className="product-card__title">{name}</p>
-        <p className="product-card__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)} ₽
+        <p className="product-card__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)}
         </p>
       </div>
       <div className="product-card__buttons">

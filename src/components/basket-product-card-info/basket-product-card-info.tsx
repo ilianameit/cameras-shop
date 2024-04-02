@@ -36,11 +36,11 @@ function BasketProductCardInfo({camera, screenType}: BasketProductCardInfoProps)
           <li className="basket-item__list-item">{level} уровень</li>
         </ul>
         {
-          screenType === 'addItem' && <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)} ₽</p>
+          screenType === 'addItem' && <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)}</p>
         }
       </div>
       {
-        screenType === 'basket' && <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)} ₽</p>
+        screenType === 'basket' && <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{returnFormatedPrice(price)}</p>
       }
     </Fragment>
   );

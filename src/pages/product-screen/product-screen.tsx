@@ -131,7 +131,7 @@ function ProductScreen(): JSX.Element {
                   </div>
                   <p className="product__price">
                     <span className="visually-hidden">Цена:</span>
-                    {returnFormatedPrice(price)} ₽
+                    {returnFormatedPrice(price)}
                   </p>
                   <button
                     className="btn btn--purple"
