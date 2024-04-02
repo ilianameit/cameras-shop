@@ -12,7 +12,7 @@ import NotFoundScreen from '../not-found-screen/not-found-screen';
 import RatingStarsList from '../../components/rating-stars-list/rating-stars-list';
 import { returnFormatedPrice } from '../../utils/common';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { AppRoutes, TabName } from '../../const/const';
+import { TabName, breadcrumbNames } from '../../const/const';
 import { Breadcrumb, Camera, TabType } from '../../types/types';
 import ProductTabs from '../../components/product-tabs/product-tabs';
 import ProductSimilarSlider from '../../components/product-similar-slider/product-similar-slider';
@@ -28,6 +28,7 @@ function ProductScreen(): JSX.Element {
   const {id} = useParams();
 
   const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
+  const focusItemSimilarPopup = useRef<HTMLButtonElement | null>(null);
 
   const [tabParams, setTabParams] = useSearchParams();
   const currentTab = useMemo(() => tabParams.get('tab') as TabType || TabName.Description, [tabParams]);
@@ -37,9 +38,11 @@ function ProductScreen(): JSX.Element {
   const [cameraCard, setCameraCard] = useState<Camera | null>(null);
 
   const [showReviewModal, setReviewModal] = useState(false);
-  const similarCameras = useAppSelector(getSimilarCameras);
 
-  const handleAddItemModal = useCallback((cameraCardModal: Camera) => {
+  const similarCameras = useAppSelector(getSimilarCameras);
+  const [showBuySimilarItemModal, setBuySimilarItemModal] = useState(false);
+
+  const handleAddItemClick = useCallback((cameraCardModal: Camera) => {
     setAddItemModal(true);
     setCameraCard(cameraCardModal);
   }, []);
@@ -52,6 +55,11 @@ function ProductScreen(): JSX.Element {
   const handleAddReviewModal = useCallback(() => setReviewModal(true), []);
   const handleCloseAddReviewModal = useCallback(() => setReviewModal(false), []);
 
+  const handleCloseBuySimilarItemModal = useCallback(() => setBuySimilarItemModal(false), []);
+  const handleBuySimilarItemClick = useCallback((cameraSimilarModal: Camera) => {
+    setBuySimilarItemModal(true);
+    setCameraCard(cameraSimilarModal);
+  }, []);
 
   useEffect(() => {
     if(!id) {
@@ -82,8 +90,7 @@ function ProductScreen(): JSX.Element {
   const {id: idCamera, name, reviewCount, rating, price, description, vendorCode, category, type, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x} = camera;
   const features = { vendorCode, category, type, level };
 
-  const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог', href: AppRoutes.Root}, {title: name}];
-
+  const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, breadcrumbNames.catalog, {title: name}];
 
   return(
     <div className="wrapper">
@@ -108,7 +115,7 @@ function ProductScreen(): JSX.Element {
                       srcSet={`/${previewImg2x} 2x`}
                       width={560}
                       height={480}
-                      alt={name}
+                      alt={`${category} «${name}»`}
                     />
                   </picture>
                 </div>
@@ -130,7 +137,7 @@ function ProductScreen(): JSX.Element {
                     className="btn btn--purple"
                     type="button"
                     data-testid="button-to-basket"
-                    onClick={() => handleAddItemModal(camera)}
+                    onClick={() => handleAddItemClick(camera)}
                   >
                     <svg width="24" height="16" aria-hidden="true">
                       <use xlinkHref="#icon-add-basket"></use>
@@ -144,7 +151,7 @@ function ProductScreen(): JSX.Element {
           </div>
           {
             similarCameras.length > 0 &&
-              <ProductSimilarSlider onBuyClick={handleAddItemModal} similarCameras={similarCameras}/>
+              <ProductSimilarSlider onBuyClick={handleBuySimilarItemClick} similarCameras={similarCameras}/>
           }
           <ReviewList id={idCamera} onReviewClick={handleAddReviewModal}/>
         </div>
@@ -155,7 +162,7 @@ function ProductScreen(): JSX.Element {
               onClose={handleCloseAddItemModal}
               firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onClose={handleCloseAddItemModal} isCardItem/>
             </ModalWindow>)
         }
         {
@@ -169,6 +176,16 @@ function ProductScreen(): JSX.Element {
               onClose={handleCloseAddReviewModal}
             />
           </ModalWindow>
+        }
+        {
+          showBuySimilarItemModal && (
+            <ModalWindow
+              title='Добавить товар в корзину'
+              onClose={handleCloseBuySimilarItemModal}
+              firstFocusElement={focusItemSimilarPopup}
+            >
+              <AddItemPopup camera={cameraCard} focusElement={focusItemSimilarPopup} onClose={handleCloseBuySimilarItemModal} isCardItem={false}/>
+            </ModalWindow>)
         }
       </main>
       <ButtonUp />
