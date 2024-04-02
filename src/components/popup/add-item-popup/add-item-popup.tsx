@@ -7,6 +7,7 @@ import ModalWindow from '../../modal-window/modal-window';
 import { addToCart, changeStatusAddToCart } from '../../../store/camera-slice/camera-slice';
 import AddItemSeccessPopup from '../add-item-seccess-popup/add-item-seccess-popup';
 import BasketProductCardInfo from '../../basket-product-card-info/basket-product-card-info';
+import NotFoundScreen from '../../../pages/not-found-screen/not-found-screen';
 
 type AddItemPopupComponentProps = {
   camera: Camera | null;
@@ -28,7 +29,7 @@ function AddItemPopupComponent({camera, focusElement, onClose, isCardItem}: AddI
   }, [focusElement]);
 
   if (!camera) {
-    return <div>Loading...</div>;
+    return <NotFoundScreen />;
   }
 
   function handleAddToCart() {
