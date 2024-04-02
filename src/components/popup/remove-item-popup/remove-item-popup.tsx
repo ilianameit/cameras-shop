@@ -21,6 +21,9 @@ function RemoveItemPopup(): JSX.Element {
                 <li className="basket-item__list-item">Любительский уровень</li>
               </ul>
             </div>
+            {
+              //  <BasketProductCardInfo camera={camera} screenType={'removeItem'} />
+            }
           </div>
           <div className="modal__buttons">
             <button className="btn btn--purple modal__btn modal__btn--half-width" type="button">Удалить
