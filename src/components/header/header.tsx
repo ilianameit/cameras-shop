@@ -34,7 +34,7 @@ function HeaderComponent(): JSX.Element {
             <use xlinkHref="#icon-basket"></use>
           </svg>
           {
-            cameras.length > 0 && <span className="header__basket-count">{cameras.length}</span>
+            cameras.length > 0 && <span className="header__basket-count">{cameras.reduce((prev, current) => prev + current.count, 0)}</span>
           }
         </Link>
       </div>
