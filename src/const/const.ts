@@ -1,4 +1,4 @@
-import { CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
+import { Breadcrumb, CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
 
 export enum AppRoutes {
   Root = '/',
@@ -178,3 +178,25 @@ export const FILTERS: FiltersState = [
     ]
   }
 ];
+
+export const breadcrumbMain: Breadcrumb = {
+  title: 'Главная',
+  href: AppRoutes.Root
+};
+export const breadcrumbCatalog: Breadcrumb = {
+  title: 'Каталог',
+  href: AppRoutes.Root
+};
+
+export const breadcrumbBasket: Breadcrumb = {
+  title: 'Корзина',
+};
+
+type BreadcrumbNamesKeyType = 'main' | 'catalog' | 'basket';
+
+export const breadcrumbNames: Record<BreadcrumbNamesKeyType, Breadcrumb> = {
+  main: breadcrumbMain,
+  catalog: breadcrumbCatalog,
+  basket: breadcrumbBasket,
+};
+
