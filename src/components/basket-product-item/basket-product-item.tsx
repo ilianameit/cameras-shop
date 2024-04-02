@@ -1,32 +1,38 @@
-import { Camera } from '../../types/types';
+import { ChangeEvent } from 'react';
+import { Camera, CameraBasket } from '../../types/types';
+import { returnFormatedPrice } from '../../utils/common';
 import BasketProductCardInfo from '../basket-product-card-info/basket-product-card-info';
+import BasketProductCount from '../basket-product-count/basket-product-count';
 
 type BasketProductItemProps = {
-  camera: Camera;
-  onDeleteButtonClick: (id: Camera['id']) => void;
-
+  camera: CameraBasket;
+  onRemoveClick: (camera: Camera) => void;
+  onIncreaseButtonClick: (id: CameraBasket['id']) => void;
+  onDecreaseButtonClick: (id: CameraBasket['id']) => void;
+  onCountChange: (event: ChangeEvent<HTMLInputElement>, id: CameraBasket['id']) => void;
 }
-function BasketProductItem({camera, onDeleteButtonClick}: BasketProductItemProps): JSX.Element {
-  const {previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, category, name, vendorCode} = camera;
+
+function BasketProductItem({camera, onRemoveClick, onIncreaseButtonClick, onDecreaseButtonClick, onCountChange }: BasketProductItemProps): JSX.Element {
+  const {id, count, price} = camera;
   return(
     <li className="basket-item">
       <BasketProductCardInfo camera={camera} screenType={'basket'} />
-      <div className="quantity">
-        <button className="btn-icon btn-icon--prev" aria-label="уменьшить количество товара">
-          <svg width="7" height="12" aria-hidden="true">
-            <use xlinkHref="#icon-arrow"></use>
-          </svg>
-        </button>
-        <label className="visually-hidden" htmlFor="counter1"></label>
-        <input type="number" id="counter1" value="1" min="1" max="99" aria-label="количество товара" />
-        <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-          <svg width="7" height="12" aria-hidden="true">
-            <use xlinkHref="#icon-arrow"></use>
-          </svg>
-        </button>
+      <BasketProductCount
+        count={count}
+        id={id}
+        onIncreaseButtonClick={onIncreaseButtonClick}
+        onDecreaseButtonClick={onDecreaseButtonClick}
+        onCountChange={onCountChange}
+      />
+      <div className="basket-item__total-price">
+        <span className="visually-hidden">Общая цена:</span>{returnFormatedPrice(count * price)}
       </div>
-      <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>37 940 ₽</div>
-      <button className="cross-btn" type="button" aria-label="Удалить товар">
+      <button
+        className="cross-btn"
+        type="button"
+        aria-label="Удалить товар"
+        onClick={() => onRemoveClick(camera)}
+      >
         <svg width="10" height="10" aria-hidden="true">
           <use xlinkHref="#icon-close"></use>
         </svg>
