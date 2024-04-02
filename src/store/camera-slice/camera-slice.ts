@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../const/const';
 import { Camera, Item } from '../../types/types';
 import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
@@ -12,6 +12,8 @@ type CamerasStateType = {
   similarCameras: Camera[];
   camerasFilteredByPrice: Camera[];
   camerasFilteredByPriceLoading: boolean;
+  cart: Camera[];
+  isSuccessAddToCart: boolean;
 }
 
 const initialState: CamerasStateType = {
@@ -23,6 +25,8 @@ const initialState: CamerasStateType = {
   similarCameras: [],
   camerasFilteredByPrice: [],
   camerasFilteredByPriceLoading: false,
+  cart: [],
+  isSuccessAddToCart: false,
 };
 
 export const camerasSlice = createSlice({
@@ -31,7 +35,18 @@ export const camerasSlice = createSlice({
   reducers: {
     dropCamera: (state) => {
       state.oneCamera = null;
-    }
+    },
+    changeStatusAddToCart: (state) => {
+      state.isSuccessAddToCart = !state.isSuccessAddToCart;
+    },
+    addToCart: (state, action: PayloadAction<Camera>) => {
+      state.cart.push(action.payload);
+      state.isSuccessAddToCart = !state.isSuccessAddToCart;
+    },
+    deleteFromCart: (state, action: PayloadAction<Camera['id']>) => {
+      state.cart = state.cart.filter((product) => product.id !== action.payload);
+    },
+
   },
   extraReducers(builder) {
     builder
@@ -67,4 +82,4 @@ export const camerasSlice = createSlice({
   },
 });
 
-export const {dropCamera} = camerasSlice.actions;
+export const { dropCamera, addToCart, changeStatusAddToCart, deleteFromCart } = camerasSlice.actions;
