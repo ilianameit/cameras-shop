@@ -8,7 +8,7 @@ type ModalWindowProps = {
   isResponse?: boolean;
   onClose: () => void;
   children: ReactNode;
-  firstFocusElement?: RefObject<HTMLButtonElement | HTMLInputElement>;
+  firstFocusElement?: RefObject<HTMLButtonElement | HTMLInputElement | HTMLAnchorElement>;
 }
 
 function ModalWindowComponent({title, onClose, children, firstFocusElement, isResponse = false}: ModalWindowProps): JSX.Element{
