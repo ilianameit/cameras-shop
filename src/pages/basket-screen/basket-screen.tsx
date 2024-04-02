@@ -1,116 +1,33 @@
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
+import { Breadcrumb } from '../../types/types';
+import { breadcrumbBasket, breadcrumbNames } from '../../const/const';
+import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getCamerasFromCart } from '../../store/camera-slice/selectors';
+import BasketProductItem from '../../components/basket-product-item/basket-product-item';
 
 function BasketScreen(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, breadcrumbNames.catalog, {title: breadcrumbBasket.title}];
+  const cameras = useAppSelector(getCamerasFromCart);
   return(
     <div className="wrapper">
       <Helmet>Backet</Helmet>
       <Header />
       <main>
         <div className="page-content">
-          <div className="breadcrumbs">
-            <div className="container">
-              <ul className="breadcrumbs__list">
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="index.html">Главная
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="catalog.html">Каталог
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Корзина</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          {<Breadcrumbs breadcrumbs={breadcrumbsScreen} />}
           <section className="basket">
             <div className="container">
               <h1 className="title title--h2">Корзина</h1>
               <ul className="basket__list">
-                <li className="basket-item">
-                  <div className="basket-item__img">
-                    <picture>
-                      <source type="image/webp" srcSet="img/content/orlenok.webp, img/content/orlenok@2x.webp 2x" />
-                      <img src="img/content/orlenok.jpg" srcSet="img/content/orlenok@2x.jpg 2x" width="140" height="120" alt="Фотоаппарат «Орлёнок»" />
-                    </picture>
-                  </div>
-                  <div className="basket-item__description">
-                    <p className="basket-item__title">Орлёнок</p>
-                    <ul className="basket-item__list">
-                      <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">O78DFGSD832</span>
-                      </li>
-                      <li className="basket-item__list-item">Плёночная фотокамера</li>
-                      <li className="basket-item__list-item">Любительский уровень</li>
-                    </ul>
-                  </div>
-                  <p className="basket-item__price"><span className="visually-hidden">Цена:</span>18 970 ₽</p>
-                  <div className="quantity">
-                    <button className="btn-icon btn-icon--prev" aria-label="уменьшить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                    <label className="visually-hidden" htmlFor="counter1"></label>
-                    <input type="number" id="counter1" value="2" min="1" max="99" aria-label="количество товара" />
-                    <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>37 940 ₽</div>
-                  <button className="cross-btn" type="button" aria-label="Удалить товар">
-                    <svg width="10" height="10" aria-hidden="true">
-                      <use xlinkHref="#icon-close"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li className="basket-item">
-                  <div className="basket-item__img">
-                    <picture>
-                      <source type="image/webp" srcSet="img/content/das-auge.webp, img/content/das-auge@2x.webp 2x" />
-                      <img src="img/content/das-auge.jpg" srcSet="img/content/das-auge@2x.jpg 2x" width="140" height="120" alt="Ретрокамера «Das Auge IV»" />
-                    </picture>
-                  </div>
-                  <div className="basket-item__description">
-                    <p className="basket-item__title">Ретрокамера «Das Auge IV»</p>
-                    <ul className="basket-item__list">
-                      <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">DA4IU67AD5</span>
-                      </li>
-                      <li className="basket-item__list-item">Коллекционная видеокамера</li>
-                      <li className="basket-item__list-item">Любительский уровень</li>
-                    </ul>
-                  </div>
-                  <p className="basket-item__price"><span className="visually-hidden">Цена:</span>73 450 ₽</p>
-                  <div className="quantity">
-                    <button className="btn-icon btn-icon--prev" disabled aria-label="уменьшить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                    <label className="visually-hidden" htmlFor="counter2"></label>
-                    <input type="number" id="counter2" value="1" min="1" max="99" aria-label="количество товара" />
-                    <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>73 450 ₽</div>
-                  <button className="cross-btn" type="button" aria-label="Удалить товар">
-                    <svg width="10" height="10" aria-hidden="true">
-                      <use xlinkHref="#icon-close"></use>
-                    </svg>
-                  </button>
-                </li>
+                {
+                  cameras.map((camera) => (
+                    <BasketProductItem key={`basket-camera-${camera.id}`} camera={camera}/>
+                  ))
+                }
               </ul>
               <div className="basket__summary">
                 <div className="basket__promo">
