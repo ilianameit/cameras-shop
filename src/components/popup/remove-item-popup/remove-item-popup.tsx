@@ -1,44 +1,52 @@
-function RemoveItemPopup(): JSX.Element {
+import { Fragment, MouseEvent, RefObject, useEffect } from 'react';
+import { Camera } from '../../../types/types';
+import BasketProductCardInfo from '../../basket-product-card-info/basket-product-card-info';
+import NotFoundScreen from '../../../pages/not-found-screen/not-found-screen';
+
+type RemoveItemPopupProps = {
+  camera: Camera | null;
+  focusElement: RefObject<HTMLButtonElement>;
+  onDeleteButtonClick: (id: Camera['id']) => void;
+  onContinueButtonClick: (evt: MouseEvent<HTMLAnchorElement>) => void;
+}
+function RemoveItemPopup({camera, focusElement, onDeleteButtonClick, onContinueButtonClick}: RemoveItemPopupProps): JSX.Element {
+  useEffect(() => {
+    if (focusElement && focusElement.current) {
+      focusElement.current.focus();
+    }
+  }, [focusElement]);
+
+  if(!camera) {
+    return(
+      <NotFoundScreen />
+    );
+  }
+
   return(
-    <div className="modal is-active">
-      <div className="modal__wrapper">
-        <div className="modal__overlay"></div>
-        <div className="modal__content">
-          <p className="title title--h4">Удалить этот товар?</p>
-          <div className="basket-item basket-item--short">
-            <div className="basket-item__img">
-              <picture>
-                <source type="image/webp" srcSet="img/content/orlenok.webp, img/content/orlenok@2x.webp 2x" />
-                <img src="img/content/orlenok.jpg" srcSet="img/content/orlenok@2x.jpg 2x" width={140} height={120} alt="Фотоаппарат «Орлёнок»" />
-              </picture>
-            </div>
-            <div className="basket-item__description">
-              <p className="basket-item__title">Орлёнок</p>
-              <ul className="basket-item__list">
-                <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">O78DFGSD832</span>
-                </li>
-                <li className="basket-item__list-item">Плёночная фотокамера</li>
-                <li className="basket-item__list-item">Любительский уровень</li>
-              </ul>
-            </div>
-            {
-              //  <BasketProductCardInfo camera={camera} screenType={'removeItem'} />
-            }
-          </div>
-          <div className="modal__buttons">
-            <button className="btn btn--purple modal__btn modal__btn--half-width" type="button">Удалить
-            </button>
-            <a className="btn btn--transparent modal__btn modal__btn--half-width" href="#">Продолжить покупки
-            </a>
-          </div>
-          <button className="cross-btn" type="button" aria-label="Закрыть попап">
-            <svg width="10" height="10" aria-hidden="true">
-              <use xlinkHref="#icon-close"></use>
-            </svg>
-          </button>
-        </div>
+    <Fragment>
+      <div className="basket-item basket-item--short">
+        {
+          <BasketProductCardInfo camera={camera} screenType={'removeItem'} />
+        }
       </div>
-    </div>
+      <div className="modal__buttons">
+        <button
+          className="btn btn--purple modal__btn modal__btn--half-width"
+          type="button"
+          ref={focusElement}
+          onClick={() => onDeleteButtonClick(camera.id)}
+        >
+          Удалить
+        </button>
+        <a
+          className="btn btn--transparent modal__btn modal__btn--half-width"
+          href="#"
+          onClick={(evt) => onContinueButtonClick(evt)}
+        >
+          Продолжить покупки
+        </a>
+      </div>
+    </Fragment>
   );
 }
 
