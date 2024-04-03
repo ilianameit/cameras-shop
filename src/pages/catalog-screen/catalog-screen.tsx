@@ -109,6 +109,7 @@ function CatalogScreenComponent(): JSX.Element {
   const [initialPriceValueFilter, setInitialPriceValueFilter] = useState<InitialPriceType>(initialPrice);
 
   function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>, key: PriceFilterType) {
+
     if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'blur' || event.type === 'focusout') {
 
       const value = Number((event.target as HTMLInputElement).value);
