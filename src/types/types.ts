@@ -80,3 +80,13 @@ export type InitialPriceType = {
 export type CameraBasket = Camera & {
   count: number;
 };
+
+export type CouponName = 'camera-333' | 'camera-444' | 'camera-555';
+export type Promocode = {
+  coupon: CouponName | null;
+  discount: number;
+};
+export type OrderData = {
+  camerasIds: Id[];
+  coupon: CouponName | null;
+};
