@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NameSpace } from '../../const/const';
-import { Camera, CameraBasket, Item } from '../../types/types';
-import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchPromoAction, fetchSimilarCamerasAction } from '../api-actions';
+import { Camera, CameraBasket} from '../../types/types';
+import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchSendOrder, fetchSimilarCamerasAction } from '../api-actions';
 import { getCamerasFromLocalStorage } from '../../utils/common';
 
 type ChangeCount = {
@@ -12,7 +12,6 @@ type ChangeCount = {
 
 type CamerasStateType = {
   cameras: Camera[];
-  promo: Item[];
   loadingCameras: boolean;
   oneCamera: Camera | null;
   loadingOneCamera: boolean;
@@ -21,11 +20,12 @@ type CamerasStateType = {
   camerasFilteredByPriceLoading: boolean;
   cart: CameraBasket[];
   isSuccessAddToCart: boolean;
+  isCreateOrderSuccess: boolean;
+  isCreateOrderFail: boolean;
 }
 
 const initialState: CamerasStateType = {
   cameras: [],
-  promo: [],
   loadingCameras: false,
   oneCamera: null,
   loadingOneCamera: false,
@@ -34,6 +34,8 @@ const initialState: CamerasStateType = {
   camerasFilteredByPriceLoading: false,
   cart: JSON.parse(localStorage.getItem(NAME_KEY_CAMERAS_STORAGE) || '[]') as CameraBasket[],
   isSuccessAddToCart: false,
+  isCreateOrderSuccess: false,
+  isCreateOrderFail: false,
 };
 
 export const camerasSlice = createSlice({
@@ -93,6 +95,14 @@ export const camerasSlice = createSlice({
         getCamerasFromLocalStorage(state.cart);
       }
     },
+    resetCart: (state) => {
+      state.isCreateOrderSuccess = false;
+      state.cart = [];
+      getCamerasFromLocalStorage([]);
+    },
+    closeErrorModal: (state) => {
+      state.isCreateOrderFail = false;
+    },
   },
   extraReducers(builder) {
     builder
@@ -110,9 +120,6 @@ export const camerasSlice = createSlice({
       .addCase(fetchCamerasPriceAction.pending, (state) => {
         state.camerasFilteredByPriceLoading = true;
       })
-      .addCase(fetchPromoAction.fulfilled, (state, action) => {
-        state.promo = action.payload;
-      })
       .addCase(fetchOneCameraAction.fulfilled, (state, action) => {
         state.oneCamera = action.payload;
       })
@@ -124,8 +131,16 @@ export const camerasSlice = createSlice({
       })
       .addCase(fetchSimilarCamerasAction.fulfilled, (state, action) => {
         state.similarCameras = action.payload;
+      })
+      .addCase(fetchSendOrder.fulfilled, (state) => {
+        state.isCreateOrderSuccess = true;
+        state.isCreateOrderFail = false;
+      })
+      .addCase(fetchSendOrder.rejected, (state) => {
+        state.isCreateOrderSuccess = false;
+        state.isCreateOrderFail = true;
       });
   },
 });
 
-export const { dropCamera, addToCart, changeStatusAddToCart, deleteFromCart, changeCountCameraInBasket } = camerasSlice.actions;
+export const { dropCamera, addToCart, changeStatusAddToCart, deleteFromCart, changeCountCameraInBasket, resetCart, closeErrorModal } = camerasSlice.actions;
