@@ -1,9 +1,10 @@
 import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { memo, useEffect, useMemo } from 'react';
-import { getPromo } from '../../store/camera-slice/selectors';
+import { getPromo } from '../../store/promo-slice/selectors';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { fetchPromoAction } from '../../store/api-actions';
+
 import { Link } from 'react-router-dom';
 import { AppRoutes } from '../../const/const';
 
