@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom';
 import { AppRoutes } from '../../const/const';
 import { memo } from 'react';
 import FormSearch from '../form-search/form-search';
+import { getCamerasFromCart } from '../../store/camera-slice/selectors';
+import { useAppSelector } from '../../hooks';
 
 function HeaderComponent(): JSX.Element {
+  const cameras = useAppSelector(getCamerasFromCart);
   return(
     <header className="header" id="header">
       <div className="container">
@@ -26,11 +29,14 @@ function HeaderComponent(): JSX.Element {
           </ul>
         </nav>
         <FormSearch />
-        <a className="header__basket-link" href="#" aria-label="Корзина">
+        <Link className="header__basket-link" to={AppRoutes.Basket} aria-label="Корзина">
           <svg width="16" height="16" aria-hidden="true">
             <use xlinkHref="#icon-basket"></use>
           </svg>
-        </a>
+          {
+            cameras.length > 0 && <span className="header__basket-count">{cameras.reduce((prev, current) => prev + current.count, 0)}</span>
+          }
+        </Link>
       </div>
     </header>
   );

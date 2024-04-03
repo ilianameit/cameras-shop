@@ -1,4 +1,4 @@
-import { CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
+import { Breadcrumb, CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, CouponName, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
 
 export enum AppRoutes {
   Root = '/',
@@ -178,3 +178,37 @@ export const FILTERS: FiltersState = [
     ]
   }
 ];
+
+export const breadcrumbMain: Breadcrumb = {
+  title: 'Главная',
+  href: AppRoutes.Root
+};
+export const breadcrumbCatalog: Breadcrumb = {
+  title: 'Каталог',
+  href: AppRoutes.Root
+};
+
+export const breadcrumbBasket: Breadcrumb = {
+  title: 'Корзина',
+};
+
+type BreadcrumbNamesKeyType = 'main' | 'catalog' | 'basket';
+
+export const breadcrumbNames: Record<BreadcrumbNamesKeyType, Breadcrumb> = {
+  main: breadcrumbMain,
+  catalog: breadcrumbCatalog,
+  basket: breadcrumbBasket,
+};
+
+export enum ChangeProductCount {
+  Increase = 'increase',
+  Decrease = 'decrease',
+  SetCount = 'setCount',
+}
+
+export const MIN_COUNT_ITEM_BASKET = 1;
+export const MAX_COUNT_ITEM_BASKET = 99;
+
+export const NAME_KEY_CAMERAS_STORAGE = 'cameras';
+
+export const COUPONS: CouponName[] = ['camera-333', 'camera-444', 'camera-555'];

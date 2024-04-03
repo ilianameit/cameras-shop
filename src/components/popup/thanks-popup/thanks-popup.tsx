@@ -4,13 +4,21 @@ import { useNavigate } from 'react-router-dom';
 
 type ThanksPopupComponentProps = {
   focusElement: RefObject<HTMLButtonElement>;
+  isErrorCreateOrder?: boolean;
+  isModalOrder?: boolean;
+  onClickContinue?: () => void;
 }
 
-function ThanksPopupComponent({focusElement}: ThanksPopupComponentProps): JSX.Element {
+function ThanksPopupComponent({focusElement, isModalOrder, isErrorCreateOrder, onClickContinue}: ThanksPopupComponentProps): JSX.Element {
   const navigate = useNavigate();
 
   function handleReturnButtonClick() {
-    navigate(AppRoutes.Root);
+    if(isModalOrder && onClickContinue){
+      onClickContinue();
+    }
+    if(!isErrorCreateOrder) {
+      navigate(AppRoutes.Root);
+    }
   }
 
   useEffect(() => {
@@ -21,9 +29,12 @@ function ThanksPopupComponent({focusElement}: ThanksPopupComponentProps): JSX.El
 
   return(
     <Fragment>
-      <svg className="modal__icon" width="80" height="78" aria-hidden="true">
-        <use xlinkHref="#icon-review-success"></use>
-      </svg>
+      {
+        !isErrorCreateOrder &&
+        <svg className="modal__icon" width="80" height="78" aria-hidden="true">
+          <use xlinkHref="#icon-review-success"></use>
+        </svg>
+      }
       <div className="modal__buttons">
         <button
           className="btn btn--purple modal__btn modal__btn--fit-width"

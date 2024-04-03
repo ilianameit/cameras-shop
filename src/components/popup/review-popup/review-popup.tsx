@@ -53,7 +53,7 @@ const VALIDATION_CONSTRAINTS = {
 function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Element {
   const dispatch = useAppDispatch();
   const isLoadingReview = useAppSelector(getStatusLoadingReview);
-  const isAddReviewSucces = useAppSelector(getAddReviewSuccessStatus);
+  const isAddReviewSuccess = useAppSelector(getAddReviewSuccessStatus);
 
   const { register, handleSubmit, setFocus, watch, formState: { errors }, reset} = useForm<FormValues>({
     mode: 'onSubmit'
@@ -69,12 +69,12 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
     setFocus('user-name');
 
     return () => {
-      if(isAddReviewSucces){
+      if(isAddReviewSuccess){
         reset();
         dispatch(changeAddReviewIsSucces());
       }
     };
-  }, [dispatch, isAddReviewSucces, reset, setFocus]);
+  }, [dispatch, isAddReviewSuccess, reset, setFocus]);
 
   function handleRatingChange() {
     setRating(watch('rate'));
@@ -101,7 +101,7 @@ function ReviewPopupComponent({onClose, idCamera}: ReviewPopupProps): JSX.Elemen
   }
 
   return(
-    isAddReviewSucces ?
+    isAddReviewSuccess ?
       <ModalWindow title={'Спасибо за отзыв'} onClose={onClose} firstFocusElement={firstFocusThanksElement} isResponse>
         <ThanksPopup focusElement={firstFocusThanksElement} />
       </ModalWindow> :

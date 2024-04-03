@@ -9,7 +9,7 @@ import Pagination from '../../components/pagination/pagination';
 import { useSearchParams } from 'react-router-dom';
 import { ChangeEvent, FocusEvent, KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AddItemPopup from '../../components/popup/add-item-popup/add-item-popup';
-import { AppRoutes, NAME_KEY_ENTER } from '../../const/const';
+import { NAME_KEY_ENTER, breadcrumbCatalog, breadcrumbNames } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import { Breadcrumb, Camera, SortTypeBy, SortTypeName, KeyFilters, InitialPriceType, PriceFilterType, FiltersParams, CameraCategoryParams, CameraTypeParams, CameraLevelParams } from '../../types/types';
 import ModalWindow from '../../components/modal-window/modal-window';
@@ -109,40 +109,44 @@ function CatalogScreenComponent(): JSX.Element {
   const [initialPriceValueFilter, setInitialPriceValueFilter] = useState<InitialPriceType>(initialPrice);
 
   function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>, key: PriceFilterType) {
-    if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'blur') {
+
+    if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'blur' || event.type === 'focusout') {
 
       const value = Number((event.target as HTMLInputElement).value);
-      if(value > 0 && (event.target as HTMLInputElement).value) {
+      if(filterPrice[key] !== value) {
+        if(value > 0 && (event.target as HTMLInputElement).value) {
 
-        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+          setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+          changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
 
-        if(key === 'from' && value < initialPriceValueFilter.from) {
+          if(key === 'from' && value < initialPriceValueFilter.from) {
 
-          setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
+            setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
 
-        } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
+          } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+            setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        } else if(key === 'to' && value > initialPriceValueFilter.to) {
+          } else if(key === 'to' && value > initialPriceValueFilter.to) {
 
-          setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
-        } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
+            setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
+          } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+            setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        } else{
+          } else{
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: value });
-          setFilterPrice({ ...filterPrice, [key]: value });
-          changeFilterPriceCameras({ ...filterPrice, [key]: value });
+            setFilterPriceValue({ ...filterPriceValue, [key]: value });
+            setFilterPrice({ ...filterPrice, [key]: value });
+            changeFilterPriceCameras({ ...filterPrice, [key]: value });
 
+          }
         }
-      }
-      if(value === 0 && !(event.target as HTMLInputElement).value) {
-        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+        if(value === 0 && !(event.target as HTMLInputElement).value) {
+          setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+          changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+        }
+        setSearchParams(params);
       }
     }
   }
@@ -266,7 +270,7 @@ function CatalogScreenComponent(): JSX.Element {
   }, []);
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
-  const breadcrumbsScreen: Breadcrumb[] = [{title: 'Главная', href: AppRoutes.Root}, {title: 'Каталог'}];
+  const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, {title: breadcrumbCatalog.title}];
 
   return(
     <div className="wrapper">
@@ -316,7 +320,7 @@ function CatalogScreenComponent(): JSX.Element {
               onClose={handleCloseBuyItemClick}
               firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onClose={handleCloseBuyItemClick} isCardItem={false}/>
             </ModalWindow>)
         }
       </main>

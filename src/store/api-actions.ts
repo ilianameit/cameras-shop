@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { AppDispatch, State } from '../types/state';
-import { Camera, Id, Item, Review, ReviewAdding } from '../types/types';
+import { Camera, Id, Item, OrderData, Promocode, Review, ReviewAdding } from '../types/types';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { APIRoute, NameSpace } from '../const/const';
 
@@ -98,5 +98,29 @@ export const fetchAddReviewAction = createAsyncThunk<
     const { data } = await api.post<Review>(APIRoute.Reviews, arg);
 
     return data;
+  },
+);
+
+export const fetchDiscountAction = createAsyncThunk<
+  Promocode['discount'],
+  Promocode['coupon'],
+  AsyncActionType
+>(
+  `${NameSpace.Coupon}/fetchDiscount`,
+  async(coupon, {extra: api}) => {
+    const {data} = await api.post<Promocode['discount']>(APIRoute.Coupons, {'coupon': coupon});
+
+    return data;
+  }
+);
+
+export const fetchSendOrder = createAsyncThunk<
+  void,
+  OrderData,
+  AsyncActionType
+>(
+  `${NameSpace.Order}/fetchSendOrder`,
+  async (data, { extra: api }) => {
+    await api.post(APIRoute.Orders, data);
   },
 );

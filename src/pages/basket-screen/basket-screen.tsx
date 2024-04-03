@@ -1,139 +1,161 @@
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
+import { Breadcrumb, Camera, CameraBasket } from '../../types/types';
+import { AppRoutes, ChangeProductCount, breadcrumbBasket, breadcrumbNames } from '../../const/const';
+import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { getCamerasFromCart, getCreateOrderFailStatus, getCreateOrderSuccessStatus } from '../../store/camera-slice/selectors';
+import BasketProductItem from '../../components/basket-product-item/basket-product-item';
+import { changeCountCameraInBasket, closeErrorModal, deleteFromCart, resetCart } from '../../store/camera-slice/camera-slice';
+import { ChangeEvent, Fragment, MouseEvent, useEffect, useRef, useState } from 'react';
+import ModalWindow from '../../components/modal-window/modal-window';
+import RemoveItemPopup from '../../components/popup/remove-item-popup/remove-item-popup';
+import { Link, useNavigate } from 'react-router-dom';
+import { returnFormatedPrice } from '../../utils/common';
+import BasketPromo from '../../components/basket-promo/basket-promo';
+import { getPromocode } from '../../store/promo-slice/selectors';
+import { fetchSendOrder } from '../../store/api-actions';
+import { resetPromocode } from '../../store/promo-slice/promo-slice';
+import ThanksPopup from '../../components/popup/thanks-popup/thanks-popup';
 
 function BasketScreen(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, breadcrumbNames.catalog, {title: breadcrumbBasket.title}];
+
+  const cameras = useAppSelector(getCamerasFromCart);
+
+  const [cameraCard, setCameraCard] = useState<Camera | null>(null);
+
+  const [removeItemModal, setRemoveItemModal] = useState(false);
+
+  const focusItemRemovePopup = useRef<HTMLButtonElement>(null);
+
+  const totalPriceCameras = cameras.reduce((prev, current) => prev + (current.price * current.count), 0);
+  const [totalPrice, setTotalPrice] = useState<number>(totalPriceCameras);
+  const promocode = useAppSelector(getPromocode);
+
+  const discount = promocode.discount ? totalPrice * (promocode.discount / 100) : 0;
+  const totalPriceWithDiscount = totalPrice - discount;
+
+  const focusThanksPopup = useRef<HTMLButtonElement>(null);
+  const isSuccessCreateOrder = useAppSelector(getCreateOrderSuccessStatus);
+  const isFailCreateOrder = useAppSelector(getCreateOrderFailStatus);
+
+  useEffect(() => {
+    setTotalPrice(totalPriceCameras);
+  }, [totalPriceCameras]);
+
+  function handleCloseRemoveItemModalClick() {
+    setRemoveItemModal(false);
+  }
+
+  function handleRemoveItemModalClick (camera: Camera) {
+    setRemoveItemModal(true);
+    setCameraCard(camera);
+  }
+
+  function handleDeleteButtonClick(id: Camera['id']) {
+    dispatch(deleteFromCart(id));
+    setRemoveItemModal(false);
+    setCameraCard(null);
+  }
+
+  function handleContinueButtonClick(evt: MouseEvent<HTMLAnchorElement>) {
+    evt.preventDefault();
+    setRemoveItemModal(false);
+    navigate(AppRoutes.Root);
+  }
+
+  function handleIncreaseButtonClick(id: CameraBasket['id']) {
+    dispatch(changeCountCameraInBasket({type: ChangeProductCount.Increase, id}));
+  }
+
+  function handleDecreaseButtonClick(id: CameraBasket['id']) {
+    dispatch(changeCountCameraInBasket({type: ChangeProductCount.Decrease, id}));
+  }
+
+  function handleCountChange(event: ChangeEvent<HTMLInputElement>, id: CameraBasket['id']) {
+    if(event.target.value.length){
+      dispatch(changeCountCameraInBasket({type: ChangeProductCount.SetCount, id, count: Number(event.target.value) }));
+    } else {
+      dispatch(changeCountCameraInBasket({type: ChangeProductCount.SetCount, id, count: 1 }));
+    }
+  }
+
+  function handleOrderButtonClick() {
+    const camerasIds = cameras.map((camera) => camera.id);
+    dispatch(fetchSendOrder({
+      camerasIds: camerasIds,
+      coupon: promocode.coupon
+    }));
+  }
+
+  function handleCloseThanksOrderModalClick() {
+    if(isSuccessCreateOrder){
+      dispatch(resetCart());
+    }
+    if(isFailCreateOrder){
+      dispatch(closeErrorModal());
+    }
+    dispatch(resetPromocode());
+  }
+
   return(
     <div className="wrapper">
       <Helmet>Backet</Helmet>
       <Header />
       <main>
         <div className="page-content">
-          <div className="breadcrumbs">
-            <div className="container">
-              <ul className="breadcrumbs__list">
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="index.html">Главная
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item">
-                  <a className="breadcrumbs__link" href="catalog.html">Каталог
-                    <svg width="5" height="8" aria-hidden="true">
-                      <use xlinkHref="#icon-arrow-mini"></use>
-                    </svg>
-                  </a>
-                </li>
-                <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Корзина</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          {<Breadcrumbs breadcrumbs={breadcrumbsScreen} />}
           <section className="basket">
             <div className="container">
               <h1 className="title title--h2">Корзина</h1>
-              <ul className="basket__list">
-                <li className="basket-item">
-                  <div className="basket-item__img">
-                    <picture>
-                      <source type="image/webp" srcSet="img/content/orlenok.webp, img/content/orlenok@2x.webp 2x" />
-                      <img src="img/content/orlenok.jpg" srcSet="img/content/orlenok@2x.jpg 2x" width="140" height="120" alt="Фотоаппарат «Орлёнок»" />
-                    </picture>
-                  </div>
-                  <div className="basket-item__description">
-                    <p className="basket-item__title">Орлёнок</p>
-                    <ul className="basket-item__list">
-                      <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">O78DFGSD832</span>
-                      </li>
-                      <li className="basket-item__list-item">Плёночная фотокамера</li>
-                      <li className="basket-item__list-item">Любительский уровень</li>
-                    </ul>
-                  </div>
-                  <p className="basket-item__price"><span className="visually-hidden">Цена:</span>18 970 ₽</p>
-                  <div className="quantity">
-                    <button className="btn-icon btn-icon--prev" aria-label="уменьшить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                    <label className="visually-hidden" htmlFor="counter1"></label>
-                    <input type="number" id="counter1" value="2" min="1" max="99" aria-label="количество товара" />
-                    <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>37 940 ₽</div>
-                  <button className="cross-btn" type="button" aria-label="Удалить товар">
-                    <svg width="10" height="10" aria-hidden="true">
-                      <use xlinkHref="#icon-close"></use>
-                    </svg>
-                  </button>
-                </li>
-                <li className="basket-item">
-                  <div className="basket-item__img">
-                    <picture>
-                      <source type="image/webp" srcSet="img/content/das-auge.webp, img/content/das-auge@2x.webp 2x" />
-                      <img src="img/content/das-auge.jpg" srcSet="img/content/das-auge@2x.jpg 2x" width="140" height="120" alt="Ретрокамера «Das Auge IV»" />
-                    </picture>
-                  </div>
-                  <div className="basket-item__description">
-                    <p className="basket-item__title">Ретрокамера «Das Auge IV»</p>
-                    <ul className="basket-item__list">
-                      <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">DA4IU67AD5</span>
-                      </li>
-                      <li className="basket-item__list-item">Коллекционная видеокамера</li>
-                      <li className="basket-item__list-item">Любительский уровень</li>
-                    </ul>
-                  </div>
-                  <p className="basket-item__price"><span className="visually-hidden">Цена:</span>73 450 ₽</p>
-                  <div className="quantity">
-                    <button className="btn-icon btn-icon--prev" disabled aria-label="уменьшить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                    <label className="visually-hidden" htmlFor="counter2"></label>
-                    <input type="number" id="counter2" value="1" min="1" max="99" aria-label="количество товара" />
-                    <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                      <svg width="7" height="12" aria-hidden="true">
-                        <use xlinkHref="#icon-arrow"></use>
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>73 450 ₽</div>
-                  <button className="cross-btn" type="button" aria-label="Удалить товар">
-                    <svg width="10" height="10" aria-hidden="true">
-                      <use xlinkHref="#icon-close"></use>
-                    </svg>
-                  </button>
-                </li>
-              </ul>
+              {
+                cameras.length ? (
+                  <ul className="basket__list">
+                    {
+                      cameras.map((camera) => (
+                        <BasketProductItem
+                          key={`basket-camera-${camera.id}`}
+                          camera={camera}
+                          onRemoveClick={handleRemoveItemModalClick}
+                          onIncreaseButtonClick={handleIncreaseButtonClick}
+                          onDecreaseButtonClick={handleDecreaseButtonClick}
+                          onCountChange={handleCountChange}
+                        />
+                      ))
+                    }
+                  </ul>
+                ) :
+                  <Fragment>
+                    <p>Ваша корзина пока пуста...</p>
+                    <Link to={AppRoutes.Root} className='link'>Перейти в каталог</Link>
+                  </Fragment>
+              }
               <div className="basket__summary">
-                <div className="basket__promo">
-                  <p className="title title--h4">Если у вас есть промокод на скидку, примените его в этом поле</p>
-                  <div className="basket-form">
-                    <form action="#">
-                      <div className="custom-input">
-                        <label><span className="custom-input__label">Промокод</span>
-                          <input type="text" name="promo" placeholder="Введите промокод" />
-                        </label>
-                        <p className="custom-input__error">Промокод неверный</p>
-                        <p className="custom-input__success">Промокод принят!</p>
-                      </div>
-                      <button className="btn" type="submit">Применить
-                      </button>
-                    </form>
-                  </div>
-                </div>
+                <BasketPromo />
                 <div className="basket__summary-order">
-                  <p className="basket__summary-item"><span className="basket__summary-text">Всего:</span><span className="basket__summary-value">111 390 ₽</span></p>
-                  <p className="basket__summary-item"><span className="basket__summary-text">Скидка:</span><span className="basket__summary-value basket__summary-value--bonus">0 ₽</span></p>
-                  <p className="basket__summary-item"><span className="basket__summary-text basket__summary-text--total">К оплате:</span><span className="basket__summary-value basket__summary-value--total">111 390 ₽</span></p>
-                  <button className="btn btn--purple" type="submit">Оформить заказ
+                  <p className="basket__summary-item">
+                    <span className="basket__summary-text">Всего:</span>
+                    <span className="basket__summary-value">{returnFormatedPrice(totalPrice)}</span>
+                  </p>
+                  <p className="basket__summary-item">
+                    <span className="basket__summary-text">Скидка:</span>
+                    <span className="basket__summary-value basket__summary-value--bonus">{returnFormatedPrice(discount)}</span>
+                  </p>
+                  <p className="basket__summary-item">
+                    <span className="basket__summary-text basket__summary-text--total">К оплате:</span>
+                    <span className="basket__summary-value basket__summary-value--total">{returnFormatedPrice(totalPriceWithDiscount)}</span>
+                  </p>
+                  <button
+                    className="btn btn--purple"
+                    type="submit"
+                    onClick={handleOrderButtonClick}
+                    disabled={cameras.length === 0}
+                  >
+                    Оформить заказ
                   </button>
                 </div>
               </div>
@@ -141,6 +163,37 @@ function BasketScreen(): JSX.Element {
           </section>
         </div>
       </main>
+      {
+        removeItemModal && (
+          <ModalWindow
+            title='Удалить этот товар?'
+            onClose={handleCloseRemoveItemModalClick}
+            firstFocusElement={focusItemRemovePopup}
+          >
+            <RemoveItemPopup
+              camera={cameraCard}
+              focusElement={focusItemRemovePopup}
+              onDeleteButtonClick={handleDeleteButtonClick}
+              onContinueButtonClick={handleContinueButtonClick}
+            />
+          </ModalWindow>)
+      }
+      {
+        (isSuccessCreateOrder || isFailCreateOrder) && (
+          <ModalWindow
+            title={isFailCreateOrder ? 'Не удалось отправить данные' : 'Спасибо за покупку'}
+            onClose={handleCloseThanksOrderModalClick}
+            firstFocusElement={focusThanksPopup}
+            isResponse
+          >
+            <ThanksPopup
+              focusElement={focusThanksPopup}
+              isModalOrder
+              onClickContinue={handleCloseThanksOrderModalClick}
+              isErrorCreateOrder={isFailCreateOrder}
+            />
+          </ModalWindow>)
+      }
       <Footer />
     </div>
   );

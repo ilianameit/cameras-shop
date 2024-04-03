@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PaginationItem from './pagination-item';
 
@@ -16,6 +16,9 @@ function PaginationComponent({currentPage, totalItems, itemsPerPage, onPageClick
   const paginationCount = useMemo(() => Math.ceil(pagesTotal / MAX_PAGES_ON_SCREEN), [pagesTotal]);
   const currentGroupPagination = useMemo(() => Math.ceil(currentPage / MAX_PAGES_ON_SCREEN), [currentPage]);
   const [currentPagination, setCurrentPagination] = useState(currentGroupPagination);
+  useEffect(() => {
+    setCurrentPagination(currentGroupPagination);
+  }, [currentGroupPagination]);
   const startNumber = useMemo(() => currentPagination * MAX_PAGES_ON_SCREEN - MAX_PAGES_ON_SCREEN + 1, [currentPagination]);
   const endNumber = currentPagination < paginationCount ? startNumber + MAX_PAGES_ON_SCREEN : pagesTotal + 1;
   const pageNumbers = useMemo(() => {
