@@ -109,40 +109,43 @@ function CatalogScreenComponent(): JSX.Element {
   const [initialPriceValueFilter, setInitialPriceValueFilter] = useState<InitialPriceType>(initialPrice);
 
   function handleChangeFilterPrice(event: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>, key: PriceFilterType) {
-    if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'focusout') {
+    if((event as KeyboardEvent).key === NAME_KEY_ENTER || event.type === 'blur' || event.type === 'focusout') {
 
       const value = Number((event.target as HTMLInputElement).value);
-      if(value > 0 && (event.target as HTMLInputElement).value) {
+      if(filterPrice[key] !== value) {
+        if(value > 0 && (event.target as HTMLInputElement).value) {
 
-        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+          setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+          changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
 
-        if(key === 'from' && value < initialPriceValueFilter.from) {
+          if(key === 'from' && value < initialPriceValueFilter.from) {
 
-          setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
+            setFilterPriceValue({...filterPriceValue, from: initialPriceValueFilter.from});
 
-        } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
+          } else if(key === 'from' && (value > initialPriceValueFilter.to || (value > filterPriceValue.to && filterPriceValue.to > 0))) {
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+            setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        } else if(key === 'to' && value > initialPriceValueFilter.to) {
+          } else if(key === 'to' && value > initialPriceValueFilter.to) {
 
-          setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
-        } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
+            setFilterPriceValue({...filterPriceValue, to: initialPriceValueFilter.to});
+          } else if(key === 'to' && (value < initialPriceValueFilter.from || (value < filterPriceValue.from && filterPriceValue.from > 0))) {
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
+            setFilterPriceValue({ ...filterPriceValue, [key]: 0 });
 
-        } else{
+          } else{
 
-          setFilterPriceValue({ ...filterPriceValue, [key]: value });
-          setFilterPrice({ ...filterPrice, [key]: value });
-          changeFilterPriceCameras({ ...filterPrice, [key]: value });
+            setFilterPriceValue({ ...filterPriceValue, [key]: value });
+            setFilterPrice({ ...filterPrice, [key]: value });
+            changeFilterPriceCameras({ ...filterPrice, [key]: value });
 
+          }
         }
-      }
-      if(value === 0 && !(event.target as HTMLInputElement).value) {
-        setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
-        changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+        if(value === 0 && !(event.target as HTMLInputElement).value) {
+          setFilterPrice({...filterPrice, [key]: initialPriceValueFilter[key]});
+          changeFilterPriceCameras({...filterPrice, [key]: initialPriceValueFilter[key]});
+        }
+        setSearchParams(params);
       }
     }
   }
