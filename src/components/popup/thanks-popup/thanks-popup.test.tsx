@@ -14,6 +14,15 @@ describe('Component Thanks modal', () => {
 
     });
 
+    it('should render without header when create order error', () => {
+      const preparedComponent = withHistory(<ThanksPopup focusElement={focusElement} isErrorCreateOrder/>);
+
+      render(preparedComponent);
+      expect(screen.getByRole('button', { name: /Вернуться к покупкам/i})).toBeInTheDocument();
+      expect(screen.queryByRole('svg')).toBeNull();
+
+    });
+
   });
 
 });

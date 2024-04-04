@@ -93,7 +93,7 @@ describe('Component ReviewModal', () => {
         [NameSpace.Review]: {
           reviews: [],
           isLoadingReview: false,
-          isAddReviewSucces: true,
+          isAddReviewSuccess: true,
         }
       });
 

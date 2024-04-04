@@ -1,22 +1,35 @@
 import { render, screen } from '@testing-library/react';
 import AddItemSeccessPopup from './add-item-seccess-popup';
+import { MockStore } from '../../../utils/mocks';
+import { withHistory, withStore } from '../../../utils/mock-component';
 
 describe('Component AddProductModal seccess', () => {
 
   describe('should render correctly', () => {
+    const focusElement = { current: document.createElement('a') };
+    function onContinueButtonClick() {
+      jest.fn();
+    }
 
-    it('should render title', () => {
-      render(<AddItemSeccessPopup/>);
+    const mockStore = MockStore();
+    it('should render button продолжить покупки', () => {
+      const { withStoreComponent } = withStore(<AddItemSeccessPopup focusElement={focusElement} onContinueButtonClick={onContinueButtonClick} isCardItem={false}/>, mockStore);
+      const preparedComponent = withHistory(withStoreComponent);
 
-      expect(screen.getByText(/Товар успешно добавлен в корзину/i)).toBeInTheDocument();
-      expect(screen.getByTestId('close-button')).toBeInTheDocument();
+      render(preparedComponent);
+
+      expect(screen.getByText(/Продолжить покупки/i)).toBeInTheDocument();
     });
 
 
-    it('should render product details', () => {
-      render(<AddItemSeccessPopup/>);
+    it('should render button перейти в корзину', () => {
+      const { withStoreComponent } = withStore(<AddItemSeccessPopup focusElement={focusElement} onContinueButtonClick={onContinueButtonClick} isCardItem={false}/>, mockStore);
+      const preparedComponent = withHistory(withStoreComponent);
 
-      expect(screen.getByText(/Продолжить покупки/i)).toBeInTheDocument();
+      render(preparedComponent);
+
+
+      expect(screen.getByRole('button', { name: /Перейти в корзину/i})).toBeInTheDocument();
     });
 
   });
