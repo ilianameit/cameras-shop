@@ -7,15 +7,14 @@ import { NameSpace } from '../../const/const';
 describe('Component Banner', () => {
   describe('should render correctly',() => {
     it('should render slides', () => {
-      const { withStoreComponent } = withStore(<Banner />, MockStore({[NameSpace.Camera]: {
+      const { withStoreComponent } = withStore(<Banner />, MockStore({[NameSpace.Promo]: {
         promo: mockPromo,
-        cameras: [],
-        loadingCameras: false,
-        oneCamera: null,
-        loadingOneCamera: false,
-        similarCameras: [],
-        camerasFilteredByPrice: [],
-        camerasFilteredByPriceLoading: false,
+        promocode: {
+          coupon: null,
+          discount: 0
+        },
+        isDiscountLoading: false,
+        invalidCoupon: false
       }}));
 
       const preparedComponent = withHistory(withStoreComponent);

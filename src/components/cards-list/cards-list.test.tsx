@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { withHistory } from '../../utils/mock-component';
+import { withHistory, withStore } from '../../utils/mock-component';
 import CardsList from './cards-list';
-import { mockCameras } from '../../utils/mocks';
+import { MockStore, mockCameras } from '../../utils/mocks';
 
 describe('Component CardsList', () => {
 
@@ -9,8 +9,10 @@ describe('Component CardsList', () => {
     function onBuyClick() {
       jest.fn();
     }
+    const mockStore = MockStore();
     it('should render cards list wrapper', () => {
-      const preparedComponent = withHistory(<CardsList cameras={mockCameras} onBuyClick={onBuyClick} />);
+      const {withStoreComponent} = withStore(<CardsList cameras={mockCameras} onBuyClick={onBuyClick} />, mockStore);
+      const preparedComponent = withHistory(withStoreComponent);
 
       render(preparedComponent);
 

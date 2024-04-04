@@ -3,10 +3,10 @@ import MockAdapter from 'axios-mock-adapter';
 import thunk from 'redux-thunk';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import { Action } from 'redux';
-import { fetchReviewsAction, fetchAddReviewAction, fetchCamerasAction, fetchPromoAction, fetchOneCameraAction, fetchSimilarCamerasAction, fetchCamerasPriceAction } from './api-actions';
+import { fetchReviewsAction, fetchAddReviewAction, fetchCamerasAction, fetchPromoAction, fetchOneCameraAction, fetchSimilarCamerasAction, fetchCamerasPriceAction, fetchDiscountAction, fetchSendOrder } from './api-actions';
 import { APIRoute } from '../const/const';
 import { extractActionsTypes, AppThunkDispatch } from '../utils/mocks';
-import { ReviewAdding } from '../types/types';
+import { OrderData, Promocode, ReviewAdding } from '../types/types';
 import { State } from '../types/state';
 
 describe('API ACTIONS', () => {
@@ -151,6 +151,37 @@ describe('API ACTIONS', () => {
         ]);
       });
 
+  });
+
+  describe('fetchDiscountAction', () => {
+    it('should dispatch fetchDiscountAction.pending and fetchDiscountAction.fulfilled with thunk fetchDiscountAction',
+      async () => {
+        const data : Promocode['coupon'] = 'camera-333';
+        mockAxiosAdapter.onPost(APIRoute.Coupons).reply(200);
+
+        await store.dispatch((fetchDiscountAction(data)));
+        const actions = extractActionsTypes(store.getActions());
+
+        expect(actions).toEqual([
+          fetchDiscountAction.pending.type,
+          fetchDiscountAction.fulfilled.type
+        ]);
+      });
+  });
+  describe('fetchSendOrder', () => {
+    it('should dispatch fetchSendOrder.pending and fetchSendOrder.fulfilled with thunk fetchSendOrder',
+      async () => {
+        const data : OrderData = {camerasIds: [1,2,3], coupon: null};
+        mockAxiosAdapter.onPost(APIRoute.Orders).reply(200);
+
+        await store.dispatch((fetchSendOrder(data)));
+        const actions = extractActionsTypes(store.getActions());
+
+        expect(actions).toEqual([
+          fetchSendOrder.pending.type,
+          fetchSendOrder.fulfilled.type,
+        ]);
+      });
   });
 
 });

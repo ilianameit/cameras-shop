@@ -1,3 +1,5 @@
+import { ChangeProductCount } from '../const/const';
+
 export type Id = number;
 export type Rating = number;
 export type Description = string;
@@ -89,4 +91,10 @@ export type Promocode = {
 export type OrderData = {
   camerasIds: Id[];
   coupon: CouponName | null;
+};
+
+export type ChangeCount = {
+  type: ChangeProductCount;
+  id: CameraBasket['id'];
+  count?: number;
 };
