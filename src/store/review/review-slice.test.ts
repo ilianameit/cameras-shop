@@ -9,7 +9,7 @@ describe('ReviewSlice', () => {
       const expectedState = {
         reviews: [],
         isLoadingReview: false,
-        isAddReviewSucces: false,
+        isAddReviewSuccess: false,
       };
 
       const result = reviewSlice.reducer(expectedState, emptyAction);
@@ -21,7 +21,7 @@ describe('ReviewSlice', () => {
       const expectedState = {
         reviews: [],
         isLoadingReview: false,
-        isAddReviewSucces: false,
+        isAddReviewSuccess: false,
       };
 
       const result = reviewSlice.reducer(undefined, emptyAction);
@@ -37,7 +37,7 @@ describe('ReviewSlice', () => {
       const expectedState = {
         reviews: [mockReview],
         isLoadingReview: false,
-        isAddReviewSucces: false,
+        isAddReviewSuccess: false,
       };
 
       const result = reviewSlice.reducer(
@@ -62,7 +62,7 @@ describe('ReviewSlice', () => {
       const expectedState = {
         reviews: [mockReview],
         isLoadingReview: false,
-        isAddReviewSucces: true,
+        isAddReviewSuccess: true,
       };
 
       const result = reviewSlice.reducer(
@@ -77,7 +77,7 @@ describe('ReviewSlice', () => {
       const expectedState = {
         reviews: [],
         isLoadingReview: true,
-        isAddReviewSucces: false,
+        isAddReviewSuccess: false,
       };
 
       const result = reviewSlice.reducer(

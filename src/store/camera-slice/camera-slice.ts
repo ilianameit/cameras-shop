@@ -1,14 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NameSpace } from '../../const/const';
-import { Camera, CameraBasket} from '../../types/types';
+import { Camera, CameraBasket, ChangeCount} from '../../types/types';
 import { fetchCamerasAction, fetchCamerasPriceAction, fetchOneCameraAction, fetchSendOrder, fetchSimilarCamerasAction } from '../api-actions';
 import { getCamerasFromLocalStorage } from '../../utils/common';
-
-type ChangeCount = {
-  type: ChangeProductCount;
-  id: CameraBasket['id'];
-  count?: number;
-}
 
 type CamerasStateType = {
   cameras: Camera[];
