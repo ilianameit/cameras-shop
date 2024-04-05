@@ -15,7 +15,7 @@ type BasketStateType = {
 }
 
 const initialState: BasketStateType = {
-  cart: JSON.parse(localStorage.getItem(NAME_KEY_CAMERAS_STORAGE) || '[]') as CameraBasket[],
+  cart: JSON.parse(localStorage.getItem(NAME_KEY_CAMERAS_STORAGE) ?? '[]') as CameraBasket[] || [],
   isSuccessAddToCart: false,
   isCreateOrderSuccess: false,
   isCreateOrderFail: false,
