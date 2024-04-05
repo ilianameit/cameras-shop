@@ -113,7 +113,6 @@ export const basketSlice = createSlice({
       .addCase(fetchDiscountAction.rejected, (state) => {
         state.invalidCoupon = true;
         state.isDiscountLoading = false;
-        state.promocode.coupon = null;
       })
       .addCase(fetchSendOrder.fulfilled, (state) => {
         state.isCreateOrderSuccess = true;

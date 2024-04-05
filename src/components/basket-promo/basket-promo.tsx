@@ -5,7 +5,7 @@ import { fetchDiscountAction } from '../../store/api-actions';
 import classNames from 'classnames';
 import { ChangeEvent } from 'react';
 import { getInvalidCouponStatus, getPromocode, getStatusLoadingDiscount } from '../../store/basket-slice/selectors';
-import { setCouponName } from '../../store/basket-slice/basket-slice';
+import { resetPromocode, setCouponName } from '../../store/basket-slice/basket-slice';
 
 type FormValues = {
   promo: CouponName;
@@ -32,18 +32,20 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
     }
   );
 
-
   function handleCouponChange(event: ChangeEvent<HTMLInputElement>) {
-    if(!promocode.coupon || invalidCouponStatus){
+    if(!promocode.discount || invalidCouponStatus){
       setCouponState(event.target.value);
+    }
+    if(!event.target.value.length) {
+      dispatch(resetPromocode());
     }
   }
 
 
   function handleFormSubmit(data: FormValues) {
-    if ((!promocode.coupon || invalidCouponStatus) && data.promo.length) {
-      dispatch(setCouponName(data.promo));
+    if ((!promocode.discount || invalidCouponStatus) && data.promo.length) {
       dispatch(fetchDiscountAction(data.promo));
+      dispatch(setCouponName(data.promo));
     }
   }
 
@@ -58,7 +60,7 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
         >
           <div className={classNames(
             'custom-input',
-            { 'is-invalid': invalidCouponStatus || errors.promo?.type === 'pattern'},
+            { 'is-invalid':(invalidCouponStatus || errors.promo?.type === 'pattern') && couponState.length > 0},
             { 'is-valid': promocode.discount !== 0 }
           )}
           >
@@ -78,7 +80,7 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
                 disabled={isLoading}
               />
             </label>
-            {(invalidCouponStatus || errors.promo?.type === 'pattern') &&
+            {(invalidCouponStatus || errors.promo?.type === 'pattern') && couponState.length > 0 &&
               <p className="custom-input__error">
                 { errors.promo?.type === 'pattern' ? errors.promo.message : 'Промокод неверный'}
               </p>}
