@@ -13,7 +13,7 @@ describe('Component AddProductModal', () => {
     }
 
     const mockStore = MockStore();
-    const { withStoreComponent } = withStore(<AddItemPopup camera={mockCamera} focusElement={focusElement} onClose={onClose} isCardItem={false}/>, mockStore);
+    const { withStoreComponent } = withStore(<AddItemPopup camera={mockCamera} focusElement={focusElement} onAddTocartClick={onClose} />, mockStore);
     const preparedComponent = withHistory(withStoreComponent);
 
     render(preparedComponent);
