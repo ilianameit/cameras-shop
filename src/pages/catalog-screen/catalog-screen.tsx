@@ -17,6 +17,9 @@ import CatalogSort from '../../components/catalog-sort/catalog-sort';
 import CatalogFilter from '../../components/catalog-filter/catalog-filter';
 import { fetchCamerasPriceAction } from '../../store/api-actions';
 import EmptyListProducts from '../../components/empty-list-products/empty-list-products';
+import AddItemSeccessPopup from '../../components/popup/add-item-seccess-popup/add-item-seccess-popup';
+import { getAddToCartSuccessStatus } from '../../store/basket-slice/selectors';
+import { changeStatusAddToCart } from '../../store/basket-slice/basket-slice';
 
 const MAX_COUNT_ITEM_PAGE = 9;
 
@@ -270,6 +273,12 @@ function CatalogScreenComponent(): JSX.Element {
   }, []);
   const handleCloseBuyItemClick = useCallback(() => setShowModal(false), []);
 
+  const isAddToCartSuccess = useAppSelector(getAddToCartSuccessStatus);
+  const focusItemSuccessPopup = useRef<HTMLAnchorElement>(null);
+  function handleCloseAddToCartSeccessModal() {
+    dispatch(changeStatusAddToCart());
+  }
+
   const breadcrumbsScreen: Breadcrumb[] = [breadcrumbNames.main, {title: breadcrumbCatalog.title}];
 
   return(
@@ -320,8 +329,15 @@ function CatalogScreenComponent(): JSX.Element {
               onClose={handleCloseBuyItemClick}
               firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onClose={handleCloseBuyItemClick} isCardItem={false}/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onAddTocartClick={handleCloseBuyItemClick}/>
             </ModalWindow>)
+        }
+        {
+          isAddToCartSuccess && (
+            <ModalWindow title={'Товар успешно добавлен в корзину'} onClose={handleCloseAddToCartSeccessModal} firstFocusElement={focusItemSuccessPopup} isResponse>
+              <AddItemSeccessPopup focusElement={focusItemSuccessPopup} onContinueButtonClick={handleCloseAddToCartSeccessModal} isCardItem={false}/>
+            </ModalWindow>
+          )
         }
       </main>
       <Footer />

@@ -2,15 +2,21 @@ import { useForm } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { CouponName } from '../../types/types';
 import { fetchDiscountAction } from '../../store/api-actions';
-import { getInvalidCouponStatus, getPromocode, getStatusLoadingDiscount } from '../../store/promo-slice/selectors';
 import classNames from 'classnames';
-import { setCouponName } from '../../store/promo-slice/promo-slice';
+import { ChangeEvent } from 'react';
+import { getInvalidCouponStatus, getPromocode, getStatusLoadingDiscount } from '../../store/basket-slice/selectors';
+import { setCouponName } from '../../store/basket-slice/basket-slice';
 
 type FormValues = {
   promo: CouponName;
 }
 
-function BasketPromo(): JSX.Element {
+type typeBasketPromoProps = {
+  setCouponState: (coupon: CouponName | string) => void;
+  couponState: CouponName | string;
+}
+
+function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.Element {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(getStatusLoadingDiscount);
   const invalidCouponStatus = useAppSelector(getInvalidCouponStatus);
@@ -24,6 +30,14 @@ function BasketPromo(): JSX.Element {
       mode: 'onSubmit'
     }
   );
+
+
+  function handleCouponChange(event: ChangeEvent<HTMLInputElement>) {
+    if(!promocode.coupon || invalidCouponStatus){
+      setCouponState(event.target.value);
+    }
+  }
+
 
   function handleFormSubmit(data: FormValues) {
     if ((!promocode.coupon || invalidCouponStatus) && data.promo.length) {
@@ -43,7 +57,7 @@ function BasketPromo(): JSX.Element {
         >
           <div className={classNames(
             'custom-input',
-            { 'is-invalid': invalidCouponStatus},
+            { 'is-invalid': invalidCouponStatus },
             { 'is-valid': promocode.discount !== 0 }
           )}
           >
@@ -53,7 +67,9 @@ function BasketPromo(): JSX.Element {
                 placeholder="Введите промокод"
                 {...register('promo', {
                   required: true,
+                  onChange: handleCouponChange
                 })}
+                value={couponState}
                 disabled={isLoading}
               />
             </label>
