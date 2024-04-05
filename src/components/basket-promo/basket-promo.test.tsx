@@ -6,8 +6,11 @@ import { withHistory, withStore } from '../../utils/mock-component';
 describe('Component BasketPromo', () => {
 
   const mockStore = MockStore();
+  function setCouponState() {
+    jest.fn();
+  }
   it('should render "Промокод"', () => {
-    const { withStoreComponent } = withStore(<BasketPromo />, mockStore);
+    const { withStoreComponent } = withStore(<BasketPromo setCouponState={setCouponState} couponState={''} />, mockStore);
     const preparedComponent = withHistory(withStoreComponent);
 
     render(preparedComponent);
@@ -17,7 +20,7 @@ describe('Component BasketPromo', () => {
   });
 
   it('should render input for promocode', () => {
-    const { withStoreComponent } = withStore(<BasketPromo />, mockStore);
+    const { withStoreComponent } = withStore(<BasketPromo setCouponState={setCouponState} couponState={''} />, mockStore);
     const preparedComponent = withHistory(withStoreComponent);
 
     render(preparedComponent);

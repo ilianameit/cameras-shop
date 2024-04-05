@@ -9,12 +9,6 @@ describe('Component Banner', () => {
     it('should render slides', () => {
       const { withStoreComponent } = withStore(<Banner />, MockStore({[NameSpace.Promo]: {
         promo: mockPromo,
-        promocode: {
-          coupon: null,
-          discount: 0
-        },
-        isDiscountLoading: false,
-        invalidCoupon: false
       }}));
 
       const preparedComponent = withHistory(withStoreComponent);
