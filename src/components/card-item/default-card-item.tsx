@@ -5,7 +5,7 @@ import { returnFormatedPrice } from '../../utils/common';
 import { AppRoutes } from '../../const/const';
 import { memo } from 'react';
 import { useAppSelector } from '../../hooks';
-import { getCamerasFromCart } from '../../store/camera-slice/selectors';
+import { getCamerasFromCart } from '../../store/basket-slice/selectors';
 
 type DefaultCardItemProps = {
   camera: Camera;
