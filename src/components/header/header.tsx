@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { AppRoutes } from '../../const/const';
 import { memo } from 'react';
 import FormSearch from '../form-search/form-search';
-import { getCamerasFromCart } from '../../store/camera-slice/selectors';
 import { useAppSelector } from '../../hooks';
+import { getCamerasFromCart } from '../../store/basket-slice/selectors';
 
 function HeaderComponent(): JSX.Element {
   const cameras = useAppSelector(getCamerasFromCart);

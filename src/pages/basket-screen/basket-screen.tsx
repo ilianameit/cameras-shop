@@ -1,23 +1,22 @@
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
-import { Breadcrumb, Camera, CameraBasket } from '../../types/types';
+import { Breadcrumb, Camera, CameraBasket, CouponName } from '../../types/types';
 import { AppRoutes, ChangeProductCount, breadcrumbBasket, breadcrumbNames } from '../../const/const';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { getCamerasFromCart, getCreateOrderFailStatus, getCreateOrderSuccessStatus } from '../../store/camera-slice/selectors';
+import { getCamerasFromCart, getCreateOrderFailStatus, getCreateOrderSuccessStatus, getPromocode } from '../../store/basket-slice/selectors';
+import { changeCountCameraInBasket, closeErrorModal, deleteFromCart, resetCart, resetPromocode } from '../../store/basket-slice/basket-slice';
 import BasketProductItem from '../../components/basket-product-item/basket-product-item';
-import { changeCountCameraInBasket, closeErrorModal, deleteFromCart, resetCart } from '../../store/camera-slice/camera-slice';
 import { ChangeEvent, Fragment, MouseEvent, useEffect, useRef, useState } from 'react';
 import ModalWindow from '../../components/modal-window/modal-window';
 import RemoveItemPopup from '../../components/popup/remove-item-popup/remove-item-popup';
 import { Link, useNavigate } from 'react-router-dom';
 import { returnFormatedPrice } from '../../utils/common';
 import BasketPromo from '../../components/basket-promo/basket-promo';
-import { getPromocode } from '../../store/promo-slice/selectors';
 import { fetchSendOrder } from '../../store/api-actions';
-import { resetPromocode } from '../../store/promo-slice/promo-slice';
 import ThanksPopup from '../../components/popup/thanks-popup/thanks-popup';
+import classNames from 'classnames';
 
 function BasketScreen(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -42,7 +41,7 @@ function BasketScreen(): JSX.Element {
   const focusThanksPopup = useRef<HTMLButtonElement>(null);
   const isSuccessCreateOrder = useAppSelector(getCreateOrderSuccessStatus);
   const isFailCreateOrder = useAppSelector(getCreateOrderFailStatus);
-
+  const [couponState, setCouponState] = useState<CouponName | string>(promocode.coupon || '');
   useEffect(() => {
     setTotalPrice(totalPriceCameras);
   }, [totalPriceCameras]);
@@ -100,6 +99,7 @@ function BasketScreen(): JSX.Element {
       dispatch(closeErrorModal());
     }
     dispatch(resetPromocode());
+    setCouponState('');
   }
 
   return(
@@ -135,7 +135,7 @@ function BasketScreen(): JSX.Element {
                   </Fragment>
               }
               <div className="basket__summary">
-                <BasketPromo />
+                <BasketPromo setCouponState={setCouponState} couponState={couponState} />
                 <div className="basket__summary-order">
                   <p className="basket__summary-item">
                     <span className="basket__summary-text">Всего:</span>
@@ -143,7 +143,14 @@ function BasketScreen(): JSX.Element {
                   </p>
                   <p className="basket__summary-item">
                     <span className="basket__summary-text">Скидка:</span>
-                    <span className="basket__summary-value basket__summary-value--bonus">{returnFormatedPrice(discount)}</span>
+                    <span
+                      className={classNames(
+                        'basket__summary-value',
+                        {'basket__summary-value--bonus' : discount}
+                      )}
+                    >
+                      {returnFormatedPrice(discount)}
+                    </span>
                   </p>
                   <p className="basket__summary-item">
                     <span className="basket__summary-text basket__summary-text--total">К оплате:</span>

@@ -21,18 +21,17 @@ describe('Component CardItem', () => {
     });
 
     it('should render в корзину if camera in the basket', () => {
-      const { withStoreComponent } = withStore(<CardItem camera={mockCamera} onBuyClick={onBuyClick}/>, MockStore({[NameSpace.Camera]: {
-        cameras: [],
-        loadingCameras: false,
-        oneCamera: mockCamera,
-        loadingOneCamera: false,
-        similarCameras: [],
-        camerasFilteredByPrice: [],
-        camerasFilteredByPriceLoading: false,
+      const { withStoreComponent } = withStore(<CardItem camera={mockCamera} onBuyClick={onBuyClick}/>, MockStore({[NameSpace.Basket]: {
         cart: [{...mockCamera, count: 1}],
         isSuccessAddToCart: false,
         isCreateOrderSuccess: false,
         isCreateOrderFail: false,
+        promocode: {
+          coupon: null,
+          discount: 0,
+        },
+        isDiscountLoading: false,
+        invalidCoupon: false,
       }}));
       const preparedComponent = withHistory(withStoreComponent);
       render(preparedComponent);

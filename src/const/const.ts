@@ -1,4 +1,4 @@
-import { Breadcrumb, CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, CouponName, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
+import { Breadcrumb, CameraCategory, CameraCategoryParams, CameraLevel, CameraLevelParams, CameraType, CameraTypeParams, Filters, FiltersParams, KeyFilters, SortTypeByState, SortTypeState } from '../types/types';
 
 export enum AppRoutes {
   Root = '/',
@@ -14,6 +14,7 @@ export enum NameSpace {
   Coupon = 'COUPON',
   Order = 'ORDER',
   App = 'APP',
+  Basket = 'BASKET'
 }
 
 export enum APIRoute {
@@ -210,5 +211,3 @@ export const MIN_COUNT_ITEM_BASKET = 1;
 export const MAX_COUNT_ITEM_BASKET = 99;
 
 export const NAME_KEY_CAMERAS_STORAGE = 'cameras';
-
-export const COUPONS: CouponName[] = ['camera-333', 'camera-444', 'camera-555'];

@@ -15,12 +15,6 @@ export const getSimilarCameras = (state: State) => state[NameSpace.Camera].simil
 export const getPriceFilteredCameras = (state: State) => state[NameSpace.Camera].camerasFilteredByPrice;
 export const getStatusLoadingPriceFiltered = (state: State) => state[NameSpace.Camera].camerasFilteredByPriceLoading;
 
-export const getCamerasFromCart = (state: State) => state[NameSpace.Camera].cart;
-export const getAddToCartSuccessStatus = (state: State) => state[NameSpace.Camera].isSuccessAddToCart;
-
-export const getCreateOrderSuccessStatus = (state: State) => state[NameSpace.Camera].isCreateOrderSuccess;
-export const getCreateOrderFailStatus = (state: State) => state[NameSpace.Camera].isCreateOrderFail;
-
 export const getSortedCameras = createSelector(
   [
     (cameras: Camera[], sortingType: SortTypeName | undefined, sortingBy: SortTypeBy | undefined) => ({sortingType, sortingBy, cameras})

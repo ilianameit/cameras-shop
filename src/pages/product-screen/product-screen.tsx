@@ -21,6 +21,9 @@ import ButtonUp from '../../components/button-up/button-up';
 import ReviewPopup from '../../components/popup/review-popup/review-popup';
 import Breadcrumbs from '../../components/breadcrumbs/breadcrumbs';
 import ModalWindow from '../../components/modal-window/modal-window';
+import AddItemSeccessPopup from '../../components/popup/add-item-seccess-popup/add-item-seccess-popup';
+import { changeStatusAddToCart } from '../../store/basket-slice/basket-slice';
+import { getAddToCartSuccessStatus } from '../../store/basket-slice/selectors';
 
 function ProductScreen(): JSX.Element {
 
@@ -28,25 +31,33 @@ function ProductScreen(): JSX.Element {
   const {id} = useParams();
 
   const focusItemAddPopup = useRef<HTMLButtonElement | null>(null);
-  const focusItemSimilarPopup = useRef<HTMLButtonElement | null>(null);
 
   const [tabParams, setTabParams] = useSearchParams();
   const currentTab = useMemo(() => tabParams.get('tab') as TabType || TabName.Description, [tabParams]);
   const camera = useAppSelector(getOneCamera);
   const isLoading = useAppSelector(getStatusLoadingOneCamera);
   const [showAddItemModal, setAddItemModal] = useState(false);
+  const isAddToCartSuccess = useAppSelector(getAddToCartSuccessStatus);
+  const focusItemSuccessPopup = useRef<HTMLAnchorElement>(null);
+
   const [cameraCard, setCameraCard] = useState<Camera | null>(null);
 
   const [showReviewModal, setReviewModal] = useState(false);
 
   const similarCameras = useAppSelector(getSimilarCameras);
   const [showBuySimilarItemModal, setBuySimilarItemModal] = useState(false);
+  function handleCloseAddToCartSeccessModal() {
+    setBuySimilarItemModal(false);
+    dispatch(changeStatusAddToCart());
+  }
 
   const handleAddItemClick = useCallback((cameraCardModal: Camera) => {
     setAddItemModal(true);
     setCameraCard(cameraCardModal);
   }, []);
-  const handleCloseAddItemModal = useCallback(() => setAddItemModal(false), []);
+  const handleCloseAddItemModal = useCallback(() => {
+    setAddItemModal(false);
+  }, []);
 
   const handleTabButtonClick = useCallback((type: TabType) => {
     setTabParams({ tab: type });
@@ -55,9 +66,9 @@ function ProductScreen(): JSX.Element {
   const handleAddReviewModal = useCallback(() => setReviewModal(true), []);
   const handleCloseAddReviewModal = useCallback(() => setReviewModal(false), []);
 
-  const handleCloseBuySimilarItemModal = useCallback(() => setBuySimilarItemModal(false), []);
   const handleBuySimilarItemClick = useCallback((cameraSimilarModal: Camera) => {
     setBuySimilarItemModal(true);
+    setAddItemModal(true);
     setCameraCard(cameraSimilarModal);
   }, []);
 
@@ -162,8 +173,15 @@ function ProductScreen(): JSX.Element {
               onClose={handleCloseAddItemModal}
               firstFocusElement={focusItemAddPopup}
             >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onClose={handleCloseAddItemModal} isCardItem/>
+              <AddItemPopup camera={cameraCard} focusElement={focusItemAddPopup} onAddTocartClick={handleCloseAddItemModal} />
             </ModalWindow>)
+        }
+        {
+          isAddToCartSuccess && (
+            <ModalWindow title={'Товар успешно добавлен в корзину'} onClose={handleCloseAddToCartSeccessModal} firstFocusElement={focusItemSuccessPopup} isResponse>
+              <AddItemSeccessPopup focusElement={focusItemSuccessPopup} onContinueButtonClick={handleCloseAddToCartSeccessModal} isCardItem={!showBuySimilarItemModal}/>
+            </ModalWindow>
+          )
         }
         {
           showReviewModal &&
@@ -176,16 +194,6 @@ function ProductScreen(): JSX.Element {
               onClose={handleCloseAddReviewModal}
             />
           </ModalWindow>
-        }
-        {
-          showBuySimilarItemModal && (
-            <ModalWindow
-              title='Добавить товар в корзину'
-              onClose={handleCloseBuySimilarItemModal}
-              firstFocusElement={focusItemSimilarPopup}
-            >
-              <AddItemPopup camera={cameraCard} focusElement={focusItemSimilarPopup} onClose={handleCloseBuySimilarItemModal} isCardItem={false}/>
-            </ModalWindow>)
         }
       </main>
       <ButtonUp />

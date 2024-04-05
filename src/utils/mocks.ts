@@ -173,10 +173,6 @@ export const MockStore = (initialState?: Partial<State>): State => ({
     similarCameras: [],
     camerasFilteredByPrice: [],
     camerasFilteredByPriceLoading: false,
-    cart: [],
-    isSuccessAddToCart: false,
-    isCreateOrderSuccess: false,
-    isCreateOrderFail: false,
   },
   REVIEW: {
     reviews: [],
@@ -185,12 +181,18 @@ export const MockStore = (initialState?: Partial<State>): State => ({
   },
   PROMO: {
     promo: [],
+  },
+  BASKET: {
     promocode: {
       coupon: null,
       discount: 0
     },
     isDiscountLoading: false,
-    invalidCoupon: false
+    invalidCoupon: false,
+    cart: [],
+    isSuccessAddToCart: false,
+    isCreateOrderSuccess: false,
+    isCreateOrderFail: false
   },
   ...initialState ?? {},
 });
