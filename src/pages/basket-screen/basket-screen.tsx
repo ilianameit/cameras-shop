@@ -94,12 +94,12 @@ function BasketScreen(): JSX.Element {
   function handleCloseThanksOrderModalClick() {
     if(isSuccessCreateOrder){
       dispatch(resetCart());
+      dispatch(resetPromocode());
+      setCouponState('');
     }
     if(isFailCreateOrder){
       dispatch(closeErrorModal());
     }
-    dispatch(resetPromocode());
-    setCouponState('');
   }
 
   return(
