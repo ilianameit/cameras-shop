@@ -1,8 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NameSpace } from '../../const/const';
+import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NAME_KEY_COUPON_STORAGE, NameSpace } from '../../const/const';
 import { Camera, CameraBasket, ChangeCount, CouponName, Promocode } from '../../types/types';
 import { fetchDiscountAction, fetchSendOrder } from '../api-actions';
-import { getCamerasFromLocalStorage } from '../../utils/common';
+import { getCamerasFromLocalStorage, getCouponFromLocalStorage } from '../../utils/common';
 
 type BasketStateType = {
   promocode: Promocode;
@@ -20,7 +20,7 @@ const initialState: BasketStateType = {
   isCreateOrderSuccess: false,
   isCreateOrderFail: false,
   promocode: {
-    coupon: null,
+    coupon:  JSON.parse(localStorage.getItem(NAME_KEY_COUPON_STORAGE) ?? 'null') as Promocode['coupon'] || null,
     discount: 0,
   },
   isDiscountLoading: false,
@@ -91,12 +91,14 @@ export const basketSlice = createSlice({
     },
     setCouponName: (state, action: PayloadAction<CouponName | null>) => {
       state.promocode.coupon = action.payload;
+      getCouponFromLocalStorage(state.promocode.coupon);
     },
     resetPromocode: (state) => {
       state.promocode = {
         coupon: null,
         discount: 0,
       };
+      getCouponFromLocalStorage(state.promocode.coupon);
       state.invalidCoupon = false;
     },
   },
