@@ -25,6 +25,7 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
   const {
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm<FormValues>(
     {
       mode: 'onSubmit'
@@ -57,7 +58,7 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
         >
           <div className={classNames(
             'custom-input',
-            { 'is-invalid': invalidCouponStatus },
+            { 'is-invalid': invalidCouponStatus || errors.promo?.type === 'pattern'},
             { 'is-valid': promocode.discount !== 0 }
           )}
           >
@@ -67,13 +68,20 @@ function BasketPromo({setCouponState, couponState}: typeBasketPromoProps): JSX.E
                 placeholder="Введите промокод"
                 {...register('promo', {
                   required: true,
-                  onChange: handleCouponChange
+                  onChange: handleCouponChange,
+                  pattern: {
+                    value: /^\S*$/i,
+                    message: 'Введите без пробелов',
+                  },
                 })}
                 value={couponState}
                 disabled={isLoading}
               />
             </label>
-            {invalidCouponStatus && <p className="custom-input__error">Промокод неверный</p>}
+            {(invalidCouponStatus || errors.promo?.type === 'pattern') &&
+              <p className="custom-input__error">
+                { errors.promo?.type === 'pattern' ? errors.promo.message : 'Промокод неверный'}
+              </p>}
             {promocode.discount !== 0 && <p className="custom-input__success">Промокод принят!</p>}
           </div>
           <button
