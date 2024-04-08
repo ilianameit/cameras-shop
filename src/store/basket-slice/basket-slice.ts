@@ -1,8 +1,8 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NAME_KEY_COUPON_STORAGE, NameSpace } from '../../const/const';
+import { ChangeProductCount, MAX_COUNT_ITEM_BASKET, MIN_COUNT_ITEM_BASKET, NAME_KEY_CAMERAS_STORAGE, NAME_KEY_PROMOCODE_STORAGE, NameSpace } from '../../const/const';
 import { Camera, CameraBasket, ChangeCount, CouponName, Promocode } from '../../types/types';
 import { fetchDiscountAction, fetchSendOrder } from '../api-actions';
-import { getCamerasFromLocalStorage, getCouponFromLocalStorage } from '../../utils/common';
+import { getCamerasFromLocalStorage, getPromocodeFromLocalStorage } from '../../utils/common';
 
 type BasketStateType = {
   promocode: Promocode;
@@ -19,10 +19,10 @@ const initialState: BasketStateType = {
   isSuccessAddToCart: false,
   isCreateOrderSuccess: false,
   isCreateOrderFail: false,
-  promocode: {
-    coupon:  JSON.parse(localStorage.getItem(NAME_KEY_COUPON_STORAGE) ?? 'null') as Promocode['coupon'] || null,
-    discount: 0,
-  },
+  promocode: JSON.parse(localStorage.getItem(NAME_KEY_PROMOCODE_STORAGE) ?? '{"coupon": null, "discount": 0}') as Promocode || {
+    coupon: null,
+    discount: 0
+  } as Promocode,
   isDiscountLoading: false,
   invalidCoupon: false,
 };
@@ -91,14 +91,14 @@ export const basketSlice = createSlice({
     },
     setCouponName: (state, action: PayloadAction<CouponName | null>) => {
       state.promocode.coupon = action.payload;
-      getCouponFromLocalStorage(state.promocode.coupon);
+      getPromocodeFromLocalStorage(state.promocode);
     },
     resetPromocode: (state) => {
       state.promocode = {
         coupon: null,
         discount: 0,
       };
-      getCouponFromLocalStorage(state.promocode.coupon);
+      getPromocodeFromLocalStorage(state.promocode);
       state.invalidCoupon = false;
     },
   },
@@ -106,6 +106,7 @@ export const basketSlice = createSlice({
     builder
       .addCase(fetchDiscountAction.fulfilled, (state, action) => {
         state.promocode.discount = action.payload;
+        getPromocodeFromLocalStorage(state.promocode);
         state.isDiscountLoading = false;
         state.invalidCoupon = false;
       })
